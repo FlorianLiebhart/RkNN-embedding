@@ -1,2 +1,34 @@
+*.class
+*.log
+
+# phantom files
+*.java\~
+*.scala\~
+*.grammar\~
+*.flex\~
+
+# sbt specific
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+
+# Scala-IDE specific
+.scala_dependencies
+
+# Mac specific
+.DS_Store
+
+# Linux specific
+*.swp
+
+# Sublime Text specific
+*.sublime-project
+*.sublime-workspace
+
+# Eclipse specific
 .classpath
 .project
+.cache
