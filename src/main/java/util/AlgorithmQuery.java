@@ -65,7 +65,7 @@ public class AlgorithmQuery {
 		else if (algorithm == AlgorithmStrings.REVERSE_NN) {
 			Vertex selected = Sampler.getInstance().getVertex(
 					nodes.get(0));
-			if (!selected.containObject()) {
+			if (!selected.containsObject()) {
 				JOptionPane
 						.showMessageDialog(
 								viewComponent,

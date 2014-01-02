@@ -15,7 +15,7 @@ public abstract class GraphAlgorithm {
 		Vector<Integer> rNeighbors = new Vector<Integer>();
 		
 		for(Vertex v : Sampler.getInstance().getAllNodesFromGraph()) {
-			if(!v.containObject() || v == home) {
+			if(!v.containsObject() || v == home) {
 				continue;
 			}
 			
@@ -91,7 +91,7 @@ public abstract class GraphAlgorithm {
 			currentNode = smallest; // ...set it as 'current node'
 			
 			if(!neighbors.contains(smallest.getId())) {
-				if(smallest.containObject()) { // ...and add it to knn if it has object
+				if(smallest.containsObject()) { // ...and add it to knn if it has object
 					neighbors.add(smallest.getId());
 				}
 			}
@@ -102,7 +102,7 @@ public abstract class GraphAlgorithm {
 		Sampler.getInstance().reset();
 		return neighbors;
 	}
-	
+
 	
 	public static Vertex getNearestNeighboursOnTheFly(Vertex start) {
 		Vertex nearest = null;
@@ -153,7 +153,7 @@ public abstract class GraphAlgorithm {
 			
 			currentNode = smallest; // ...set it as 'current node'
 			
-			if(smallest.containObject()) {
+			if(smallest.containsObject()) {
 				nearest = smallest;
 				break;
 			}
@@ -224,7 +224,7 @@ public abstract class GraphAlgorithm {
 			
 			currentNode = smallest; // ...set it as 'current node'
 			if(!neighbors.contains(smallest.getId())) {
-				if(smallest.containObject()) { // ...and add it to knn if it has object
+				if(smallest.containsObject()) { // ...and add it to knn if it has object
 					neighbors.add(smallest.getId());
 				}
 			}
@@ -665,7 +665,7 @@ public abstract class GraphAlgorithm {
 
 	/** Floyd-Warshall-Algorithm.
 	 *  Used for calculating graph diameter.
-	 * @param g
+	 * @param
 	 * @return
 	 */
 	private static double[][] getAllPairShortestPath() {

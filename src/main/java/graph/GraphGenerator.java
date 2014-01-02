@@ -129,7 +129,7 @@ public class GraphGenerator {
 			if(numberOfEdges < 0) {
 				throw new RuntimeException("Number of edges < 0");
 			}
-			
+
 			int vertices = g.getAllVertices().size();
 			int max = (vertices * vertices - 1) / 2;
 			if(numberOfEdges > max) {

@@ -19,7 +19,7 @@ public class Graph {
 		this.vertices.put(new Integer(v.getId()), v);
 		this.mapping.put(v, new HashMap<Vertex,Edge>());
 	}
-	
+
 	public Vertex addVertex() {
 		int id = 0;
 		while(true) {
@@ -29,10 +29,10 @@ public class Graph {
 			id++;
 		}
 		Vertex v = new Vertex(id);
-		
+
 		this.vertices.put(new Integer(v.getId()), v);
 		this.mapping.put(v, new HashMap<Vertex,Edge>());
-		
+
 		return v;
 	}
 
@@ -44,10 +44,10 @@ public class Graph {
 		//}
 		return vertices.get(new Integer(nodeId));
 	}
-	
+
 	public void removeVertex(Vertex v) {
 		this.vertices.remove(v.getId());
-		
+
 		HashMap<Vertex, Edge> m = this.mapping.get(v);
 		for(Edge e: m.values()){
 			if(e.getSource() == v || e.getTarget() == v) {
@@ -57,16 +57,16 @@ public class Graph {
 			}
 		}
 	}
-	
+
 	public void setVertices(Vector<Vertex> vertices) {
 		this.vertices = new HashMap<Integer, Vertex>();
 		this.mapping = new HashMap<Vertex, HashMap<Vertex, Edge>>();
 		for(Vertex v: vertices){
 			this.vertices.put(new Integer(v.getId()), v);
 			this.mapping.put(v, new HashMap<Vertex,Edge>());
-		}		
+		}
 	}
-	
+
 	public void addEdge(Edge e) {
 		this.edges.add(e);
 		try {
@@ -241,7 +241,7 @@ public class Graph {
 		return new Vector<Edge>(this.edges);
 	}
 
-	public Vector<Vertex> getAllVertices() {
+	public Vector<Vertex>   getAllVertices() {
 		return new Vector<Vertex>(this.vertices.values());
 	}
 

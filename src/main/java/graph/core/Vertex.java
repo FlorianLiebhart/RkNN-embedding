@@ -37,8 +37,11 @@ public class Vertex {
 	public Point getNodeLocation() {
 		return pos;
 	}
-	
-	public boolean containObject() {
+
+    /**
+     * @return true if this Vertex contains an object; false if it doesn't.
+     */
+	public boolean containsObject() {
 		return objectId != Vertex.NO_OBJECT;
 	}
 }

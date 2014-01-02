@@ -22,7 +22,7 @@ public class GUIStarter {
 		for(int i = 0; i < g.getNumberOfEdges(); i++) {
 			Edge e = g.getEdgesSet().get(i);
 			System.out.println((i+1) + ". " + e + " > Prob: " + g.getProbability(e));
-		}
+		} 
 		System.out.println("\nHas Connection between 1-3: " + g.containsEdge(1, 3));
 		*/
 		SwingUtilities.invokeLater(new Runnable() {
