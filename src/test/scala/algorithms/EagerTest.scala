@@ -16,5 +16,4 @@ class EagerTest extends FunSuite with ShouldMatchers{
     assert(mySeq(2) == 6)
     assert(mySeq(3) == 0)
   }
-
 }
