@@ -99,7 +99,8 @@ public class MainWindow extends JFrame implements ActionListener, Observer {
 		// setExtendedState(getExtendedState()|JFrame.MAXIMIZED_BOTH);
 
 		RefineryUtilities.centerFrameOnScreen(this);
-		setVisible(true);
+        setShowEdgeWeight();
+        setVisible(true);
 	}
 
 	private void createMenus() {
@@ -154,21 +155,17 @@ public class MainWindow extends JFrame implements ActionListener, Observer {
 
 		ButtonGroup weightGroup = new ButtonGroup();
 		JRadioButtonMenuItem weightOneMenuItem = new JRadioButtonMenuItem(GuiStrings.EDGE_ONE);
-		weightOneMenuItem.setSelected(true);
+		weightOneMenuItem.setSelected(false);
 		weightOneMenuItem.addActionListener(this);
-		weightOneMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1,
-				ActionEvent.ALT_MASK));
-		weightOneMenuItem
-				.setActionCommand(ActionCommands.SET_WEIGHT_TO_ONE_ACTION);
+		weightOneMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.ALT_MASK));
+		weightOneMenuItem.setActionCommand(ActionCommands.SET_WEIGHT_TO_ONE_ACTION);
 		weightGroup.add(weightOneMenuItem);
 		weightMenu.add(weightOneMenuItem);
 
 		JRadioButtonMenuItem weightRandomMenuItem = new JRadioButtonMenuItem(GuiStrings.EDGE_RANDOM);
 		weightRandomMenuItem.addActionListener(this);
-		weightRandomMenuItem.setAccelerator(KeyStroke.getKeyStroke(
-				KeyEvent.VK_R, ActionEvent.ALT_MASK));
-		weightRandomMenuItem
-				.setActionCommand(ActionCommands.SET_WEIGHT_RANDOM_ACTION);
+		weightRandomMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.ALT_MASK));
+		weightRandomMenuItem.setActionCommand(ActionCommands.SET_WEIGHT_RANDOM_ACTION);
 		weightGroup.add(weightRandomMenuItem);
 		weightMenu.add(weightRandomMenuItem);
 		settingsMenu.addSeparator();
@@ -179,15 +176,15 @@ public class MainWindow extends JFrame implements ActionListener, Observer {
 
 		ButtonGroup edgeLabelGroup = new ButtonGroup();
 		showEdgeProbItem = new JRadioButtonMenuItem(GuiStrings.EDGE_SHOW_PROB);
-		showEdgeProbItem.setSelected(true);
+		showEdgeProbItem.setSelected(false);
 		showEdgeProbItem.addActionListener(this);
-		showEdgeProbItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P,
-				ActionEvent.ALT_MASK));
+		showEdgeProbItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P,ActionEvent.ALT_MASK));
 		showEdgeProbItem.setActionCommand(ActionCommands.SHOW_PROB_ACTION);
 		edgeLabelGroup.add(showEdgeProbItem);
 		edgeLabelMenu.add(showEdgeProbItem);
 
 		showEdgeWeightItem = new JRadioButtonMenuItem(GuiStrings.EDGE_SHOW_WEIGHT);
+        showEdgeWeightItem.setSelected(true);
 		showEdgeWeightItem.addActionListener(this);
 		edgeLabelGroup.add(showEdgeWeightItem);
 		edgeLabelMenu.add(showEdgeWeightItem);
@@ -361,7 +358,8 @@ public class MainWindow extends JFrame implements ActionListener, Observer {
 		showEdgeWeightButton.setFont(cursiv);
 		showEdgeWeightButton.setToolTipText(GuiStrings.EDGE_WEIGHT_TOOLTIP);
 		showEdgeWeightButton.addActionListener(this);
-		showEdgeWeightButton.setEnabled(false);
+		showEdgeWeightButton.setEnabled(true);
+        showEdgeWeightButton.setSelected(true);
 		showEdgeWeightButton
 				.setActionCommand(ActionCommands.SHOW_WEIGHT_ACTION);
 		toolbar.add(showEdgeWeightButton);
@@ -371,6 +369,7 @@ public class MainWindow extends JFrame implements ActionListener, Observer {
 		showEdgeProbButton.setToolTipText(GuiStrings.EDGE_PROB_TOOLTIP);
 		showEdgeProbButton.addActionListener(this);
 		showEdgeProbButton.setEnabled(false);
+		showEdgeProbButton.setSelected(false);
 		showEdgeProbButton.setActionCommand(ActionCommands.SHOW_PROB_ACTION);
 		toolbar.add(showEdgeProbButton);
 
@@ -605,16 +604,18 @@ public class MainWindow extends JFrame implements ActionListener, Observer {
 	}
 
 	private void setShowEdgeProbability() {
+        showEdgeWeightButton.setSelected(false);
+        showEdgeWeightItem.setSelected(false);
 		showEdgeProbItem.setSelected(true);
 		showEdgeProbButton.setSelected(true);
-		showEdgeWeightButton.setSelected(false);
 		graphPanel.setShowingEdgeWeight(false);
 	}
 
 	private void setShowEdgeWeight() {
+        showEdgeProbButton.setSelected(false);
+        showEdgeProbItem.setSelected(false);
 		showEdgeWeightItem.setSelected(true);
 		showEdgeWeightButton.setSelected(true);
-		showEdgeProbButton.setSelected(false);
 		graphPanel.setShowingEdgeWeight(true);
 	}
 
@@ -878,9 +879,9 @@ public class MainWindow extends JFrame implements ActionListener, Observer {
 
 		if (justStarted) {
 			// DEFAULT: reset to show probability
-			showEdgeProbItem.setSelected(true);
-			showEdgeProbButton.setSelected(true);
-			showEdgeWeightButton.setSelected(false);
+			showEdgeProbItem.setSelected(false);
+			showEdgeProbButton.setSelected(false);
+			showEdgeWeightButton.setSelected(true);
 			showNodeIdButton.setEnabled(true);
 			showNodeIdButton.setSelected(true);
 			showObjectIdButton.setEnabled(true);
@@ -889,7 +890,7 @@ public class MainWindow extends JFrame implements ActionListener, Observer {
 			infoMenu.setEnabled(true);
 			editModeToggle.setEnabled(true);
 			showEdgeWeightButton.setEnabled(true);
-			showEdgeProbButton.setEnabled(true);
+			showEdgeProbButton.setEnabled(false);
 			sampleGraphButton.setEnabled(true);
 			saveGraphItem.setEnabled(true);
 			saveGraphButton.setEnabled(true);
