@@ -1,6 +1,7 @@
 package app
 
-import algorithms.Eager
+import algorithms.Eager.eager
+import algorithms.NaiveRkNN.getReverseKNearestNeighbors
 import graph.core.{Edge, Graph, Vertex}
 import util.Utils
 
@@ -22,8 +23,15 @@ object RkNNComparator {
      */
 
     val graph = Utils.createExampleGraph
-    val rKnns = Eager.eager(graph, graph.getVertex(4), 1)
-    for( v <- rKnns )
+
+    val rKnnsNaive = getReverseKNearestNeighbors(graph, graph.getVertex(5), 2)
+    println("Naive:")
+    for( v <- rKnnsNaive )
       println("Node: " + v._1.getId + ", Dist: " + v._2)
-  }
+
+    println("\nEager:")
+    val rKnnsEager = eager(graph, graph.getVertex(5),2)
+    for( v <- rKnnsEager )
+        println("Node: " + v._1.getId + ", Dist: " + v._2)
+    }
 }

@@ -241,7 +241,7 @@ public class Graph {
 		return new Vector<Edge>(this.edges);
 	}
 
-	public Vector<Vertex>   getAllVertices() {
+	public Vector<Vertex> getAllVertices() {
 		return new Vector<Vertex>(this.vertices.values());
 	}
 

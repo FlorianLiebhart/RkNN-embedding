@@ -34,6 +34,7 @@ class EagerTest extends FunSuite with ShouldMatchers {
    *              - dass für k = 0 nichts zurück gegeben wird
    *              - checke die restl. Tests auf allgemeine Testbarkeit
    *              - Führe diese Tests über mehrere generierte Graphen durch (for ...graphen .. do Test )
+   *              - Checke, ob rangeNN die richtigen distanzen zurück gibt!
    */
   test("rangeNN all and only nearest neighbour nodes containing objects returned for infinite k and dist"){
     val graph =  createExampleGraph
@@ -122,22 +123,31 @@ class EagerTest extends FunSuite with ShouldMatchers {
   test("eager all possible rknns are being returned for maximum k"){
     val graph = createExampleGraph
     val rknns = Eager.eager(graph, graph.getVertex(4), Integer.MAX_VALUE).map(_._1)
-    rknns should have size 2
+    rknns should have size 3
     rknns.contains(graph.getVertex(6)) should be (true)
     rknns.contains(graph.getVertex(5)) should be (true)
+    rknns.contains(graph.getVertex(7)) should be (true)
   }
   test("eager returns all object-nodes in the correct order") {
     val graph =  createExampleGraph
     val rknns = Eager.eager(graph, graph.getVertex(4), Integer.MAX_VALUE)
     rknns(0)._1 should equal (graph.getVertex(6))
     rknns(1)._1 should equal (graph.getVertex(5))
+    rknns(2)._1 should equal (graph.getVertex(7))
+  }
+  test("eager returns the correct result on exampleGraph for k=1") {
+    val graph =  createExampleGraph
+    val rknns = Eager.eager(graph, graph.getVertex(4), 1)
+    rknns should have size 2
+    rknns(0)._1 should equal (graph.getVertex(6))
+    rknns(1)._1 should equal (graph.getVertex(5))
   }
   test("eager Grenzfall: Auch mehr als k Ergebnisse möglich, falls es beim 'letzten k' nächste Nachbarn mit selbem Abstand gibt"){
     val graph =  createExampleGraph
-    val rknns = Eager.eager(graph, graph.getVertex(5), 2).map(_._1)
+    val rknns = Eager.eager(graph, graph.getVertex(5), 2)
     rknns should have size 3
-    rknns(0) should equal (graph.getVertex(4))
-    assert((rknns(1) equals graph.getVertex(7)) && (rknns(2) equals graph.getVertex(6))
-        || (rknns(1) equals graph.getVertex(6)) && (rknns(2) equals graph.getVertex(7)))
+    rknns(0)._1 should equal (graph.getVertex(4))
+    assert((rknns(1)._1 equals graph.getVertex(7)) && (rknns(2)._1 equals graph.getVertex(6))
+        || (rknns(1)._1 equals graph.getVertex(6)) && (rknns(2)._1 equals graph.getVertex(7)))
   }
 }
