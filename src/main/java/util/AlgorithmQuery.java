@@ -100,8 +100,20 @@ public class AlgorithmQuery {
 		} 
 		else if (algorithm == AlgorithmStrings.DURCHMESSER) {
 			setVisualizer(new DiameterChartWindow(useRelative));
-		} 
-	}
+		}
+//        else if (algorithm == AlgorithmStrings.RKNN_NAIVE) {
+//            try {
+//                final int k = Integer.parseInt(kNumber);
+//                setVisualizer(new RKnnSimpleTableWindow(nodes.get(0), k, useRelative));
+//            } catch (NumberFormatException ex) {
+//                JOptionPane.showMessageDialog(
+//                        viewComponent,
+//                        "Please enter a number!\n("
+//                                + ex.getLocalizedMessage() + ")",
+//                        "Reverse K-Nearest Neighbours", JOptionPane.ERROR_MESSAGE);
+//            }
+//        }
+    }
 
 	public ResultVisualizer getVisualizer() {
 		return visualizer;

@@ -17,7 +17,7 @@ public class Sampler {
 	private HashMap<Edge, Boolean> sampledEdges; 
 	
 	private Sampler() {
-		randomer = new Random();
+		randomer = new Random(System.currentTimeMillis());
 		sampledEdges = new HashMap<Edge, Boolean>();
 	}
 	

@@ -1,5 +1,6 @@
 package view;
 
+import app.RkNNComparator;
 import graph.GraphGenerator;
 import graph.ProbabilisticGraph;
 
@@ -40,6 +41,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileFilter;
 
+import graph.core.Graph;
 import org.jfree.ui.RefineryUtilities;
 
 import util.ActionCommands;
@@ -67,7 +69,10 @@ public class MainWindow extends JFrame implements ActionListener, Observer {
 	private JButton sampleGraphButton, runButton, saveGraphButton, hypoButton, zoomInButton, zoomOutButton;
 	private JToggleButton editModeToggle, showEdgeWeightButton,
 			showEdgeProbButton, showNodeIdButton, showObjectIdButton;
-	private JTextField knnField;
+	private JTextField kNNField;
+	private JTextField rknnSimpleField;
+	private JTextField rknnEagerField;
+	private JTextField rknnEmbeddedField;
 	private GraphVisualizer graphPanel;
 
 	// private ProbabilisticGraph probGraph;
@@ -480,6 +485,9 @@ public class MainWindow extends JFrame implements ActionListener, Observer {
 		outlookBar.addBar(AlgorithmStrings.REVERSE_NN,
 						  GuiUtil.createInfoPanel(AlgorithmStrings.REVERSE_NN_INFO), 1,
 						  false);
+        outlookBar.addBar(AlgorithmStrings.RKNN_NAIVE, createRkNNSimplePanel(), 1, false);
+        outlookBar.addBar(AlgorithmStrings.RKNN_EAGER, createRkNNEagerPanel(), 1, false);
+        outlookBar.addBar(AlgorithmStrings.RKNN_EMBEDDED, createRkNNEmbeddedPanel(), 1, false);
 		
 		// "DUMMY" is an empty panel, to fill up the space
 		outlookBar.addBar("DUMMY", new JPanel(), 0, false);
@@ -855,12 +863,12 @@ public class MainWindow extends JFrame implements ActionListener, Observer {
 
 		JPanel tmp = new JPanel();
 		JLabel l = new JLabel("<html><i>k :</i></html>");
-		knnField = new JTextField(10);
-		knnField.setHorizontalAlignment(JTextField.CENTER);
+		kNNField = new JTextField(10);
+		kNNField.setHorizontalAlignment(JTextField.CENTER);
 
-		l.setLabelFor(knnField);
+		l.setLabelFor(kNNField);
 		tmp.add(l);
-		tmp.add(knnField);
+		tmp.add(kNNField);
 
 		panel.add(tmp, BorderLayout.SOUTH);
 		panel.add(GuiUtil.createInfoPanel(AlgorithmStrings.KNN_INFO),
@@ -868,6 +876,67 @@ public class MainWindow extends JFrame implements ActionListener, Observer {
 		panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		return panel;
 	}
+
+    private JPanel createRkNNSimplePanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+
+        JPanel tmp = new JPanel();
+        JLabel l = new JLabel("<html><i>k :</i></html>");
+        rknnSimpleField = new JTextField(10);
+        rknnSimpleField.setHorizontalAlignment(JTextField.CENTER);
+
+        l.setLabelFor(rknnSimpleField);
+        tmp.add(l);
+        tmp.add(rknnSimpleField);
+
+        panel.add(tmp, BorderLayout.SOUTH);
+        panel.add(GuiUtil.createInfoPanel(AlgorithmStrings.RKNN_INFO),
+                BorderLayout.CENTER);
+        panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        return panel;
+    }
+
+    private JPanel createRkNNEagerPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+
+        JPanel tmp = new JPanel();
+        JLabel l = new JLabel("<html><i>k :</i></html>");
+        rknnEagerField = new JTextField(10);
+        rknnEagerField.setHorizontalAlignment(JTextField.CENTER);
+
+        l.setLabelFor(rknnEagerField);
+        tmp.add(l);
+        tmp.add(rknnEagerField);
+
+        panel.add(tmp, BorderLayout.SOUTH);
+        panel.add(GuiUtil.createInfoPanel(AlgorithmStrings.RKNN_INFO),
+                BorderLayout.CENTER);
+        panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        return panel;
+    }
+
+    private JPanel createRkNNEmbeddedPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+
+        JPanel tmp = new JPanel();
+        JLabel l = new JLabel("<html><i>k :</i></html>");
+        rknnEmbeddedField = new JTextField(10);
+        rknnEmbeddedField.setHorizontalAlignment(JTextField.CENTER);
+
+        l.setLabelFor(rknnEmbeddedField);
+        tmp.add(l);
+        tmp.add(rknnEmbeddedField);
+
+        panel.add(tmp, BorderLayout.SOUTH);
+        panel.add(GuiUtil.createInfoPanel(AlgorithmStrings.RKNN_INFO),
+                BorderLayout.CENTER);
+        panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        return panel;
+    }
+
 
 	private void resetOutlookBar() {
 		graphPanel.getSelectedNodes().clear();
@@ -926,14 +995,34 @@ public class MainWindow extends JFrame implements ActionListener, Observer {
 			
 			if(!algo.equals("")) {
 				// run
-				Vector<Integer> nodes = graphPanel.getSelectedNodes();
-				AlgorithmQuery.getInstance().setAlgorithm(algo);
-				AlgorithmQuery.getInstance().setUseRelative(useRelative.isSelected());
-				AlgorithmQuery.getInstance().setKNumber(knnField.getText().trim());
-				AlgorithmQuery.getInstance().startSampling(nodes);
-			} else {
-				// no action selected
-				updateStatusBar("<font color=\"red\">" + GuiStrings.NO_ACTION_MSG + "!</font>");
+                if(algo.equals(AlgorithmStrings.RKNN_NAIVE)){
+                    Graph jGraph = ProbabilisticGraph.getInstance();
+                    int qID = graphPanel.getSelectedNodes().get(0);
+                    int k = Integer.parseInt(rknnSimpleField.getText().trim());
+                    RkNNComparator.naiveRkNN(jGraph, qID, k);
+                }
+                else if(algo.equals(AlgorithmStrings.RKNN_EAGER)){
+                    Graph jGraph = ProbabilisticGraph.getInstance();
+                    int qID = graphPanel.getSelectedNodes().get(0);
+                    int k = Integer.parseInt(rknnEagerField.getText().trim());
+                    RkNNComparator.eagerRkNN(jGraph, qID, k);
+                }
+                else if(algo.equals(AlgorithmStrings.RKNN_EMBEDDED)){
+                    Graph jGraph = ProbabilisticGraph.getInstance();
+                    int qID = graphPanel.getSelectedNodes().get(0);
+                    int k = Integer.parseInt(rknnEmbeddedField.getText().trim());
+                    RkNNComparator.embeddedRkNN(jGraph, qID, k);
+                }
+                else{
+                    Vector<Integer> nodes = graphPanel.getSelectedNodes();
+                    AlgorithmQuery.getInstance().setAlgorithm(algo);
+                    AlgorithmQuery.getInstance().setUseRelative(useRelative.isSelected());
+                    AlgorithmQuery.getInstance().setKNumber(kNNField.getText().trim());
+                    AlgorithmQuery.getInstance().startSampling(nodes);
+                }
+            } else {
+             // no action selected
+            updateStatusBar("<font color=\"red\">" + GuiStrings.NO_ACTION_MSG + "!</font>");
 			}
 		}
 	}

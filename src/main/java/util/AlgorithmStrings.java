@@ -6,6 +6,9 @@ public class AlgorithmStrings {
 	public final static String REACHABLE_NODES 	  = "Reachable Nodes";
 	public final static String KNN             	  = "K-Nearest Neighbours";
 	public final static String REVERSE_NN           = "Reverse Nearest Neighbours";
+	public final static String RKNN_NAIVE           = "RkNN Naive";
+	public final static String RKNN_EAGER           = "RkNN Eager";
+	public final static String RKNN_EMBEDDED        = "RkNN Embedded";
 	public final static String CONNECT_COMP    	  = "Connected Components";
 	public final static String LARGEST_CONNECT_COMP = "Largest Connected Component";
 	public final static String DURCHMESSER          = "Diameter";
@@ -35,5 +38,6 @@ public class AlgorithmStrings {
 											" If k = 1, then the object is simply assigned to the class of its nearest neighbor.";
 	
 	public final static String REVERSE_NN_INFO = "For a query q, reverse nearest neighbors retrieve all objects which has q as their nearest neigbor";
+	public final static String RKNN_INFO = "For a query point q, reverse k-nearest neighbors retrieve all objects which have q as their k nearest neigbour";
 
 }

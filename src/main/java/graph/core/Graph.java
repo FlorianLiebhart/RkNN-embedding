@@ -259,7 +259,7 @@ public class Graph {
 	 * @param upperLimit
 	 */
 	public void setAllWeightWithLimit(int upperLimit) {
-		Random randomer = new Random();
+		Random randomer = new Random(System.currentTimeMillis());
 		for(Edge e : edges) {
 			int w = randomer.nextInt(upperLimit + 1); // inclusive this number
 			while(w == 0) {

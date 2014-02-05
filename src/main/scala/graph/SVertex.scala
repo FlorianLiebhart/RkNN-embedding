@@ -1,21 +1,21 @@
 package graph
 
 import java.awt.Point
-import Vertex._
+import SVertex._
 
 /**
  * Created: 31.12.13, 13:43
  * @author fliebhart
  */
 
-object Vertex {
+object SVertex {
   val NO_OBJECT = -1
 }
 
-class Vertex(var id: Int) {
+class SVertex(val id: Int) {
 
   var objectId: Int = NO_OBJECT
-  private var pos: Point = _
+  private var pos: Point = null
 
   override def toString: String = this.id + ""
 
@@ -23,7 +23,15 @@ class Vertex(var id: Int) {
     pos = new Point(x, y)
   }
 
+  def setObjectId(id: Int) {
+    objectId = id
+  }
+
+  def getObjectId: Int = {
+    return objectId
+  }
+
   def getNodeLocation: Point = pos
 
-  def containsObject: Boolean = objectId != Vertex.NO_OBJECT
+  def containsObject: Boolean = objectId != SVertex.NO_OBJECT
 }

@@ -357,7 +357,7 @@ public abstract class GraphAlgorithm {
 		for(Vertex v : Sampler.getInstance().getAllNodesFromGraph()) {
 			toAnalyzedNodes.add(v);
 		}
-		Random indexRandomer = new Random();
+		Random indexRandomer = new Random(System.currentTimeMillis());
 		
 		while(toAnalyzedNodes.size() > 0) {
 			// start dijkstra, until all nodes visited
@@ -428,7 +428,7 @@ public abstract class GraphAlgorithm {
 			for(Vertex v : Sampler.getInstance().getAllNodesFromGraph()) {
 				toAnalyzedNodes.add(v);
 			}
-			Random indexRandomer = new Random();
+			Random indexRandomer = new Random(System.currentTimeMillis());
 			
 			while(toAnalyzedNodes.size() > 0) {
 				HashMap<Vertex, Double> nodeDistance = new HashMap<Vertex, Double>(); // tentative distance value for every node

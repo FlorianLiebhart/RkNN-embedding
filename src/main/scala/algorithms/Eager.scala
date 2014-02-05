@@ -1,26 +1,26 @@
 package algorithms
 
-import graph.core._
-import graph.core.Graph
+import graph.{SEdge, SGraph, SVertex}
+
 import scala.collection.mutable.PriorityQueue
-import scala.collection.JavaConverters._
 import util.Utils.VD
 import util.Utils.t2ToOrdered
 
 object Eager {
 
   //  val graphGenerator = GraphGenerator.getInstance()
-  val graph = new Graph()
+  val graph = new SGraph()
 
-  def eager(graph: Graph, q: Vertex, k: Int): IndexedSeq[VD] = {
+  def eager(graph: SGraph, q: SVertex, k: Int): IndexedSeq[VD] = {
     val h = new PriorityQueue[VD]
     h.enqueue((q, 0))
-    var visitedNodes   = Seq.empty[Vertex]
-    var verifiedPoints = IndexedSeq.empty[Vertex]
+    var visitedNodes   = Seq.empty[SVertex]
+    var verifiedPoints = IndexedSeq.empty[SVertex]
     var RkNN_q         = IndexedSeq.empty[VD]
+    if(k <= 0)
+      return RkNN_q
     while (!h.isEmpty) {
       val h2   = h; val visitedNodes2 = visitedNodes; val verifiedPoints2 = verifiedPoints; val RkNN_q2 = RkNN_q
-
       /* When a node n is deheaped, eager applies Lemma 1 in order to
        * determine whether the expansion should proceed.*/
       val n   = h.dequeue
@@ -28,8 +28,11 @@ object Eager {
         visitedNodes = visitedNodes :+ n._1
         /* In particular, it first retrieves the NN of n
          * by performing a range-NN query (n, k, d(n,q) */
-        val kNN_n = rangeNN(graph, n._1, k, n._2, false).filterNot(_._1 equals q) // Needs to be there, ansonsten kann die nächste if- Anfrage durch q getäuscht werden. --> this is correct, verify checks if q is in it!
+        var kNN_n = rangeNN(graph, n._1, k, n._2, q) // .filterNot(_._1 equals q) // Needs to be there, ansonsten kann die nächste if- Anfrage durch q getäuscht werden. --> this is correct, verify checks if q is in it!
 
+        // Evtl. zusätzlich Performance: Prüfe, ob kNN_n > k  ==> Kein verifizieren Notwendig, da kein Punkt rknn von q sein kann. (Da sich alle Punkte innerhalb der Range gegenseitig prunen)
+        if(n._1.containsObject && !(n._1 equals q))
+          kNN_n :+= n //verify(graph, n, k, q)
         /* If there are k points p, such that d(n, q) > d(n, p),
          * the expansion does not proceed further because
          * (according to Lemma 1) n cannot lead to a RNN of q. */
@@ -40,10 +43,11 @@ object Eager {
              * Thus, eager issues a verify(p, k, q) query.
 
              * If q = kNN(p), p is added to the result. */
-              val p_updatedDist = new VD(p._1, scala.math.min(p._2 + n._2, h.find(x => x._1 equals p._1).map(_._2).getOrElse(Double.PositiveInfinity)))
-              if (verify(graph, p_updatedDist, k, q))
-                RkNN_q :+= p_updatedDist
+//          val p_updatedDist = new VD(p._1, p._2 + n._2)
+            val p_updatedDist = new VD(p._1, List(p._2 + n._2, h.find(x => x._1 equals p._1).map(_._2).getOrElse(Double.PositiveInfinity), if(p._1 equals n._1) n._2 else Double.PositiveInfinity).min)
 
+            if (verify(graph, p_updatedDist, k, q))
+                RkNN_q :+= p_updatedDist
             /* Furthermore, p is marked as verified in order not to be expanded,
              * if it is found again in the future through another node.
              */
@@ -53,11 +57,11 @@ object Eager {
         /* If no k data points are discovered within distance d(n,q)
          * from n, the algorithm en-heaps the adjacent nodes of n. */
         if (kNN_n.size < k)
-          for (n_i <- graph.getNeighborsFrom(n._1).asScala)
+          for (n_i <- graph.getNeighborsFrom(n._1))
             h.enqueue((n_i, n._2 + graph.getEdge(n._1, n_i).getWeight))
       }
     }
-    RkNN_q
+    RkNN_q.sortWith((x,y) => (x._2 < y._2) || (x._2 == y._2) && (x._1.id < y._1.id))
   }
 
   //        val unVerifiedPoints = kNN_n diff verifiedPoints
@@ -73,14 +77,18 @@ object Eager {
    * @param k
    * @param e
    * @return
+   * TODO: statt verifyMode: inclusiveE: Boolean und stopAtQ:Boolean (nötig zB für NaiveRkNN)
    */
-  def rangeNN(graph: Graph, q: Vertex, k: Int, e: Double, verifyMode: Boolean): IndexedSeq[VD] = {
+  // TODO: NaiveAlgorithm should not use rangeNN cuz double.infinity wont work any more
+  def rangeNN(graph: SGraph, q: SVertex, k: Int, e: Double, originalQ: SVertex = null): IndexedSeq[VD] = {
     val h = PriorityQueue.empty[VD]
     var knns = IndexedSeq.empty[VD] // evtl. als PriorityQueue
-    var visitedNodes: IndexedSeq[Vertex] = IndexedSeq(q)
+    var visitedNodes: IndexedSeq[SVertex] = IndexedSeq(q)
+    if(k <= 0)
+      return knns
 
 //    h.enqueue((n, 0))
-    val neighbours: Seq[Vertex] = graph.getNeighborsFrom(q).asScala   // evtl priorityQueue
+    val neighbours: Seq[SVertex] = graph.getNeighborsFrom(q)   // evtl priorityQueue
     val vertexDistanceTuples = neighbours.map(n_i => (n_i, graph.getEdge(q, n_i).getWeight))
     vertexDistanceTuples.map(x => h.enqueue(x))
 
@@ -88,31 +96,38 @@ object Eager {
 
     def processQueue: Any = {
       while (!h.isEmpty) {
-        val el = h.dequeue()
-        val n = el._1
-        val d_nq = el._2
-        if (!visitedNodes.contains(n)) {
-          visitedNodes :+= n
+        val n = h.dequeue()
+        if (!visitedNodes.contains(n._1)) {
+          visitedNodes :+= n._1
 
           // ensure n.dist < maxdist für rangenn (da sonst lemma 1 nicht gilt)
           // und n.dist <= maxdist für verify (damit q enthalten ein kann, da e = d(n,q)!)
-          if (!verifyMode && (d_nq >= e) || verifyMode && (d_nq > e)) //TODO: muss richtig sein! Denn wenn d(q, n) = d(n, p), dann gilt Lemma 1 nicht und p2 kann nicht als rknn ausgeschlossen werden, weil dann q € knn(p2) (zB. falls d(n3,n6) = 4)
+          if (n._2 >= e)  //TODO: muss richtig sein! Denn wenn d(q, n) = d(n, p), dann gilt Lemma 1 nicht und p2 kann nicht als rknn ausgeschlossen werden, weil dann q € knn(p2) (zB. falls d(n3,n6) = 4)
             return
+
+          // performance verbessern: breche ab, sobald q gefunden
+          // (evtl. nicht durchführen, aber in Ausarbeitung aufnehmen!), oder durchführen, und am ende der Ausarbeitung zu "Verbesserungen" aufnehmen
+
 
           // Grenzfall: Falls "letztes" k mehrere nächste Nachbarn mit gleichen Abstand
-          if (knns.size >= k && d_nq > knns.last._2)
+          if (knns.size >= k && n._2 > knns.last._2)
             return
 
-          if (n.containsObject)
-            knns :+= el
+          if (n._1.containsObject)
+            knns :+= n
 
-          val unVisitedNeighbours: Seq[Vertex] = graph.getNeighborsFrom(n).asScala diff visitedNodes
-          val vertexDistanceTuples = unVisitedNeighbours.map(n_i => (n_i, d_nq + graph.getEdge(n, n_i).getWeight))
+          val unVisitedNeighbours: Seq[SVertex] = graph.getNeighborsFrom(n._1) diff visitedNodes
+          val vertexDistanceTuples = unVisitedNeighbours.map(n_i => (n_i, n._2 + graph.getEdge(n._1, n_i).getWeight))
           vertexDistanceTuples.map(x => h.enqueue(x))
         }
       }
     }
-    knns
+
+    val qWithDist = knns.find(_._1 equals originalQ)
+    if(qWithDist.isDefined)
+      knns.filter(_._2 < qWithDist.get._2)
+    else
+      knns
   }
   /**
    * Given two points p and q, a verification query verify(p,k,q)
@@ -126,12 +141,18 @@ object Eager {
    * @param q
    * @return
    */
-  def verify(graph: Graph, p: VD, k: Int, q: Vertex): Boolean = {
+  def verify(graph: SGraph, p: VD, k: Int, q: SVertex): Boolean = {
     // ist richtig, aber muss ersetzt werden durch eigene Implementierung der Methode, denn es kann vorzeitig
     // abgebrochen werden, sobald q gefunden wird   --> in Ausarbeitung aufnehmen!
     // TODO: VERIFY-Flag in Range-NN, sodass die Methode verify entfallen kann (bzw. an diese Methode delegieren kann.)
     // TODO: (Verify-Flag auch wichtig für:) Für Verify aber ganz klar: dist > e => break, weil sonst q nicht gefunden wird, aber (da bei k-nächste Nachbarn
     // bei gleichberechtigen Ergebnissen alle zurück gegeben werden müssen, q trotzdem als knn gilt. (in Ausarbeitung aufnehmen!)
-    rangeNN(graph, p._1, k, p._2, true).map(_._1).contains(q) // kein shortest path! (siehe S4, letzter Absatz!)
+    val result = rangeNN(graph, p._1, k, p._2, q)
+    // TODO: maxResultSize schmarrn, weil es für die Verifizierung nix ändert, ob auf dem zu verifizierenden Knoten ein Punkt drauf ist oder nicht
+
+    // falsch! nicht < k, sondern die Größen der einzelnen kontrollieren, oder sichergehen dass die range < shortestdist zu q!
+    // rangeNN ändern: Am Ende q und alle >= q rausschmeissen!
+
+    result.size < k
   }
 }

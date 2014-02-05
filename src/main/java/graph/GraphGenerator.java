@@ -28,24 +28,30 @@ public class GraphGenerator {
 		return instance;
 	}
 	
-	public void generateProbabilisticGraph(int numberOfVertex, int numberOfEdges, int numberOfUncertainEdges, int numberOfObjects) {
-		ProbabilisticGraph.getInstance().clear();
-		createNodes(ProbabilisticGraph.getInstance(), numberOfVertex);
-		addRandomObjects(ProbabilisticGraph.getInstance(), numberOfObjects);
-		GuiUtil.setNodesPosition(ProbabilisticGraph.getInstance());
-		createEdgesAccordingNodesPosition(ProbabilisticGraph.getInstance(), numberOfEdges);
-		addRandomProbabilities(ProbabilisticGraph.getInstance(), numberOfUncertainEdges);
-		addWeights(ProbabilisticGraph.getInstance()); 
+	public void generateProbabilisticGraph(int numberOfVertices, int numberOfEdges, int numberOfUncertainEdges, int numberOfObjects) {
+        ProbabilisticGraph.getInstance().clear();
+        createNodes(ProbabilisticGraph.getInstance(), numberOfVertices);
+        addRandomObjects(ProbabilisticGraph.getInstance(), numberOfObjects);
+        GuiUtil.setNodesPosition(ProbabilisticGraph.getInstance());
+        createEdgesAccordingNodesPosition(ProbabilisticGraph.getInstance(), numberOfEdges);
+        addRandomProbabilities(ProbabilisticGraph.getInstance(), numberOfUncertainEdges);
+        addWeights(ProbabilisticGraph.getInstance());
 	}
-	
-	@SuppressWarnings("unchecked")
+
+    public void generateProbabilisticGraph(int numberOfVertices, int numberOfEdges, int numberOfUncertainEdges, int numberOfObjects, boolean weightOne) {
+        this.weightOne = weightOne;
+        generateProbabilisticGraph(numberOfVertices, numberOfEdges, numberOfUncertainEdges, numberOfObjects);
+    }
+
+
+        @SuppressWarnings("unchecked")
 	private void addRandomObjects(ProbabilisticGraph graph, int numberOfObjects) {
 		Vector<Vertex> nodes = (Vector<Vertex>) graph.getAllVertices().clone();
 		
 		if(numberOfObjects > nodes.size()) {
 			throw new RuntimeException("Maximum number of objects: " + nodes.size());
 		}
-		Random randomer = new Random();
+		Random randomer = new Random(System.currentTimeMillis());
 		int created = 0;
 		int id = 0;
 		int nr = 1;
@@ -55,7 +61,7 @@ public class GraphGenerator {
 			nodes.remove(v);
 			id++;
 			created++;
-			System.out.println("Creating Objects... (" + nr++ + " / " + numberOfObjects + ")");
+//			System.out.println("Creating Objects... (" + nr++ + " / " + numberOfObjects + ")");
 		}
 	}
 
@@ -72,7 +78,7 @@ public class GraphGenerator {
 				throw new RuntimeException("Number of edges with probabilities < 0");
 			}
 			
-			Random randomer = new Random();
+			Random randomer = new Random(System.currentTimeMillis());
 			Vector<Edge> modifiedEdges = new Vector<Edge>();
 			@SuppressWarnings("unchecked")
 			Vector<Edge> candidates = (Vector<Edge>) target.getAllEdges().clone();
@@ -91,7 +97,7 @@ public class GraphGenerator {
 				target.setProbability(candidates.get(index), Double.valueOf(randomPString.replaceAll(",", ".")));
 				modifiedEdges.add(candidates.get(index));
 				candidates.remove(index);
-				System.out.println("Adding probabilities...(" + modified++ + " / " + numberOfUncertainEdges + ")");
+//				System.out.println("Adding probabilities...(" + modified++ + " / " + numberOfUncertainEdges + ")");
 			}
 //			target.setUncertainEdges(modifiedEdges);
 			
@@ -117,7 +123,7 @@ public class GraphGenerator {
 		int nr = 1;
 		for(int i = 0; i < numberOfNodes; i++) {
 			graph.addVertex(new Vertex(i));
-			System.out.println("Creating Nodes... (" + nr++ + " / " + numberOfNodes + ")");
+//			System.out.println("Creating Nodes... (" + nr++ + " / " + numberOfNodes + ")");
 		}
 	}
 
@@ -136,7 +142,7 @@ public class GraphGenerator {
 				throw new RuntimeException("Maximum number of edges: " + max);
 			}
 			
-			Random randomer = new Random();
+			Random randomer = new Random(System.currentTimeMillis());
 			double radius = GuiConstants.RADIUS;
 			Vector<Vertex> nodesInRadius = null;
 			int created = 1;
@@ -179,7 +185,7 @@ public class GraphGenerator {
 						} else {
 							g.addEdge(e);
 							nodesInRadius.remove(target); // don't check the same node
-							System.out.println("Creating edges... (" + created++ + " / " + numberOfEdges + ")");
+//							System.out.println("Creating edges... (" + created++ + " / " + numberOfEdges + ")");
 							createdEdges++;
 						}
 					}

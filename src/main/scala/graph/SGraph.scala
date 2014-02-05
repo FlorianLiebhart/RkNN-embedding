@@ -7,31 +7,31 @@ import scala.collection.mutable.{ HashSet, HashMap }
  * Created: 31.12.13, 13:35
  * @author fliebhart
  */
-class Graph {
+class SGraph {
 
-  private var vertices: HashMap[Int, Vertex] = new HashMap[Int, Vertex]()
-  private var edges: HashSet[Edge] = new HashSet[Edge]()
-  private var mapping: HashMap[Vertex, HashMap[Vertex, Edge]] = new HashMap[Vertex, HashMap[Vertex, Edge]]()
+  private var vertices: HashMap[Int, SVertex] = new HashMap[Int, SVertex]()
+  private var edges: HashSet[SEdge] = new HashSet[SEdge]()
+  private var mapping: HashMap[SVertex, HashMap[SVertex, SEdge]] = new HashMap[SVertex, HashMap[SVertex, SEdge]]()
 
-  def addVertex(v: Vertex) {
+  def addVertex(v: SVertex) {
     this.vertices += v.id -> v
-    this.mapping += v -> new HashMap[Vertex, Edge].empty
+    this.mapping += v -> new HashMap[SVertex, SEdge].empty
   }
 
-  def addVertex(): Vertex = {
+  def addVertex(): SVertex = {
     var id = 0
     while (getVertex(id) != null)
       id += 1
 
-    val v = new Vertex(id)
+    val v = new SVertex(id)
     this.vertices += v.id -> v
-    this.mapping += v -> new HashMap[Vertex, Edge].empty
+    this.mapping += v -> new HashMap[SVertex, SEdge].empty
     v
   }
 
-  def getVertex(nodeId: Int): Vertex = vertices.getOrElse(nodeId, null)
+  def getVertex(nodeId: Int): SVertex = vertices.getOrElse(nodeId, null)
 
-  def removeVertex(v: Vertex) {
+  def removeVertex(v: SVertex) {
     this.vertices -= v.id
     val mapping = this.mapping.getOrElse(v, Map.empty)
 
@@ -42,16 +42,16 @@ class Graph {
     }
   }
 
-  def setVertices(vertices: Vector[Vertex]) {
-    this.vertices = HashMap.empty[Int, Vertex]
-    this.mapping = HashMap.empty[Vertex, HashMap[Vertex, Edge]]
+  def setVertices(vertices: Vector[SVertex]) {
+    this.vertices = HashMap.empty[Int, SVertex]
+    this.mapping = HashMap.empty[SVertex, HashMap[SVertex, SEdge]]
     for (v <- vertices) {
       this.vertices += v.id -> v
-      this.mapping += v -> new HashMap[Vertex, Edge].empty
+      this.mapping += v -> new HashMap[SVertex, SEdge].empty
     }
   }
 
-  def addEdge(e: Edge) {
+  def addEdge(e: SEdge) {
     this.edges += e
     try {
       val m1 = this.mapping.get(e.source)
@@ -63,24 +63,24 @@ class Graph {
     }
   }
 
-  def removeEdge(e: Edge) {
+  def removeEdge(e: SEdge) {
     this.edges -= e
     this.mapping.getOrElse(e.source, HashMap.empty) -= e.target
     this.mapping.getOrElse(e.target, HashMap.empty) -= e.source
   }
 
-  def setEdges(edges: Vector[Edge]) {
-    this.edges = new HashSet[Edge]()
-    this.mapping = new HashMap[Vertex, HashMap[Vertex, Edge]]()
+  def setEdges(edges: Vector[SEdge]) {
+    this.edges = new HashSet[SEdge]()
+    this.mapping = new HashMap[SVertex, HashMap[SVertex, SEdge]]()
     for (v <- this.vertices.values) {
-      this.mapping += v -> new HashMap[Vertex, Edge].empty
+      this.mapping += v -> new HashMap[SVertex, SEdge].empty
     }
     for (e <- edges) {
       this.addEdge(e)
     }
   }
 
-  def getEdge(v1: Int, v2: Int): Edge = {
+  def getEdge(v1: Int, v2: Int): SEdge = {
     val start = getVertex(v1)
     val end = getVertex(v2)
     if (start == null || end == null) {
@@ -89,7 +89,7 @@ class Graph {
     mapping.get(start).get(end)
   }
 
-  def getEdge(start: Vertex, end: Vertex): Edge = {
+  def getEdge(start: SVertex, end: SVertex): SEdge = {
     if (start == null || end == null) {
       return null
     }
@@ -105,7 +105,7 @@ class Graph {
     mapping.get(start).get(end) != null
   }
 
-  def containsEdge(edge: Edge): Boolean = {
+  def containsEdge(edge: SEdge): Boolean = {
     val start = edge.source
     val end = edge.target
     if (start == null || end == null) {
@@ -114,32 +114,32 @@ class Graph {
     mapping.get(start).get(end) != null
   }
 
-  def getNeighborsFrom(home: Vertex): Vector[Vertex] = {
-    val neighbors = Vector.empty[Vertex]
-    val mapping = this.mapping.getOrElse(home, Map.empty)
+  def getNeighborsFrom(home: SVertex): Vector[SVertex] = {
+    var neighbors = Vector.empty[SVertex]
+    var mapping = this.mapping.getOrElse(home, Map.empty)
     for (e <- mapping.values) {
       if (e.source == home)
-        neighbors :+ e.target
+        neighbors :+= e.target
 
       if (e.target == home)
-        neighbors :+ e.source
+        neighbors :+= e.source
     }
     neighbors
   }
 
-  def getEdgesFrom(home: Vertex): Iterable[Edge] = this.mapping.getOrElse(home, Map.empty).values
+  def getEdgesFrom(home: SVertex): Iterable[SEdge] = this.mapping.getOrElse(home, Map.empty).values
 
-  def getPredecessorFrom(home: Vertex): Iterable[Vertex] = {
+  def getPredecessorFrom(home: SVertex): Iterable[SVertex] = {
     val mapping = this.mapping.getOrElse(home, Map.empty)
     mapping.values.filter(_.target == home).map(_.source)
   }
 
-  def getSuccessorFrom(home: Vertex): Iterable[Vertex] = {
+  def getSuccessorFrom(home: SVertex): Iterable[SVertex] = {
     val mapping = this.mapping.getOrElse(home, Map.empty)
     mapping.values.filter(_.source == home).map(_.target)
   }
 
-  def equals(graph: Graph): Boolean = {
+  def equals(graph: SGraph): Boolean = {
     if (this.vertices.size != graph.getNumberOfVertices) {
       return false
     }
@@ -152,7 +152,7 @@ class Graph {
     true
   }
 
-  def equalsIgnoreEdges(graph: Graph): Boolean = {
+  def equalsIgnoreEdges(graph: SGraph): Boolean = {
     if (this.vertices.size != graph.getNumberOfVertices)
       return false
 
@@ -164,16 +164,16 @@ class Graph {
 
   def getNumberOfNodesWithObjects: Int = this.vertices.values.count(_.containsObject)
 
-  def getAllEdges: Seq[Edge] = this.edges.toSeq
+  def getAllEdges: Seq[SEdge] = this.edges.toSeq
 
-  def getAllVertices: Seq[Vertex] = this.vertices.values.toSeq
+  def getAllVertices: Seq[SVertex] = this.vertices.values.toSeq
 
   def getNumberOfVertices: Int = vertices.size
 
   def getNumberOfEdges: Int = edges.size
 
   def setAllWeightWithLimit(upperLimit: Int) {
-    val randomer = new Random()
+    val randomer = new Random(System.currentTimeMillis())
     for (e <- edges) {
       var w = randomer.nextInt(upperLimit + 1)
       while (w == 0) {

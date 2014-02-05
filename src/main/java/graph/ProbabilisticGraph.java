@@ -12,7 +12,7 @@ public class ProbabilisticGraph extends Graph {
 	private static ProbabilisticGraph instance = null;
 	
 	private HashMap<Edge, Double> prob;
-	public Random randomer = new Random();
+	public Random randomer = new Random(System.currentTimeMillis());
 	
 	private ProbabilisticGraph() {
 		super();

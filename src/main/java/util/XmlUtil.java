@@ -114,7 +114,7 @@ public class XmlUtil {
 	
 	public static void importGraphFromXml(String fileName) {
 		ProbabilisticGraph.getInstance().clear();
-		System.out.println("Reading graph from XML...");
+//		System.out.println("Reading graph from XML...");
 		try {
 			File file = new File(fileName);
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -167,7 +167,7 @@ public class XmlUtil {
 			e.printStackTrace();
 		}
 		
-		System.out.println("Reading graph from XML... DONE!");
+//		System.out.println("Reading graph from XML... DONE!");
 	}
 	
 	private static String getTagValue(String tag, Element element) {
