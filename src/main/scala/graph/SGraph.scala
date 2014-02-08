@@ -156,7 +156,7 @@ class SGraph {
     if (this.vertices.size != graph.getNumberOfVertices)
       return false
 
-    for (v <- graph.getAllVertices if !this.vertices.values.toSeq.contains(v))
+    for (v <- graph.getAllVertices if !this.vertices.values.toIndexedSeq.contains(v))
       return false
 
     true
@@ -164,9 +164,9 @@ class SGraph {
 
   def getNumberOfNodesWithObjects: Int = this.vertices.values.count(_.containsObject)
 
-  def getAllEdges: Seq[SEdge] = this.edges.toSeq
+  def getAllEdges: Seq[SEdge] = this.edges.toIndexedSeq
 
-  def getAllVertices: Seq[SVertex] = this.vertices.values.toSeq
+  def getAllVertices: Seq[SVertex] = this.vertices.values.toIndexedSeq
 
   def getNumberOfVertices: Int = vertices.size
 

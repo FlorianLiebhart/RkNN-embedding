@@ -38,15 +38,7 @@ object GraphGen {
   }
 
   def generateScalaGraph(numberOfVertices: Integer, numberOfEdges: Integer, numberOfObjects: Integer, weightOne: Boolean): SGraph = {
-
     val jGraph = generateJavaGraph(numberOfVertices, numberOfEdges, numberOfObjects, weightOne)
-
-    val t0 = System.currentTimeMillis()
-    val sGraph = util.Utils.convertJavaToScalaGraph(jGraph)
-    val t1 = System.currentTimeMillis()
-
-    println("Runtime: " + (t1-t0)/1000.0 + " sec. for converting JGraph to SGraph with " + numberOfVertices + " nodes, " + numberOfEdges + " edges, " + numberOfObjects + " objects." )
-
-    sGraph
+    util.Utils.convertJavaToScalaGraph(jGraph)
   }
 }

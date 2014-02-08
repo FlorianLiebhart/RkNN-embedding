@@ -4,10 +4,11 @@ import algorithms.Eager.eager
 import algorithms.NaiveRkNN.getReverseKNearestNeighbors
 import graph.{GraphGen, SEdge, SGraph, SVertex}
 import util.Utils._
-import util.Utils
+import util.{GraphAlgorithm, Utils}
 import algorithms.Eager.eager
 import algorithms.EmbeddingAlgorithm._
 import java.util.Random
+import algorithms.Dijkstra
 
 object RkNNComparator {
 
@@ -32,14 +33,16 @@ object RkNNComparator {
     // Graph Generation
     val vertices = 1000
     val edges = 1500
-    val objects = 200
+    val objects = 100
     val weightOne = false
     val sGraph = GraphGen.generateScalaGraph(vertices, edges, objects, weightOne)
     val qID = vertices/2
       if(!sGraph.getVertex(qID).containsObject)
         sGraph.getVertex(qID).setObjectId(objects)
 
-    val k = 5
+    val k = 2
+
+//    println("dijkstra:" + Dijkstra.dijkstra(sGraph, sGraph.getVertex(qID)).size + ", graph vertices" + sGraph.getAllVertices.size)
 
     println("")
     // Naive - Algorithm
