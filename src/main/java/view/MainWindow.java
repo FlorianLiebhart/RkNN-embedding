@@ -933,7 +933,7 @@ public class MainWindow extends JFrame implements ActionListener, Observer {
         rknnEmbeddedFieldNumRefPoints = new JTextField(10);
         rknnEmbeddedFieldNumRefPoints.setHorizontalAlignment(JTextField.CENTER);
         l.setLabelFor(rknnEmbeddedFieldNumRefPoints);
-        
+
         tmp.add(l);
         tmp.add(l2);
         tmp.add(rknnEmbeddedField);

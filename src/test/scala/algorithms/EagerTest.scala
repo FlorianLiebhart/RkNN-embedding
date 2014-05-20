@@ -83,7 +83,7 @@ class EagerTest extends FunSuite with ShouldMatchers {
     isRkNN1 should be (true)
     isRkNN2 should be (true)
   }
-  test("verify correctly unverifies all unvalid rknns"){
+  test("verify correctly unverifies all invalid rknns"){
     val graph =  createExampleGraph
     val isRkNN1 = Eager.verify(graph, new VD(graph.getVertex(4), Double.PositiveInfinity), Integer.MAX_VALUE, graph.getVertex(1))
     val isRkNN2 = Eager.verify(graph, new VD(graph.getVertex(4), Double.PositiveInfinity), Integer.MAX_VALUE, graph.getVertex(2))

@@ -7,12 +7,14 @@ import de.lmu.ifi.dbs.elki.database.StaticArrayDatabase;
 import de.lmu.ifi.dbs.elki.database.ids.DBID;
 import de.lmu.ifi.dbs.elki.database.ids.DBIDIter;
 import de.lmu.ifi.dbs.elki.database.ids.DBIDUtil;
+import de.lmu.ifi.dbs.elki.database.ids.DBIDs;
 import de.lmu.ifi.dbs.elki.database.ids.distance.DistanceDBIDList;
 import de.lmu.ifi.dbs.elki.database.query.distance.SpatialDistanceQuery;
 import de.lmu.ifi.dbs.elki.database.relation.Relation;
 import de.lmu.ifi.dbs.elki.datasource.FileBasedDatabaseConnection;
 import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.EuclideanDistanceFunction;
 import de.lmu.ifi.dbs.elki.distance.distancevalue.DoubleDistance;
+import de.lmu.ifi.dbs.elki.evaluation.roc.ROC;
 import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.AbstractRTreeSettings;
 import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar.RStarTreeIndex;
 import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar.RStarTreeNode;
@@ -23,8 +25,12 @@ import de.lmu.ifi.dbs.elki.utilities.ClassGenericsUtil;
 import de.lmu.ifi.dbs.elki.utilities.optionhandling.parameterization.ListParameterization;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 
 public class Simulation {
@@ -32,8 +38,6 @@ public class Simulation {
   private static SpatialDistanceQuery distanceQuery;
   private static EuclideanDistanceFunction distanceFunction;
   private static LRUCache c1;
-
-
 
   private static Database[] createDatabase(String queryFile, int pagesize){
 
@@ -55,14 +59,14 @@ public class Simulation {
 
     System.out.println("Building R*-Tree...");
     long time = System.nanoTime();
-    time = System.nanoTime();
     AbstractRTreeSettings settings = new AbstractRTreeSettings();
     PageFile<RStarTreeNode> pageFile = new MemoryPageFile<RStarTreeNode>(pagesize);
     dbIndex = new RStarTreeIndex<DoubleVector>(rQuery, pageFile, settings);
-    //dbIndex.insertAll(rQuery.getDBIDs());
+    dbIndex.initialize();
+
     time = System.nanoTime()-time;
     System.out.println("R*-Tree built in "+time/1E6+"ms.");
-    System.out.println("objects: "+dbIndex.getRoot().getNumEntries());
+    System.out.println("objects: "+dbIndex.getRoot().getNumEntries()); // TODO: Commented out, because this raises a nullpointer exception
 
 
     distanceQuery = distanceFunction.instantiate(rQuery);
@@ -102,8 +106,12 @@ public class Simulation {
     // Generiert CSV Datei
     // Beispiel-CSV:
     // 0.3;0.22;0.9;
-  public void generate(int dimension, int numPoints, String file) throws IOException {
-    FileWriter fw = new FileWriter(file);
+  public void generate(int dimension, int numPoints, String csvPath) throws IOException {
+    Path pathToFile = Paths.get(csvPath);
+    Files.createDirectories(pathToFile.getParent());
+    if (!Files.exists(pathToFile))
+        Files.createFile(pathToFile);
+    FileWriter fw = new FileWriter(csvPath, false);
     BufferedWriter out = new BufferedWriter(fw);
 
     for (int i = 0; i < numPoints; i++){

@@ -5,9 +5,6 @@ import scala.collection.mutable.HashMap
 import _root_.util.Utils._
 import scala.util.Random
 import scala._
-import rweeks.RTree
-import rweeks.RTree.SeedPicker
-import scala.Array
 import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants._
 import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar._
 import de.lmu.ifi.dbs.elki.persistent._
@@ -16,6 +13,7 @@ import elkiTPL.{Simulation, GenericTPLRkNNQuery}
 import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.EuclideanDistanceFunction
 import de.lmu.ifi.dbs.elki.distance.distancevalue.DoubleDistance
 import de.lmu.ifi.dbs.elki.database.ids.distance.DistanceDBIDList
+import de.lmu.ifi.dbs.elki.database.ids.{DBID, DBIDUtil, DBIDIter}
 
 /**
  * @author fliebhart
@@ -23,41 +21,25 @@ import de.lmu.ifi.dbs.elki.database.ids.distance.DistanceDBIDList
 object EmbeddingAlgorithm {
 
 
-  def embeddedRKNNs(sGraph: SGraph, sQ: SVertex, k: Int, numRefPoints: Integer): DistanceDBIDList[DoubleDistance] = {
+  def embeddedRKNNs(sGraph: SGraph, sQ: SVertex, k: Int, numRefPoints: Integer): IndexedSeq[(DBID, Double)] = {
     val refPoints: Seq[SVertex] = createRefPoints(sGraph.getAllVertices, numRefPoints)
     // key: Knoten, value: Liste mit Distanzen zu Referenzpunkte (? evtl: Flag ob Objekt auf Knoten)
     val refpointDistances: HashMap[SVertex, IndexedSeq[Double]] = createEmbedding(sGraph, refPoints)
 
-    // build rTree
-    // implementation without ELKI:
-//    val rTree = new RTree[SVertex](50, 2, 2, SeedPicker.LINEAR)
-//    refpointDistances map { x => rTree.insert(Array[Float](x._2.map(_.toFloat):_*), x._1) }
-
-
-
-    // implementation with ELKI:
-
-//    val rStarSettings = new AbstractRTreeSettings()
-//    rStarSettings.setMinimumFill(2)
-//    rStarSettings.setBulkStrategy(SortTileRecursiveBulkSplit.STATIC) // Erich Schubert hat das so gesagt.
-//    rStarSettings
-    // TestRStarTree
-    // SortTileRecursive(..BulkSplit .. bulkload
-//    val pageFile = new MemoryPageFile[RStarTreeNode](20)    // // MemoryPageFileFactory  (PagedIndexFactory)
-
-//    val rStarTree = new RStarTree(pageFile, rStarSettings)
-
-    val rTreePath = "~/Desktop/tplSimulation/rTree.csv"
+    val rTreePath = "tplSimulation/rTree.csv"
     val dimensions = numRefPoints
     val tplSimulation = new Simulation()
     tplSimulation.generate(dimensions, 100, rTreePath)
 
-    val pageSize = 10
-    val rkNNs: DistanceDBIDList[DoubleDistance] = tplSimulation.simulate(rTreePath, pageSize, k, dimensions, true)
+    val pageSize = 1000  // 1mb todo: what's a good memory page size?
+    val distanceDBIDList: DistanceDBIDList[DoubleDistance] = tplSimulation.simulate(rTreePath, pageSize, k, dimensions, true)
 
-
-//    val genericTPLRkNNQuery = new GenericTPLRkNNQuery(rStarTree,EuclideanDistanceFunction.STATIC,true)
-//    genericTPLRkNNQuery.getRKNNForBulkDBIDs()
+    var rkNNs: IndexedSeq[(DBID, Double)] = IndexedSeq.empty
+    val rkNNIter = distanceDBIDList.iter()
+    while (rkNNIter.valid()) {
+      rkNNs :+ (DBIDUtil.deref(rkNNIter), rkNNIter.getDistance.doubleValue)
+      rkNNIter.advance()
+    }
     rkNNs
   }
 

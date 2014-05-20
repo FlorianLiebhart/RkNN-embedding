@@ -7,6 +7,7 @@ import util.Utils._
 import algorithms.NaiveRkNN.naiveRkNNs
 import algorithms.Eager.eager
 import algorithms.EmbeddingAlgorithm
+import de.lmu.ifi.dbs.elki.database.ids.DBID
 
 object RkNNComparator {
 
@@ -100,14 +101,13 @@ object RkNNComparator {
     println(s"R${k}NNs for query point $qID")
 
     val t0            = System.currentTimeMillis()
-    val rkNNsEmbedded = EmbeddingAlgorithm.embeddedRKNNs(sGraph, sQ, k, numRefPoints)
+    val rkNNsEmbedded: IndexedSeq[(DBID, Double)] = EmbeddingAlgorithm.embeddedRKNNs(sGraph, sQ, k, numRefPoints)
     val t1            = System.currentTimeMillis()
 
     println(s"Runtime: ${(t1 - t0)/1000.0} sec.\n")
 
-    println(rkNNsEmbedded.iter().getDistancePair.getDistance)
-//    for( v <- rkNNsEmbedded )
-//      println(s"Node: ${v._1.id}  Dist: ${v._2}")
+    for( v <- rkNNsEmbedded )
+      println(s"Node: ${v._1.toString}  Dist: ${v._2}")
     println("")
   }
 }
