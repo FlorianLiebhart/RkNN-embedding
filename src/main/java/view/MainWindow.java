@@ -73,6 +73,7 @@ public class MainWindow extends JFrame implements ActionListener, Observer {
 	private JTextField rknnSimpleField;
 	private JTextField rknnEagerField;
 	private JTextField rknnEmbeddedField;
+	private JTextField rknnEmbeddedFieldNumRefPoints;
 	private GraphVisualizer graphPanel;
 
 	// private ProbabilisticGraph probGraph;
@@ -925,10 +926,18 @@ public class MainWindow extends JFrame implements ActionListener, Observer {
         JLabel l = new JLabel("<html><i>k :</i></html>");
         rknnEmbeddedField = new JTextField(10);
         rknnEmbeddedField.setHorizontalAlignment(JTextField.CENTER);
-
         l.setLabelFor(rknnEmbeddedField);
+
+
+        JLabel l2 = new JLabel("<html><i>NumRefPoints :</i></html>");
+        rknnEmbeddedFieldNumRefPoints = new JTextField(10);
+        rknnEmbeddedFieldNumRefPoints.setHorizontalAlignment(JTextField.CENTER);
+        l.setLabelFor(rknnEmbeddedFieldNumRefPoints);
+        
         tmp.add(l);
+        tmp.add(l2);
         tmp.add(rknnEmbeddedField);
+        tmp.add(rknnEmbeddedFieldNumRefPoints);
 
         panel.add(tmp, BorderLayout.SOUTH);
         panel.add(GuiUtil.createInfoPanel(AlgorithmStrings.RKNN_INFO),
@@ -1011,7 +1020,8 @@ public class MainWindow extends JFrame implements ActionListener, Observer {
                     Graph jGraph = ProbabilisticGraph.getInstance();
                     int qID = graphPanel.getSelectedNodes().get(0);
                     int k = Integer.parseInt(rknnEmbeddedField.getText().trim());
-                    RkNNComparator.embeddedRkNN(jGraph, qID, k);
+                    int numRefPoints = Integer.parseInt(rknnEmbeddedFieldNumRefPoints.getText().trim());
+                    RkNNComparator.embeddedRkNN(jGraph, qID, k, numRefPoints);
                 }
                 else{
                     Vector<Integer> nodes = graphPanel.getSelectedNodes();
