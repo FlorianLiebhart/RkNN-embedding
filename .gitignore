@@ -37,3 +37,7 @@ target/*
 # IDEA specific
 .idea/
 .idea_modules/
+
+
+#Project specific
+src/main/java/rweeks/*

@@ -70,11 +70,11 @@ class EagerTest extends FunSuite with ShouldMatchers {
     val knns = Eager.rangeNN(graph, graph.getVertex(4), 1, 0.0).map(_._1)
     knns should be ('empty)
   }
-  // todo: test: compare with solution from other guy? (Johannes fragen wg. Fehler)
+  // todo: test: compareTo with solution from other guy? (Johannes fragen wg. Fehler)
 
   /*
    * Verify- Tests
-   * TODO: Für generierte Graphen
+   * TODO: Tests für generierte Graphen schreiben, nicht nur von den statischen
    */
   test("verify correctly verifies all valid rknns"){
     val graph =  createExampleGraph

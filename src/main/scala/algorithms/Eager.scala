@@ -20,7 +20,7 @@ object Eager {
     if(k <= 0)
       return RkNN_q
     while (!h.isEmpty) {
-      val h2   = h; val visitedNodes2 = visitedNodes; val verifiedPoints2 = verifiedPoints; val RkNN_q2 = RkNN_q
+//      val h2   = h; val visitedNodes2 = visitedNodes; val verifiedPoints2 = verifiedPoints; val RkNN_q2 = RkNN_q
       /* When a node n is deheaped, eager applies Lemma 1 in order to
        * determine whether the expansion should proceed.*/
       val n   = h.dequeue

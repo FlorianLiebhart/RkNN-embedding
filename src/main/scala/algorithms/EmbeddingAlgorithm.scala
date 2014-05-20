@@ -5,22 +5,55 @@ import scala.collection.mutable.HashMap
 import _root_.util.Utils._
 import scala.util.Random
 import scala._
+import rweeks.RTree
+import rweeks.RTree.SeedPicker
+import scala.Array
+import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants._
+import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar._
+import de.lmu.ifi.dbs.elki.persistent._
+import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.strategies.bulk.SortTileRecursiveBulkSplit
+import elkiTPL.GenericTPLRkNNQuery
+import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.EuclideanDistanceFunction
 
 /**
- * Created: 04.02.14, 11:47
  * @author fliebhart
  */
 object EmbeddingAlgorithm {
 
-  var refPoints: Seq[SVertex] = IndexedSeq[SVertex]()
-
-  // key: Knoten, value: Liste mit Distanzen zu Referenzpunkte (? evtl: Flag ob Objekt auf Knoten)
-  var refpointDistances = HashMap[SVertex, IndexedSeq[Double]]()
-
 
   def start(sGraph: SGraph, numRefPoints: Integer){
-    refPoints = createRefPoints(sGraph.getAllVertices, numRefPoints)
-    refpointDistances = createEmbedding(sGraph, refPoints)
+    val refPoints: Seq[SVertex] = createRefPoints(sGraph.getAllVertices, numRefPoints)
+    // key: Knoten, value: Liste mit Distanzen zu Referenzpunkte (? evtl: Flag ob Objekt auf Knoten)
+    val refpointDistances: HashMap[SVertex, IndexedSeq[Double]] = createEmbedding(sGraph, refPoints)
+
+    // build rTree
+    // implementation without ELKI:
+//    val rTree = new RTree[SVertex](50, 2, 2, SeedPicker.LINEAR)
+//    refpointDistances map { x => rTree.insert(Array[Float](x._2.map(_.toFloat):_*), x._1) }
+
+
+
+    // implementation with ELKI:
+
+    val rStarSettings = new AbstractRTreeSettings()
+    rStarSettings.setMinimumFill(2)
+    rStarSettings.setBulkStrategy(SortTileRecursiveBulkSplit.STATIC) // Erich Schubert hat das so gesagt.
+    rStarSettings
+    // TestRStarTree
+    // SortTileRecursive(..BulkSplit .. bulkload
+    val pageFile = new MemoryPageFile[RStarTreeNode](20)    // // MemoryPageFileFactory  (PagedIndexFactory)
+
+    val rStarTree = new RStarTree(pageFile, rStarSettings)
+
+    rStarTree.canBulkLoad
+
+
+
+    rStarTree.initialize()
+
+//    val genericTPLRkNNQuery = new GenericTPLRkNNQuery(rStarTree,EuclideanDistanceFunction.STATIC,true)
+//    genericTPLRkNNQuery.getRKNNForBulkDBIDs()
+    
   }
 
   /**
@@ -43,13 +76,18 @@ object EmbeddingAlgorithm {
 
     for(refPoint <- refPoints){
       val allDistsFromRefPoint = Dijkstra.dijkstra(sGraph, refPoint)
-      allDistsFromRefPoint map (x => refpointDistances.put(x._1, (refpointDistances.get(x._1).getOrElse(Nil) :+ x._2).toIndexedSeq)) // evtl. finetuning bei "toIndexedSeq" -> Später, wenns läuft, mit Seq probieren!
+      allDistsFromRefPoint map { x =>
+        refpointDistances.put(
+          x._1,
+          (refpointDistances.get(x._1).getOrElse(Nil) :+ x._2).toIndexedSeq
+        )
+      } // evtl. finetuning bei "toIndexedSeq" -> Später, wenns läuft, mit Seq probieren!
     }
     refpointDistances
   }
 
   /**
-   * Berechnet minimale Distanz
+   * Berechnet max. minimale Distanz
    *
    */
   def minDist(p1: SVertex, p2: SVertex){
@@ -58,7 +96,7 @@ object EmbeddingAlgorithm {
 
   /**
    * Berechnet "minimale maximale" Distanz
-   * (
+   *
    */
   def maxDist(p1: SVertex, p2: SVertex){
 

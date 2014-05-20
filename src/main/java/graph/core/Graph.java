@@ -197,7 +197,7 @@ public class Graph {
 			return false;
 		}
 		
-		// compare all edges
+		// compareTo all edges
 		for(Edge e : edges) {
 			if(!graph.containsEdge(e.getSource().getId(), e.getTarget().getId())) {
 				return false;
