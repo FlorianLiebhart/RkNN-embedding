@@ -12,8 +12,10 @@ import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants._
 import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar._
 import de.lmu.ifi.dbs.elki.persistent._
 import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.strategies.bulk.SortTileRecursiveBulkSplit
-import elkiTPL.GenericTPLRkNNQuery
+import elkiTPL.{Simulation, GenericTPLRkNNQuery}
 import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.EuclideanDistanceFunction
+import de.lmu.ifi.dbs.elki.distance.distancevalue.DoubleDistance
+import de.lmu.ifi.dbs.elki.database.ids.distance.DistanceDBIDList
 
 /**
  * @author fliebhart
@@ -21,7 +23,7 @@ import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.EuclideanDistance
 object EmbeddingAlgorithm {
 
 
-  def start(sGraph: SGraph, numRefPoints: Integer){
+  def embeddedRKNNs(sGraph: SGraph, sQ: SVertex, k: Int, numRefPoints: Integer): DistanceDBIDList[DoubleDistance] = {
     val refPoints: Seq[SVertex] = createRefPoints(sGraph.getAllVertices, numRefPoints)
     // key: Knoten, value: Liste mit Distanzen zu Referenzpunkte (? evtl: Flag ob Objekt auf Knoten)
     val refpointDistances: HashMap[SVertex, IndexedSeq[Double]] = createEmbedding(sGraph, refPoints)
@@ -35,25 +37,28 @@ object EmbeddingAlgorithm {
 
     // implementation with ELKI:
 
-    val rStarSettings = new AbstractRTreeSettings()
-    rStarSettings.setMinimumFill(2)
-    rStarSettings.setBulkStrategy(SortTileRecursiveBulkSplit.STATIC) // Erich Schubert hat das so gesagt.
-    rStarSettings
+//    val rStarSettings = new AbstractRTreeSettings()
+//    rStarSettings.setMinimumFill(2)
+//    rStarSettings.setBulkStrategy(SortTileRecursiveBulkSplit.STATIC) // Erich Schubert hat das so gesagt.
+//    rStarSettings
     // TestRStarTree
     // SortTileRecursive(..BulkSplit .. bulkload
-    val pageFile = new MemoryPageFile[RStarTreeNode](20)    // // MemoryPageFileFactory  (PagedIndexFactory)
+//    val pageFile = new MemoryPageFile[RStarTreeNode](20)    // // MemoryPageFileFactory  (PagedIndexFactory)
 
-    val rStarTree = new RStarTree(pageFile, rStarSettings)
+//    val rStarTree = new RStarTree(pageFile, rStarSettings)
 
-    rStarTree.canBulkLoad
+    val rTreePath = "~/Desktop/tplSimulation/rTree.csv"
+    val dimensions = numRefPoints
+    val tplSimulation = new Simulation()
+    tplSimulation.generate(dimensions, 100, rTreePath)
 
+    val pageSize = 10
+    val rkNNs: DistanceDBIDList[DoubleDistance] = tplSimulation.simulate(rTreePath, pageSize, k, dimensions, true)
 
-
-    rStarTree.initialize()
 
 //    val genericTPLRkNNQuery = new GenericTPLRkNNQuery(rStarTree,EuclideanDistanceFunction.STATIC,true)
 //    genericTPLRkNNQuery.getRKNNForBulkDBIDs()
-    
+    rkNNs
   }
 
   /**

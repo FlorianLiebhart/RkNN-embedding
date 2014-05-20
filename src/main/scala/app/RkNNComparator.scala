@@ -1,14 +1,12 @@
 package app
 
-import algorithms.Eager.eager
-import algorithms.NaiveRkNN.getReverseKNearestNeighbors
-import graph.{GraphGen, SEdge, SGraph, SVertex}
+import graph.{GraphGen, SGraph}
+
 import util.Utils._
-import util.{GraphAlgorithm, Utils}
+
+import algorithms.NaiveRkNN.naiveRkNNs
 import algorithms.Eager.eager
-import algorithms.EmbeddingAlgorithm._
-import java.util.Random
-import algorithms.Dijkstra
+import algorithms.EmbeddingAlgorithm
 
 object RkNNComparator {
 
@@ -45,11 +43,14 @@ object RkNNComparator {
 //    println("dijkstra:" + Dijkstra.dijkstra(sGraph, sGraph.getVertex(qID)).size + ", graph vertices" + sGraph.getAllVertices.size)
 
     println("")
-    // Naive - Algorithm
+    // Naive algorithm
     naiveRkNN(sGraph, qID, k)
 
-    // Eager - Algorithm
+    // Eager algorithm
     eagerRkNN(sGraph, qID, k)
+
+    // Embedded algorithm
+    embeddedRkNN(sGraph, qID, k, numRefPoints = 4)
   }
 
 
@@ -63,12 +64,12 @@ object RkNNComparator {
     println(s"R${k}NNs for query point " + qID)
 
     val t0 = System.currentTimeMillis()
-    val rKnnsNaive = getReverseKNearestNeighbors(sGraph, sQ, k)
+    val rkNNsNaive = naiveRkNNs(sGraph, sQ, k)
     val t1 = System.currentTimeMillis()
 
     println(s"Runtime: ${(t1 - t0)/1000.0} sec.\n")
 
-    for( v <- rKnnsNaive )
+    for( v <- rkNNsNaive )
       println(s"Node: ${v._1.id}  Dist: ${v._2}")
     println("")
   }
@@ -81,32 +82,32 @@ object RkNNComparator {
     println(s"R${k}NNs for query point " + qID)
 
     val t0 = System.currentTimeMillis()
-    val rKnnsNaive = eager(sGraph, sQ, k)
+    val rkNNsNaive = eager(sGraph, sQ, k)
     val t1 = System.currentTimeMillis()
 
     println(s"Runtime: ${(t1 - t0)/1000.0} sec.\n")
 
-    for( v <- rKnnsNaive )
+    for( v <- rkNNsNaive )
       println(s"Node: ${v._1.id}  Dist: ${v._2}")
     println("")
   }
 
-  def embeddedRkNN(jGraph: graph.core.Graph, qID: Integer, k: Integer) : Unit = embeddedRkNN(convertJavaToScalaGraph(jGraph), qID, k)
-  def embeddedRkNN(sGraph: SGraph          , qID: Integer, k: Integer) : Unit = {
+  def embeddedRkNN(jGraph: graph.core.Graph, qID: Integer, k: Integer, numRefPoints: Int) : Unit = embeddedRkNN(convertJavaToScalaGraph(jGraph), qID, k, numRefPoints)
+  def embeddedRkNN(sGraph: SGraph          , qID: Integer, k: Integer, numRefPoints: Int) : Unit = {
     val sQ     = sGraph.getVertex(qID)
 
     println("-----------Embedded:-----------")
     println(s"R${k}NNs for query point $qID")
 
-    val t0 = System.currentTimeMillis()
-    val rKnnsNaive = getReverseKNearestNeighbors(sGraph, sQ, k)
-    val t1 = System.currentTimeMillis()
+    val t0            = System.currentTimeMillis()
+    val rkNNsEmbedded = EmbeddingAlgorithm.embeddedRKNNs(sGraph, sQ, k, numRefPoints)
+    val t1            = System.currentTimeMillis()
 
     println(s"Runtime: ${(t1 - t0)/1000.0} sec.\n")
 
-    for( v <- rKnnsNaive )
-      println(s"Node: ${v._1.id}  Dist: ${v._2}")
+    println(rkNNsEmbedded.iter().getDistancePair.getDistance)
+//    for( v <- rkNNsEmbedded )
+//      println(s"Node: ${v._1.id}  Dist: ${v._2}")
     println("")
-
   }
 }

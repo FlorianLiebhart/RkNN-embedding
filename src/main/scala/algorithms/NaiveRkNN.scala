@@ -15,7 +15,7 @@ object NaiveRkNN {
    * @param k
    * @return Sorted rknns
    */
-  def getReverseKNearestNeighbors(graph: SGraph, q: SVertex, k: Integer): IndexedSeq[VD] = {
+  def naiveRkNNs(graph: SGraph, q: SVertex, k: Integer): IndexedSeq[VD] = {
     val allGraphNodes = graph.getAllVertices.toIndexedSeq
     val allGraphNodesWithObjects = allGraphNodes filter (_.containsObject) filterNot (_ equals q)
     val allkNNs = allGraphNodesWithObjects map ( p => (p, Eager.rangeNN(graph, p, k, Double.PositiveInfinity)))

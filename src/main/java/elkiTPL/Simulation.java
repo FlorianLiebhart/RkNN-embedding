@@ -73,7 +73,7 @@ public class Simulation {
 
 
 
-  public void simulate(String file, int pagesize, int k, int dimension, boolean withClipping) {
+  public DistanceDBIDList<DoubleDistance> simulate(String file, int pagesize, int k, int dimension, boolean withClipping) {
 
     Database[] db = createDatabase(file, pagesize);
     Relation<DoubleVector> relation = db[0].getRelation(TypeUtil.NUMBER_VECTOR_FIELD);
@@ -94,6 +94,8 @@ public class Simulation {
 
     GenericTPLRkNNQuery gtpl = new GenericTPLRkNNQuery(dbIndex, distanceQuery, withClipping);
     result = gtpl.getRKNNForObject(relation.get(getDBObjectAsQueryObject(relation)), k);
+
+    return result;
   }
 
 
