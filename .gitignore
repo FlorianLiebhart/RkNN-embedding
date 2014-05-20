@@ -41,3 +41,4 @@ target/*
 
 #Project specific
 src/main/java/rweeks/*
+lib/*
