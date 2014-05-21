@@ -31,94 +31,122 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 
 public class Simulation {
-  private static RStarTreeIndex dbIndex;
+  final private static EuclideanDistanceFunction distanceFunction = EuclideanDistanceFunction.STATIC;;
   private static SpatialDistanceQuery distanceQuery;
-  private static EuclideanDistanceFunction distanceFunction;
   private static LRUCache c1;
 
-  private static Database[] createDatabase(String queryFile, int pagesize){
+  /**
+   *
+   * @param file
+   * @param pageSize
+   * @param k
+   * @param dimension
+   * @param withClipping
+   * @return
+   */
+  public DistanceDBIDList<DoubleDistance> simulate(String file, int pageSize, int k, int dimension, boolean withClipping) {
 
-    distanceFunction = EuclideanDistanceFunction.STATIC;
-
-
-    ListParameterization inputparamsQuery = new ListParameterization();
-    inputparamsQuery.addParameter(FileBasedDatabaseConnection.Parameterizer.INPUT_ID, queryFile); //synthetic data
-    //inputparamsQuery.addParameter(OptionID.DATABASE_CONNECTION, GeneratorXMLDatabaseConnection.class);
-
-    Database dbQuery = ClassGenericsUtil.parameterizeOrAbort(StaticArrayDatabase.class, inputparamsQuery);
-    inputparamsQuery.failOnErrors();
-    dbQuery.initialize();
-
-    Relation<DoubleVector> rQuery = dbQuery.getRelation(TypeUtil.NUMBER_VECTOR_FIELD);
-
-
-    System.out.println("Size of relation: "+rQuery.size());
-
-    System.out.println("Building R*-Tree...");
-    long time = System.nanoTime();
-    AbstractRTreeSettings settings = new AbstractRTreeSettings();
-    PageFile<RStarTreeNode> pageFile = new MemoryPageFile<RStarTreeNode>(pagesize);
-    dbIndex = new RStarTreeIndex<DoubleVector>(rQuery, pageFile, settings);
-    dbIndex.initialize();
-
-    time = System.nanoTime()-time;
-    System.out.println("R*-Tree built in "+time/1E6+"ms.");
-    System.out.println("objects: "+dbIndex.getRoot().getNumEntries()); // TODO: Commented out, because this raises a nullpointer exception
-
-
-    distanceQuery = distanceFunction.instantiate(rQuery);
-
-
-    return new Database[]{dbQuery};
-  }
-
-
-
-  public DistanceDBIDList<DoubleDistance> simulate(String file, int pagesize, int k, int dimension, boolean withClipping) {
-
-    Database[] db = createDatabase(file, pagesize);
+    // create Memory Database
+    Database[] db = createDatabase(file);
     Relation<DoubleVector> relation = db[0].getRelation(TypeUtil.NUMBER_VECTOR_FIELD);
 
-    // Query
-    double[] coordinates = new double[dimension];
-    for (int i = 0; i < dimension; i++){
-      coordinates[i] = Math.random();
-    }
-    DoubleVector q = new DoubleVector(coordinates);
-    System.out.println("Query: "+q);
-
-    long time = System.nanoTime();
-    time = System.nanoTime();
-    System.out.println("Performing RkNN-Query...");
-
-    DistanceDBIDList<DoubleDistance> result = null;
-
+    // create RStar Tree
+    RStarTreeIndex dbIndex = createRStarTree(relation, pageSize);
+    distanceQuery = distanceFunction.instantiate(relation);
     GenericTPLRkNNQuery gtpl = new GenericTPLRkNNQuery(dbIndex, distanceQuery, withClipping);
-    result = gtpl.getRKNNForObject(relation.get(getDBObjectAsQueryObject(relation)), k);
 
-    return result;
+    // Generate random query point
+//    double[] coordinates = new double[dimension];
+//    for (int i = 0; i < dimension; i++){
+//      coordinates[i] = Math.random();
+//    }
+//    DoubleVector queryObject = new DoubleVector(coordinates);
+//    System.out.println("Generated query object: " + queryObject);
+
+    // random query object from the database
+    DoubleVector queryObject = relation.get(getDBObjectAsQueryObject(relation));
+    System.out.println("Random query object from database: " + queryObject + "\n");
+
+    // Performing rkNN Query
+    System.out.println("Performing RkNN-Query...");
+    long t0 = System.currentTimeMillis();
+
+    DistanceDBIDList<DoubleDistance> rkNNs = gtpl.getRKNNForObject(queryObject, k);
+
+    long t1 = System.currentTimeMillis();
+    System.out.println("RkNN Query performed in " + (t1-t0) + " ms.\n");
+
+    return rkNNs;
   }
 
 
-    // Generiert CSV Datei
-    // Beispiel-CSV:
-    // 0.3;0.22;0.9;
-  public void generate(int dimension, int numPoints, String csvPath) throws IOException {
+  /**
+   * Creates a file based database at given dbFilePath
+   * @param dbFilePath Path where file based database should be stored
+   * @return The database created
+   */
+  private Database[] createDatabase(String dbFilePath){
+
+    ListParameterization parametrizationConfig = new ListParameterization();
+    parametrizationConfig.addParameter(FileBasedDatabaseConnection.Parameterizer.INPUT_ID, dbFilePath); //synthetic data
+
+    Database db = ClassGenericsUtil.parameterizeOrAbort(StaticArrayDatabase.class, parametrizationConfig);
+    parametrizationConfig.failOnErrors();
+    db.initialize();
+
+    return new Database[]{db};
+  }
+
+
+  private RStarTreeIndex<DoubleVector> createRStarTree(Relation<DoubleVector> relation, int pageSize){
+    System.out.println("Building R*-Tree... (Entries: " + relation.size() + ", page size: " + pageSize + " bytes)");
+
+    long t0 = System.currentTimeMillis();
+
+    PageFile<RStarTreeNode> memoryPageFile = new MemoryPageFile<RStarTreeNode>(pageSize);
+    AbstractRTreeSettings settings = new AbstractRTreeSettings();
+    RStarTreeIndex<DoubleVector> dbIndex = new RStarTreeIndex<DoubleVector>(relation, memoryPageFile, settings);
+    dbIndex.initialize();
+
+    long t1 = System.currentTimeMillis();
+
+    System.out.println("R*-Tree built in " + (t1-t0) + " ms.");
+    System.out.println("  objects: " + dbIndex.getRoot().getNumEntries() + "\n");
+
+    return dbIndex;
+  }
+
+
+  /**
+   * Generates a CSV file with "numPoints" random vectors in "dimensions" dimensions.
+   * Example CSV: 0.3;0.22;0.9;
+   * @param dimension
+   * @param numPoints
+   * @param csvPath
+   * @throws IOException
+   */
+  public void generateCSVFile(int dimension, int numPoints, String csvPath) throws IOException {
+    // create directories and file if non-existent
     Path pathToFile = Paths.get(csvPath);
     Files.createDirectories(pathToFile.getParent());
     if (!Files.exists(pathToFile))
         Files.createFile(pathToFile);
-    FileWriter fw = new FileWriter(csvPath, false);
+    FileWriter fw = new FileWriter(csvPath, false); // false = overwrite current file content
     BufferedWriter out = new BufferedWriter(fw);
 
     for (int i = 0; i < numPoints; i++){
       String newline = "";
       for (int j = 0; j < dimension; j++){
-        double number = Math.random();
-        newline = newline + number + ";";
+//        newline = newline + Math.random() + ";";
+        NumberFormat doubleUKformatter = new DecimalFormat("#0.00", new DecimalFormatSymbols(Locale.UK));
+        newline = newline + doubleUKformatter.format(Math.random()) + ";";
       }
       if (i != 0){
         newline = "\n" + newline;
@@ -129,14 +157,17 @@ public class Simulation {
     out.close();
   }
 
-  // Gets a random object from the db
-  public DBID getDBObjectAsQueryObject(Relation<DoubleVector> r){
-    DBIDIter iter = r.getDBIDs().iter();
-    int random = (int) (Math.random() * r.size() + 1);
-    for (int i = 0; i < random && iter.valid(); i++){
+  /**
+   * Gets a random object's DBID from the DB
+   * @param relation The database relation
+   * @return the DBID from the random object received from the DB
+   */
+  public DBID getDBObjectAsQueryObject(Relation<DoubleVector> relation){
+    DBIDIter iter = relation.getDBIDs().iter();
+    int randomNumber = (int) (Math.random() * relation.size() + 1);
+    for (int i = 0; i < randomNumber && iter.valid(); i++){
       iter.advance();
     }
-    System.out.println("Query: "+iter);
 
     return DBIDUtil.deref(iter);
   }

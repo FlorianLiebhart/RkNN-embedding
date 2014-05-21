@@ -29,7 +29,7 @@ object EmbeddingAlgorithm {
     val rTreePath = "tplSimulation/rTree.csv"
     val dimensions = numRefPoints
     val tplSimulation = new Simulation()
-    tplSimulation.generate(dimensions, 100, rTreePath)
+    tplSimulation.generateCSVFile(dimensions, 100, rTreePath)
 
     val pageSize = 1000  // 1mb todo: what's a good memory page size?
     val distanceDBIDList: DistanceDBIDList[DoubleDistance] = tplSimulation.simulate(rTreePath, pageSize, k, dimensions, true)

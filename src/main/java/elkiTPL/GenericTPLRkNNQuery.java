@@ -532,11 +532,14 @@ public class GenericTPLRkNNQuery<N extends SpatialNode<N,E>, E extends SpatialEn
   @Override
   public DistanceDBIDList<D> getRKNNForObject(O q, int k) {
     // TODO Auto-generated method stub
-    long time = System.nanoTime();
-    time = System.nanoTime();
+
     System.out.println("  Performing filter step...");
+    long t0 = System.currentTimeMillis();
+
     ArrayList<ArrayList<?>> filtered = filter(q, k);
-    System.out.println("  Filter step done in "+time/1E6+"ms.");
+
+    long t1 = System.currentTimeMillis();
+    System.out.println("  Filter step done in " + (t1-t0) +" ms.");
     
     ArrayList<SpatialPointLeafEntry> candidateSet = new ArrayList<SpatialPointLeafEntry>();
     ArrayList<TPLEntry> refinementSet = new ArrayList<TPLEntry>();

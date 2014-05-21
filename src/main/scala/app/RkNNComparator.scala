@@ -70,6 +70,7 @@ object RkNNComparator {
 
     println(s"Runtime: ${(t1 - t0)/1000.0} sec.\n")
 
+    println(s"Result r${k}NNs: ${if (rkNNsNaive.size == 0) "--" else ""}")
     for( v <- rkNNsNaive )
       println(s"Node: ${v._1.id}  Dist: ${v._2}")
     println("")
@@ -83,12 +84,13 @@ object RkNNComparator {
     println(s"R${k}NNs for query point " + qID)
 
     val t0 = System.currentTimeMillis()
-    val rkNNsNaive = eager(sGraph, sQ, k)
+    val rkNNsEager = eager(sGraph, sQ, k)
     val t1 = System.currentTimeMillis()
 
     println(s"Runtime: ${(t1 - t0)/1000.0} sec.\n")
 
-    for( v <- rkNNsNaive )
+    println(s"Result r${k}NNs: ${if (rkNNsEager.size == 0) "--" else ""}")
+    for( v <- rkNNsEager )
       println(s"Node: ${v._1.id}  Dist: ${v._2}")
     println("")
   }
@@ -106,6 +108,7 @@ object RkNNComparator {
 
     println(s"Runtime: ${(t1 - t0)/1000.0} sec.\n")
 
+    println(s"Result r${k}NNs: ${if (rkNNsEmbedded.size == 0) "--" else ""}")
     for( v <- rkNNsEmbedded )
       println(s"Node: ${v._1.toString}  Dist: ${v._2}")
     println("")
