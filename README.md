@@ -41,7 +41,7 @@ Run ```sbt test``` from the command line to run the tests. (some eager tests mig
 
 
 
-## Technology stack:
+## Technology stack
 
 ### Build Tool
 - [SBT v. 0.13.0](http://www.scala-sbt.org/0.13.0/docs/home.html) [`open source`](https://github.com/sbt/sbt)
