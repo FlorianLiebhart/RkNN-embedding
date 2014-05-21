@@ -42,3 +42,4 @@ target/*
 #Project specific
 src/main/java/rweeks/*
 lib/*
+tplSimulation/rTree.csv
