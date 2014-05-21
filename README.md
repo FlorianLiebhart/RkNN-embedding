@@ -1,5 +1,8 @@
-RkNN-embedding - Comparison between RkNN-retrieval on graphs (Eager algorithm) and its embedded version in R*-Trees with materialized reference points (modified TPL algorithm)
+RkNN-embedding
 ==============
+
+A comparison between RkNN-retrieval on graphs (Eager algorithm) and its embedded version in R*-Trees with materialized reference points (modified TPL algorithm)
+
 
 #### by [FlorianLiebhart](https://github.com/FlorianLiebhart/)
 --------
@@ -24,8 +27,9 @@ RkNN-embedding - Comparison between RkNN-retrieval on graphs (Eager algorithm) a
 ```git checkout git@github.com:FlorianLiebhart/RkNN-embedding.git```
 2. Download elki.jar and put it into the lib folder of this project
 3. Run ```sbt update```to download all necessary sbt dependencies (except ELKI, which needed to be downloaded manually).
-3. Run ```sbt compile``` from the command line to compile this project.
-4. Then, run the main method in src/main/scala/app/RkNNComparator.scala to start the comparison; Or start the GUI in src/main/java/app/GUIStarter.java
+4. Run ```sbt compile``` from the command line to compile this project.
+5. Then, run the main method in src/main/scala/app/RkNNComparator.scala to start the comparison; Or start the GUI in src/main/java/app/GUIStarter.java
+
 Note: Step 4. needs a little know how to do from the command line.
 Best using IntelliJ Idea v. 13.1: Create IDEA project files with the [sbt-idea plugin](https://github.com/mpeltonen/sbt-idea) using the command ```sbt gen-idea```.
 You should also install the sbt plugin within IntelliJ Idea.
