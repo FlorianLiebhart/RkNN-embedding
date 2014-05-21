@@ -26,7 +26,7 @@ A comparison between RkNN-retrieval on graphs (Eager algorithm) and its embedded
 1. Check out this git respository: 
 ```git checkout git@github.com:FlorianLiebhart/RkNN-embedding.git```
 2. Download elki.jar and put it into the lib folder of this project
-3. Run ```sbt update```to download all necessary sbt dependencies (except ELKI, which needed to be downloaded manually).
+3. Run ```sbt update``` to download all necessary sbt dependencies (except ELKI, which needed to be downloaded manually).
 4. Run ```sbt compile``` from the command line to compile this project.
 5. Then, run the main method in src/main/scala/app/RkNNComparator.scala to start the comparison; Or start the GUI in src/main/java/app/GUIStarter.java
 
