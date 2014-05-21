@@ -539,7 +539,7 @@ public class GenericTPLRkNNQuery<N extends SpatialNode<N,E>, E extends SpatialEn
     ArrayList<ArrayList<?>> filtered = filter(q, k);
 
     long t1 = System.currentTimeMillis();
-    System.out.println("  Filter step done in " + (t1-t0) +" ms.");
+    System.out.println("  Filter step done in " + (t1-t0) + " ms.");
     
     ArrayList<SpatialPointLeafEntry> candidateSet = new ArrayList<SpatialPointLeafEntry>();
     ArrayList<TPLEntry> refinementSet = new ArrayList<TPLEntry>();
