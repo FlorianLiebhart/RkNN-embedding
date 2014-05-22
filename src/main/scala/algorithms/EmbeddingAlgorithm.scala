@@ -33,7 +33,7 @@ object EmbeddingAlgorithm {
     tplSimulation.generateCSVFile(dimensions, numPoints, rTreePath)
 
     val pageSize = 1024  // Determines how many points fit into one page. Felix: Mostly between 1024 und 8192 byte. 1024 byte correspond to about 22 points
-    val distanceDBIDList: DistanceDBIDList[DoubleDistance] = tplSimulation.simulate(rTreePath, pageSize, k, dimensions, true)
+    val distanceDBIDList: DistanceDBIDList[DoubleDistance] = tplSimulation.simulate(rTreePath, pageSize, k, dimensions, false) // withClipping = false
 
     var rkNNs: IndexedSeq[(DBID, Double)] = IndexedSeq.empty
     val rkNNIter = distanceDBIDList.iter()

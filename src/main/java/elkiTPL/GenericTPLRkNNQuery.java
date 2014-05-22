@@ -147,7 +147,12 @@ public class GenericTPLRkNNQuery<N extends SpatialNode<N,E>, E extends SpatialEn
             // for each point se2 in node ( sorted on dist(se2,q) )
             
             for(SpatialEntry se2 : ((AbstractNode<SpatialEntry>) node).getEntries()) {
-              double distance = k_trim(q, k, candidateSet, se2);
+              double distance = 0.0;
+              if (withClipping)
+                distance = k_trim(q, k, candidateSet, se2);
+              else
+                distance = prune(q, k, candidateSet, se2);
+
               // if (trim(q, candidateSet, se2) != infinite)
               if(distance != Double.POSITIVE_INFINITY){
                 // then insert (se2, dist(p,q)) in APL
@@ -161,7 +166,11 @@ public class GenericTPLRkNNQuery<N extends SpatialNode<N,E>, E extends SpatialEn
             // for each entry N_i in node
             for (SpatialEntry N_i : ((AbstractNode<SpatialEntry>) node).getEntries()) {
               // mindist(Nres_i, q) = trim(q, candidateSet, N_i)
-              double distance = k_trim(q, k, candidateSet, N_i);
+              double distance = 0.0;
+              if (withClipping)
+                distance = k_trim(q, k, candidateSet, N_i);
+              else
+                distance = prune(q, k, candidateSet, N_i);
               // if mindist(Nres_i, q) = infinite
               if (distance == Double.POSITIVE_INFINITY){
                 // refinementSet = refinementSet + {N_i}

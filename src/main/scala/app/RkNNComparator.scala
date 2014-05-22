@@ -39,7 +39,7 @@ object RkNNComparator {
       if(!sGraph.getVertex(qID).containsObject)
         sGraph.getVertex(qID).setObjectId(objects)
 
-    val k = 2
+    val k = 3
 
 //    println("dijkstra:" + Dijkstra.dijkstra(sGraph, sGraph.getVertex(qID)).size + ", graph vertices" + sGraph.getAllVertices.size)
 

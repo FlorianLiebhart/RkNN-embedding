@@ -74,14 +74,14 @@ public class Simulation {
     DoubleVector queryObject = relation.get(getDBObjectAsQueryObject(relation));
     System.out.println("Random query object from database: " + queryObject + "\n");
 
-    // Performing rkNN Query
-    System.out.println("Performing RkNN-Query...");
+    // Performing RkNN query
+    System.out.println("Performing RkNN-query...");
     long t0 = System.currentTimeMillis();
 
     DistanceDBIDList<DoubleDistance> rkNNs = gtpl.getRKNNForObject(queryObject, k);
 
     long t1 = System.currentTimeMillis();
-    System.out.println("RkNN Query performed in " + (t1-t0) + " ms.\n");
+    System.out.println("RkNN query performed in " + (t1-t0) + " ms.\n");
 
     return rkNNs;
   }
@@ -106,7 +106,7 @@ public class Simulation {
 
 
   private RStarTreeIndex<DoubleVector> createRStarTree(Relation<DoubleVector> relation, int pageSize){
-    System.out.println("Building R*-Tree... (Entries: " + relation.size() + ", page size: " + pageSize + " bytes)");
+    System.out.println("Building R*-Tree... (entries: " + relation.size() + ", page size: " + pageSize + " bytes)");
 
     long t0 = System.currentTimeMillis();
 
