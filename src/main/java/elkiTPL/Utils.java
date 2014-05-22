@@ -7,14 +7,12 @@ import de.lmu.ifi.dbs.elki.database.StaticArrayDatabase;
 import de.lmu.ifi.dbs.elki.database.ids.DBID;
 import de.lmu.ifi.dbs.elki.database.ids.DBIDIter;
 import de.lmu.ifi.dbs.elki.database.ids.DBIDUtil;
-import de.lmu.ifi.dbs.elki.database.ids.DBIDs;
 import de.lmu.ifi.dbs.elki.database.ids.distance.DistanceDBIDList;
 import de.lmu.ifi.dbs.elki.database.query.distance.SpatialDistanceQuery;
 import de.lmu.ifi.dbs.elki.database.relation.Relation;
 import de.lmu.ifi.dbs.elki.datasource.FileBasedDatabaseConnection;
 import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.EuclideanDistanceFunction;
 import de.lmu.ifi.dbs.elki.distance.distancevalue.DoubleDistance;
-import de.lmu.ifi.dbs.elki.evaluation.roc.ROC;
 import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.AbstractRTreeSettings;
 import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar.RStarTreeIndex;
 import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar.RStarTreeNode;
@@ -25,7 +23,6 @@ import de.lmu.ifi.dbs.elki.utilities.ClassGenericsUtil;
 import de.lmu.ifi.dbs.elki.utilities.optionhandling.parameterization.ListParameterization;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -37,10 +34,7 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 
-public class Simulation {
-  final private static EuclideanDistanceFunction distanceFunction = EuclideanDistanceFunction.STATIC;;
-  private static SpatialDistanceQuery distanceQuery;
-  private static LRUCache c1;
+public class Utils {
 
   /**
    *
@@ -51,7 +45,7 @@ public class Simulation {
    * @param withClipping
    * @return
    */
-  public DistanceDBIDList<DoubleDistance> simulate(String file, int pageSize, int k, int dimension, boolean withClipping) {
+  public static DistanceDBIDList<DoubleDistance> simulate(String file, int pageSize, int k, int dimension, boolean withClipping) {
 
     // create Memory Database
     Database[] db = createDatabase(file);
@@ -59,8 +53,9 @@ public class Simulation {
 
     // create RStar Tree
     RStarTreeIndex dbIndex = createRStarTree(relation, pageSize);
-    distanceQuery = distanceFunction.instantiate(relation);
-    GenericTPLRkNNQuery gtpl = new GenericTPLRkNNQuery(dbIndex, distanceQuery, withClipping);
+    EuclideanDistanceFunction distanceFunction = EuclideanDistanceFunction.STATIC;
+    SpatialDistanceQuery distanceQuery         = distanceFunction.instantiate(relation);
+    GenericTPLRkNNQuery gtpl                   = new GenericTPLRkNNQuery(dbIndex, distanceQuery, withClipping);
 
     // Generate random query point
 //    double[] coordinates = new double[dimension];
@@ -71,7 +66,7 @@ public class Simulation {
 //    System.out.println("Generated query object: " + queryObject);
 
     // random query object from the database
-    DoubleVector queryObject = relation.get(getDBObjectAsQueryObject(relation));
+    DoubleVector queryObject = relation.get(getRandomDBObject(relation));
     System.out.println("Random query object from database: " + queryObject + "\n");
 
     // Performing RkNN query
@@ -92,11 +87,13 @@ public class Simulation {
    * @param dbFilePath Path where file based database should be stored
    * @return The database created
    */
-  private Database[] createDatabase(String dbFilePath){
+  public static Database[] createDatabase(String dbFilePath){
 
+    // create config
     ListParameterization parametrizationConfig = new ListParameterization();
     parametrizationConfig.addParameter(FileBasedDatabaseConnection.Parameterizer.INPUT_ID, dbFilePath); //synthetic data
 
+    // create and initialize database
     Database db = ClassGenericsUtil.parameterizeOrAbort(StaticArrayDatabase.class, parametrizationConfig);
     parametrizationConfig.failOnErrors();
     db.initialize();
@@ -104,35 +101,40 @@ public class Simulation {
     return new Database[]{db};
   }
 
-
-  private RStarTreeIndex<DoubleVector> createRStarTree(Relation<DoubleVector> relation, int pageSize){
+  /**
+   * Creates and returns an R*Tree index for a given relation
+   * @param relation Relation which should be indexed by the R*-Tree
+   * @param pageSize Page size of the R*-Tree as number of bytes (e.g. 1024 bytes)
+   * @return
+   */
+  public static RStarTreeIndex<DoubleVector> createRStarTree(Relation<DoubleVector> relation, int pageSize){
     System.out.println("Building R*-Tree... (entries: " + relation.size() + ", page size: " + pageSize + " bytes)");
 
     long t0 = System.currentTimeMillis();
 
-    PageFile<RStarTreeNode> memoryPageFile = new MemoryPageFile<RStarTreeNode>(pageSize);
-    AbstractRTreeSettings settings = new AbstractRTreeSettings();
-    RStarTreeIndex<DoubleVector> dbIndex = new RStarTreeIndex<DoubleVector>(relation, memoryPageFile, settings);
-    dbIndex.initialize();
+    PageFile<RStarTreeNode> memoryPageFile      = new MemoryPageFile<RStarTreeNode>(pageSize);
+    AbstractRTreeSettings settings              = new AbstractRTreeSettings();
+    RStarTreeIndex<DoubleVector> rStarTreeIndex = new RStarTreeIndex<DoubleVector>(relation, memoryPageFile, settings);
+    rStarTreeIndex.initialize();
 
     long t1 = System.currentTimeMillis();
 
     System.out.println("R*-Tree built in " + (t1-t0) + " ms.");
-    System.out.println("  objects: " + dbIndex.getRoot().getNumEntries() + "\n");
+    System.out.println("  objects: " + rStarTreeIndex.getRoot().getNumEntries() + "\n");
 
-    return dbIndex;
+    return rStarTreeIndex;
   }
 
 
   /**
    * Generates a CSV file with "numPoints" random vectors in "dimensions" dimensions.
    * Example CSV: 0.3;0.22;0.9;
-   * @param dimension
+   * @param dimensions
    * @param numPoints
    * @param csvPath
    * @throws IOException
    */
-  public void generateCSVFile(int dimension, int numPoints, String csvPath) throws IOException {
+  public static void generateCSVFile(int dimensions, int numPoints, String csvPath) throws IOException {
     // create directories and file if non-existent
     Path pathToFile = Paths.get(csvPath);
     Files.createDirectories(pathToFile.getParent());
@@ -143,8 +145,8 @@ public class Simulation {
 
     for (int i = 0; i < numPoints; i++){
       String newline = "";
-      for (int j = 0; j < dimension; j++){
-//        newline = newline + Math.random() + ";";
+      for (int j = 0; j < dimensions; j++){
+//        newline = newline + Math.random() + ";"; // original line, replaced by the following two lines, which create only two digit numbers:
         NumberFormat doubleUKformatter = new DecimalFormat("#0.00", new DecimalFormatSymbols(Locale.UK));
         newline = newline + doubleUKformatter.format(Math.random()) + ";";
       }
@@ -162,7 +164,7 @@ public class Simulation {
    * @param relation The database relation
    * @return the DBID from the random object received from the DB
    */
-  public DBID getDBObjectAsQueryObject(Relation<DoubleVector> relation){
+  public static DBID getRandomDBObject(Relation<DoubleVector> relation){
     DBIDIter iter = relation.getDBIDs().iter();
     int randomNumber = (int) (Math.random() * relation.size() + 1);
     for (int i = 0; i < randomNumber && iter.valid(); i++){

@@ -1,39 +1,70 @@
 package algorithms
 
-import graph.{SVertex, SGraph}
-import scala.collection.mutable.HashMap
-import _root_.util.Utils._
 import scala.util.Random
-import scala._
-import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants._
-import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar._
-import de.lmu.ifi.dbs.elki.persistent._
-import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.strategies.bulk.SortTileRecursiveBulkSplit
-import elkiTPL.{Simulation, GenericTPLRkNNQuery}
+import scala.collection.mutable.HashMap
+
 import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.EuclideanDistanceFunction
-import de.lmu.ifi.dbs.elki.distance.distancevalue.DoubleDistance
+import de.lmu.ifi.dbs.elki.distance.distancevalue.{DoubleDistance}
+import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.EuclideanDistanceFunction
 import de.lmu.ifi.dbs.elki.database.ids.distance.DistanceDBIDList
-import de.lmu.ifi.dbs.elki.database.ids.{DBID, DBIDUtil, DBIDIter}
+import de.lmu.ifi.dbs.elki.database.ids.{DBID, DBIDUtil}
+import de.lmu.ifi.dbs.elki.database.Database
+import de.lmu.ifi.dbs.elki.database.relation.Relation
+import de.lmu.ifi.dbs.elki.data.{DoubleVector}
+import de.lmu.ifi.dbs.elki.data.`type`.TypeUtil
+import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar._
+import de.lmu.ifi.dbs.elki.index.tree.spatial.SpatialEntry
+import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.strategies.bulk.SortTileRecursiveBulkSplit
+
+import elkiTPL.{TPLEntry, Utils, GenericTPLRkNNQuery}
+import graph.{SVertex, SGraph}
+import util.Utils._
+
 
 /**
  * @author fliebhart
  */
 object EmbeddingAlgorithm {
 
-
   def embeddedRKNNs(sGraph: SGraph, sQ: SVertex, k: Int, numRefPoints: Integer): IndexedSeq[(DBID, Double)] = {
-    val refPoints: Seq[SVertex] = createRefPoints(sGraph.getAllVertices, numRefPoints)
-    // key: Knoten, value: Liste mit Distanzen zu Referenzpunkte (? evtl: Flag ob Objekt auf Knoten)
-    val refpointDistances: HashMap[SVertex, IndexedSeq[Double]] = createEmbedding(sGraph, refPoints)
+    val refPoints        : Seq[SVertex]                         = createRefPoints(sGraph.getAllVertices, numRefPoints)
+    val refPointDistances: HashMap[SVertex, IndexedSeq[Double]] = createEmbedding(sGraph, refPoints) // key: Knoten, value: Liste mit Distanzen zu Referenzpunkte (? evtl: Flag ob Objekt auf Knoten)
 
-    val rTreePath = "tplSimulation/rTree.csv"
     val dimensions = numRefPoints
-    val numPoints = 100
-    val tplSimulation = new Simulation()
-    tplSimulation.generateCSVFile(dimensions, numPoints, rTreePath)
+    val numPoints  = 100
+    val rTreePath  = "tplSimulation/rTree.csv"
+    Utils.generateCSVFile(dimensions, numPoints, rTreePath)
 
-    val pageSize = 1024  // Determines how many points fit into one page. Felix: Mostly between 1024 und 8192 byte. 1024 byte correspond to about 22 points
-    val distanceDBIDList: DistanceDBIDList[DoubleDistance] = tplSimulation.simulate(rTreePath, pageSize, k, dimensions, false) // withClipping = false
+    // create Memory Database
+    val db: List[Database] = Utils.createDatabase(rTreePath).toList
+    val relation: Relation[DoubleVector] = db(0).getRelation(TypeUtil.NUMBER_VECTOR_FIELD)
+
+    // create RStar Tree
+    val rStarTreePageSize = 1024  // Determines how many points fit into one page. Felix: Mostly between 1024 und 8192 byte. 1024 byte correspond to about 22 points
+    val dbIndex           = Utils.createRStarTree(relation, rStarTreePageSize)
+    val distanceFunction  = EuclideanDistanceFunction.STATIC
+    val distanceQuery     = distanceFunction.instantiate(relation)
+    val gtpl = new GenericTPLRkNNQuery[RStarTreeNode, SpatialEntry, DoubleVector, DoubleDistance](dbIndex, distanceQuery, false) // withClipping = false
+
+    // Generate random query point
+//    val coordinates: Array[Double] = new Array[Double](dimensions)
+//    for (i <- 0 to dimensions) {
+//      coordinates(i) = Math.random()
+//    }
+//    val queryObject: DoubleVector = new DoubleVector(coordinates);
+//    println("Generated query object: " + queryObject)
+
+    // random query object from the database
+    val queryObject: DoubleVector = relation.get(Utils.getRandomDBObject(relation))
+    println(s"Random query object from database: $queryObject\n")
+
+    // Performing RkNN query
+    println("Performing RkNN-query...")
+    val t0 = System.currentTimeMillis()
+    val distanceDBIDList: DistanceDBIDList[DoubleDistance] = gtpl.getRKNNForObject(queryObject, k)
+    val t1 = System.currentTimeMillis()
+    println(s"RkNN query performed in ${t1-t0} ms.\n")
+
 
     var rkNNs: IndexedSeq[(DBID, Double)] = IndexedSeq.empty
     val rkNNIter = distanceDBIDList.iter()
