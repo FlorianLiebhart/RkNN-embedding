@@ -231,7 +231,7 @@ public class GenericTPLRkNNQuery<N extends SpatialNode<N,E>, E extends SpatialEn
           // if dist(p,p2)<dist(p,q)
           if (dist.doubleMinDist(p, p2) < dist.doubleMinDist(p, q)){
             counter--;
-            if (counter == 0){
+            if (counter == 0){ // TODO: Better use counter <= 0
               // candidateSet = candidateSet - {p}
               refinedCandidateSet.remove(i-removed);
               removed++;
@@ -311,7 +311,7 @@ public class GenericTPLRkNNQuery<N extends SpatialNode<N,E>, E extends SpatialEn
           // counter(p)--
           counter--;
           // if counter(p) = 0
-          if (counter == 0){
+          if (counter == 0){  // TODO: Better use counter <= 0
             // candidateSet = candidateSet - {p} -- false hit
             candidateSet.remove(i);
             i--;

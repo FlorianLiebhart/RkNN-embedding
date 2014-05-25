@@ -143,11 +143,12 @@ public class Utils {
     FileWriter fw = new FileWriter(csvPath, false); // false = overwrite current file content
     BufferedWriter out = new BufferedWriter(fw);
 
+    NumberFormat doubleUKformatter = new DecimalFormat("#0.00", new DecimalFormatSymbols(Locale.UK));
+
     for (int i = 0; i < numPoints; i++){
       String newline = "";
       for (int j = 0; j < dimensions; j++){
 //        newline = newline + Math.random() + ";"; // original line, replaced by the following two lines, which create only two digit numbers:
-        NumberFormat doubleUKformatter = new DecimalFormat("#0.00", new DecimalFormatSymbols(Locale.UK));
         newline = newline + doubleUKformatter.format(Math.random()) + ";";
       }
       if (i != 0){

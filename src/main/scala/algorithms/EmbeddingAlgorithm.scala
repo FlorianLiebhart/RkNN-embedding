@@ -16,9 +16,11 @@ import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar._
 import de.lmu.ifi.dbs.elki.index.tree.spatial.SpatialEntry
 import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.strategies.bulk.SortTileRecursiveBulkSplit
 
-import elkiTPL.{TPLEntry, Utils, GenericTPLRkNNQuery}
+import elkiTPL.{Utils, GenericTPLRkNNQuery}
 import graph.{SVertex, SGraph}
 import util.Utils._
+import java.nio.file.{Files, Paths}
+import java.io.{BufferedWriter, FileWriter}
 
 
 /**
@@ -27,13 +29,13 @@ import util.Utils._
 object EmbeddingAlgorithm {
 
   def embeddedRKNNs(sGraph: SGraph, sQ: SVertex, k: Int, numRefPoints: Integer): IndexedSeq[(DBID, Double)] = {
-    val refPoints        : Seq[SVertex]                         = createRefPoints(sGraph.getAllVertices, numRefPoints)
-    val refPointDistances: HashMap[SVertex, IndexedSeq[Double]] = createEmbedding(sGraph, refPoints) // key: Knoten, value: Liste mit Distanzen zu Referenzpunkte (? evtl: Flag ob Objekt auf Knoten)
-
-    val dimensions = numRefPoints
-    val numPoints  = 100
     val rTreePath  = "tplSimulation/rTree.csv"
-    Utils.generateCSVFile(dimensions, numPoints, rTreePath)
+
+//    Utils.generateCSVFile(numRefPoints, 100, rTreePath) // dimensions = numRefPoints, number of random vectors to be created = 100
+
+    val refPoints        : Seq[SVertex]                         = createRefPoints(vertices = sGraph.getAllVertices, numRefPoints)
+    val refPointDistances: HashMap[SVertex, IndexedSeq[Double]] = createEmbedding(sGraph, refPoints) // key: Knoten, value: Liste mit Distanzen zu Referenzpunkte (? evtl: Flag ob Objekt auf Knoten)
+    writeRTreeCSVFile(refPointDistances, rTreePath)
 
     // create Memory Database
     val db: List[Database] = Utils.createDatabase(rTreePath).toList
@@ -87,10 +89,10 @@ object EmbeddingAlgorithm {
    * @return A Map with key: Node, Val: Distances to all reference points
    */
   def createEmbedding(sGraph: SGraph, refPoints: Seq[SVertex]): HashMap[SVertex, IndexedSeq[Double]] = {
-    //    // pure functional, immutable implementation: (maps still need to be merged)
-    //    import scala.collection.immutable.HashMap
-    //    val allRefPointDistances = refPoints.map(refPoint => Dijkstra.dijkstra(sGraph, refPoint))
-    //    allRefPointDistances.map(_.foldLeft(new HashMap[SVertex, Seq[Double]]) ((x, y) => x + (y._1 -> x.get(y._1).getOrElse(Nil).:+(y._2))  ))
+    //  // pure functional, immutable implementation: (maps still need to be merged)
+    //  import scala.collection.immutable.HashMap
+    //  val allRefPointDistances = refPoints.map(refPoint => Dijkstra.dijkstra(sGraph, refPoint))
+    //  allRefPointDistances.map(_.foldLeft(new HashMap[SVertex, Seq[Double]]) ((x, y) => x + (y._1 -> x.get(y._1).getOrElse(Nil).:+(y._2))  ))
     val refpointDistances = HashMap[SVertex, IndexedSeq[Double]]()
 
     for(refPoint <- refPoints){
@@ -104,6 +106,33 @@ object EmbeddingAlgorithm {
     }
     refpointDistances
   }
+
+  /**
+   * Takes a map of Vertex -> Distances and writes it as a CSV file to the given path as an RTree
+   * @param vectorsMap
+   * @param destPath
+   * @return
+   */
+  def writeRTreeCSVFile(vectorsMap: HashMap[SVertex, IndexedSeq[Double]], destPath: String) {
+    // create directories and file if non-existent
+    val pathToFile = Paths.get(destPath)
+    Files.createDirectories(pathToFile.getParent())
+    if (!Files.exists(pathToFile))
+        Files.createFile(pathToFile)
+    val fw  = new FileWriter(destPath, false) // false = overwrite current file content
+    val out = new BufferedWriter(fw)
+
+//    val doubleUKformatter: NumberFormat = new DecimalFormat("#0.00", new DecimalFormatSymbols(Locale.UK))
+//    newline += doubleUKformatter.format(Math.random()) + ";"
+
+    out.write(
+      vectorsMap.map( vector =>
+        vector._2 mkString ";"
+      ) mkString "\n"
+    )
+    out.close()
+  }
+
 
   /**
    * Berechnet max. minimale Distanz
