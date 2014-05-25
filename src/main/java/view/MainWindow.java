@@ -924,19 +924,19 @@ public class MainWindow extends JFrame implements ActionListener, Observer {
 
         JPanel tmp = new JPanel();
         JLabel l = new JLabel("<html><i>k :</i></html>");
-        rknnEmbeddedField = new JTextField(10);
+        rknnEmbeddedField = new JTextField(2);
         rknnEmbeddedField.setHorizontalAlignment(JTextField.CENTER);
         l.setLabelFor(rknnEmbeddedField);
 
 
-        JLabel l2 = new JLabel("<html><i>NumRefPoints :</i></html>");
-        rknnEmbeddedFieldNumRefPoints = new JTextField(10);
+        JLabel l2 = new JLabel("<html><i>Refspoints :</i></html>");
+        rknnEmbeddedFieldNumRefPoints = new JTextField(2);
         rknnEmbeddedFieldNumRefPoints.setHorizontalAlignment(JTextField.CENTER);
         l.setLabelFor(rknnEmbeddedFieldNumRefPoints);
 
         tmp.add(l);
-        tmp.add(l2);
         tmp.add(rknnEmbeddedField);
+        tmp.add(l2);
         tmp.add(rknnEmbeddedFieldNumRefPoints);
 
         panel.add(tmp, BorderLayout.SOUTH);
