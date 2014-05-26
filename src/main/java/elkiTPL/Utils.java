@@ -37,52 +37,6 @@ import java.util.Locale;
 public class Utils {
 
   /**
-   *
-   * @param file
-   * @param pageSize
-   * @param k
-   * @param dimension
-   * @param withClipping
-   * @return
-   */
-  public static DistanceDBIDList<DoubleDistance> simulate(String file, int pageSize, int k, int dimension, boolean withClipping) {
-
-    // create Memory Database
-    Database[] db = createDatabase(file);
-    Relation<DoubleVector> relation = db[0].getRelation(TypeUtil.NUMBER_VECTOR_FIELD);
-
-    // create RStar Tree
-    RStarTreeIndex dbIndex = createRStarTree(relation, pageSize);
-    EuclideanDistanceFunction distanceFunction = EuclideanDistanceFunction.STATIC;
-    SpatialDistanceQuery distanceQuery         = distanceFunction.instantiate(relation);
-    GenericTPLRkNNQuery gtpl                   = new GenericTPLRkNNQuery(dbIndex, distanceQuery, withClipping);
-
-    // Generate random query point
-//    double[] coordinates = new double[dimension];
-//    for (int i = 0; i < dimension; i++){
-//      coordinates[i] = Math.random();
-//    }
-//    DoubleVector queryObject = new DoubleVector(coordinates);
-//    System.out.println("Generated query object: " + queryObject);
-
-    // random query object from the database
-    DoubleVector queryObject = relation.get(getRandomDBObject(relation));
-    System.out.println("Random query object from database: " + queryObject + "\n");
-
-    // Performing RkNN query
-    System.out.println("Performing RkNN-query...");
-    long t0 = System.currentTimeMillis();
-
-    DistanceDBIDList<DoubleDistance> rkNNs = gtpl.getRKNNForObject(queryObject, k);
-
-    long t1 = System.currentTimeMillis();
-    System.out.println("RkNN query performed in " + (t1-t0) + " ms.\n");
-
-    return rkNNs;
-  }
-
-
-  /**
    * Creates a file based database at given dbFilePath
    * @param dbFilePath Path where file based database should be stored
    * @return The database created
@@ -108,8 +62,16 @@ public class Utils {
    * @return
    */
   public static RStarTreeIndex<DoubleVector> createRStarTree(Relation<DoubleVector> relation, int pageSize){
-    System.out.println("Building R*-Tree... (entries: " + relation.size() + ", page size: " + pageSize + " bytes)");
+    /*
+    // This is just to check if the DBIDs correspond to the line numbers in the CSV file TODO: Write test instead of this!
+    DBIDIter iter = relation.getDBIDs().iter();
+    while (iter.valid()){
+      System.out.println(DBIDUtil.deref(iter) + " : " + relation.get(iter));
+      iter.advance();
+    }
+    */
 
+    System.out.println("\nBuilding R*-Tree... (entries: " + relation.size() + ", page size: " + pageSize + " bytes)");
     long t0 = System.currentTimeMillis();
 
     PageFile<RStarTreeNode> memoryPageFile      = new MemoryPageFile<RStarTreeNode>(pageSize);
@@ -118,9 +80,7 @@ public class Utils {
     rStarTreeIndex.initialize();
 
     long t1 = System.currentTimeMillis();
-
-    System.out.println("R*-Tree built in " + (t1-t0) + " ms.");
-    System.out.println("  objects: " + rStarTreeIndex.getRoot().getNumEntries() + "\n");
+    System.out.println("R*-Tree built in " + (t1-t0) + " ms.\n");
 
     return rStarTreeIndex;
   }
