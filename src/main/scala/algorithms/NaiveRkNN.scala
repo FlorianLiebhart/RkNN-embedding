@@ -16,9 +16,11 @@ object NaiveRkNN {
    * @return Sorted rknns
    */
   def naiveRkNNs(graph: SGraph, q: SVertex, k: Integer): IndexedSeq[VD] = {
-    val allGraphNodes = graph.getAllVertices.toIndexedSeq
+    val allGraphNodes            = graph.getAllVertices.toIndexedSeq
     val allGraphNodesWithObjects = allGraphNodes filter (_.containsObject) filterNot (_ equals q)
-    val allkNNs = allGraphNodesWithObjects map ( p => (p, Eager.rangeNN(graph, p, k, Double.PositiveInfinity)))
+    val allkNNs = allGraphNodesWithObjects map ( p =>
+      (p, Eager.rangeNN(graph, p, k, Double.PositiveInfinity))
+    )
 
     val rKnns = allkNNs collect {
       case (v, knns) if knns map( _._1 ) contains q => new VD(v, knns.find(y => (y._1 equals q)).get._2)

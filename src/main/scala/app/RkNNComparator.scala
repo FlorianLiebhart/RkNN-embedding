@@ -1,6 +1,6 @@
 package app
 
-import graph.{GraphGen, SGraph}
+import graph.{SVertex, GraphGen, SGraph}
 
 import util.Utils._
 
@@ -26,24 +26,52 @@ object RkNNComparator {
      *  4.) Print out runtime difference
      */
 
-//    val sGraph = Utils.createExampleGraph
-//    val qID = 5
 
-    // Graph Generation
-    val vertices = 1000
-    val edges = 1500
-    val objects = 100
-    val weightOne = false
-    val sGraph = GraphGen.generateScalaGraph(vertices, edges, objects, weightOne)
-    val qID = vertices/2
-      if(!sGraph.getVertex(qID).containsObject)
-        sGraph.getVertex(qID).setObjectId(objects)
+    /*
+     * rknn query settings
+     */
 
-    val k = 3
+    val exampleGraph = true  // true for using the example graph from TKDE - GraphRNN paper page 3,
+                             // false for generating a random graph
+    val (sGraph, qID, refPoints, k, rStarTreePageSize)  =
+      if (exampleGraph) {
+        val sGraph            = createExampleGraph
+        val qID               = 4
+        val refPoints         = Seq(sGraph.getVertex(1), sGraph.getVertex(2))
+        val k                 = 2
+        val rStarTreePageSize = 1024  // 1024 byte correspond to about 22 points
+
+
+        (sGraph, qID, refPoints, k, rStarTreePageSize)
+      }
+      else {   // randomly generated graph
+        val vertices          = 1000
+        val objects           = 100
+        val edges             = 1500
+        val numRefPoints      = 2
+        val k                 = 2
+        val qID               = vertices / 2
+        val rStarTreePageSize = 1024  // 1024 byte correspond to about 22 points
+
+        val sGraph    = GraphGen.generateScalaGraph(vertices, edges, objects, weightOne = false)
+
+        // insert a new object in query node, if non existent
+        if (!sGraph.getVertex(qID).containsObject)
+          sGraph.getVertex(qID).setObjectId(objects) // generated object IDs start with 0
+
+        val refPoints = EmbeddingAlgorithm.createRefPoints(sGraph.getAllVertices, numRefPoints)
+
+        (sGraph, qID, refPoints, k, rStarTreePageSize)
+      }
+
+
+    /*
+     * perfom queries
+     */
 
 //    println("dijkstra:" + Dijkstra.dijkstra(sGraph, sGraph.getVertex(qID)).size + ", graph vertices" + sGraph.getAllVertices.size)
-
     println("")
+
     // Naive algorithm
     naiveRkNN(sGraph, qID, k)
 
@@ -51,7 +79,7 @@ object RkNNComparator {
     eagerRkNN(sGraph, qID, k)
 
     // Embedded algorithm
-    embeddedRkNN(sGraph, qID, k, numRefPoints = 4)
+    embeddedRkNN(sGraph, qID, k, refPoints, rStarTreePageSize)
   }
 
 
@@ -76,7 +104,7 @@ object RkNNComparator {
     println("")
   }
 
-  def eagerRkNN(jGraph: graph.core.Graph, qID: Integer, k: Integer) : Unit =  eagerRkNN(convertJavaToScalaGraph(jGraph), qID, k)
+  def eagerRkNN(jGraph: graph.core.Graph, qID: Integer, k: Integer) : Unit = eagerRkNN(convertJavaToScalaGraph(jGraph), qID, k)
   def eagerRkNN(sGraph: SGraph          , qID: Integer, k: Integer) : Unit = {
     val sQ     = sGraph.getVertex(qID)
 
@@ -95,15 +123,19 @@ object RkNNComparator {
     println("")
   }
 
-  def embeddedRkNN(jGraph: graph.core.Graph, qID: Integer, k: Integer, numRefPoints: Int) : Unit = embeddedRkNN(convertJavaToScalaGraph(jGraph), qID, k, numRefPoints)
-  def embeddedRkNN(sGraph: SGraph          , qID: Integer, k: Integer, numRefPoints: Int) : Unit = {
+  def embeddedRkNN(jGraph: graph.core.Graph, qID: Integer, k: Integer, numRefPoints: Int) : Unit = {
+    val sGraph    = convertJavaToScalaGraph(jGraph)
+    val refPoints = EmbeddingAlgorithm.createRefPoints(sGraph.getAllVertices, numRefPoints)
+    embeddedRkNN(sGraph, qID, k, refPoints, rStarTreePageSize = 1024)
+  }
+  def embeddedRkNN(sGraph: SGraph          , qID: Integer, k: Integer, refPoints: Seq[SVertex], rStarTreePageSize: Int) : Unit = {
     val sQ     = sGraph.getVertex(qID)
 
     println("-----------Embedded:-----------")
     println(s"R${k}NNs for query point $qID")
 
     val t0            = System.currentTimeMillis()
-    val rkNNsEmbedded: IndexedSeq[(DBID, Double)] = EmbeddingAlgorithm.embeddedRKNNs(sGraph, sQ, k, numRefPoints)
+    val rkNNsEmbedded: IndexedSeq[(DBID, Double)] = EmbeddingAlgorithm.embeddedRKNNs(sGraph, sQ, k, refPoints, rStarTreePageSize)
     val t1            = System.currentTimeMillis()
 
     println(s"Runtime: ${(t1 - t0)/1000.0} sec.\n")
