@@ -41,5 +41,6 @@ target/*
 
 #Project specific
 src/main/java/rweeks/*
-lib/*
 tplSimulation/rTree.csv
+lib/*
+!lib/MiniGUI-saved-settings.txt

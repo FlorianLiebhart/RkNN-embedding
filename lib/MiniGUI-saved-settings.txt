@@ -1,0 +1,66 @@
+#Saved ELKI settings. First line is title, remaining lines are parameters.
+
+-enableDebug
+true
+-dbc.in
+/Daten/Projekte/BA/RkNN/tplSimulation/exampleGeneratedRTree2D.csv
+-parser.labelIndices
+2
+-db.index
+tree.spatial.rstarvariants.rstar.RStarTreeFactory
+-pagefile.pagesize
+300
+-spatial.bulkstrategy
+SortTileRecursiveBulkSplit
+-algorithm
+NullAlgorithm
+-vis.window.title
+RStarTree Visualization
+-index.fill
+
+RStar 2D
+-enableDebug
+true
+-dbc.in
+/Daten/Projekte/BA/RkNN/tplSimulation/exampleGeneratedRTree2D.csv
+-parser.labelIndices
+2
+-dbc.filter
+FixedDBIDsFilter
+-dbc.startid
+1
+-db.index
+tree.spatial.rstarvariants.rstar.RStarTreeFactory
+-pagefile.pagesize
+300
+-spatial.bulkstrategy
+SortTileRecursiveBulkSplit
+-algorithm
+NullAlgorithm
+-vis.window.title
+RStar Tree Visualization
+-index.fill
+
+RStar 4D
+-enableDebug
+true
+-dbc.in
+/Daten/Projekte/BA/RkNN/tplSimulation/exampleGeneratedRTree4D.csv
+-parser.labelIndices
+4
+-dbc.filter
+FixedDBIDsFilter
+-dbc.startid
+1
+-db.index
+tree.spatial.rstarvariants.rstar.RStarTreeFactory
+-pagefile.pagesize
+300
+-spatial.bulkstrategy
+SortTileRecursiveBulkSplit
+-algorithm
+NullAlgorithm
+-vis.window.title
+RStar Tree Visualization
+-index.fill
+
