@@ -38,8 +38,8 @@ object RkNNComparator {
         val sGraph            = createExampleGraph
         val qID               = 4
         val refPoints         = Seq(sGraph.getVertex(1), sGraph.getVertex(2))
+        val rStarTreePageSize = 300  // bytes: e.g. 1024 bytes; Erich recommendation: 25*8*dimensions (=> corresponds to around 25 entries/page)
         val k                 = 2
-        val rStarTreePageSize = 1024  // 1024 byte correspond to about 22 points
 
 
         (sGraph, qID, refPoints, k, rStarTreePageSize)
@@ -48,12 +48,12 @@ object RkNNComparator {
         val vertices          = 1000
         val objects           = 100
         val edges             = 1500
-        val numRefPoints      = 2
-        val k                 = 2
         val qID               = vertices / 2
-        val rStarTreePageSize = 1024  // 1024 byte correspond to about 22 points
+        val numRefPoints      = 2
+        val rStarTreePageSize = 300  // bytes: e.g. 1024 bytes; Erich recommendation: 25*8*dimensions (=> corresponds to around 25 entries/page)
+        val k                 = 2
 
-        val sGraph    = GraphGen.generateScalaGraph(vertices, edges, objects, weightOne = false)
+        val sGraph            = GraphGen.generateScalaGraph(vertices, edges, objects, weightOne = false)
 
         // insert a new object in query node, if non existent
         if (!sGraph.getVertex(qID).containsObject)

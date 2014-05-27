@@ -11,6 +11,8 @@ import de.lmu.ifi.dbs.elki.database.ids.distance.DistanceDBIDList;
 import de.lmu.ifi.dbs.elki.database.query.distance.SpatialDistanceQuery;
 import de.lmu.ifi.dbs.elki.database.relation.Relation;
 import de.lmu.ifi.dbs.elki.datasource.FileBasedDatabaseConnection;
+import de.lmu.ifi.dbs.elki.datasource.filter.FixedDBIDsFilter;
+import de.lmu.ifi.dbs.elki.datasource.parser.NumberVectorLabelParser;
 import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.EuclideanDistanceFunction;
 import de.lmu.ifi.dbs.elki.distance.distancevalue.DoubleDistance;
 import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.AbstractRTreeSettings;
@@ -31,6 +33,8 @@ import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -46,6 +50,14 @@ public class Utils {
     // create config
     ListParameterization parametrizationConfig = new ListParameterization();
     parametrizationConfig.addParameter(FileBasedDatabaseConnection.Parameterizer.INPUT_ID, dbFilePath); //synthetic data
+    List<Class<?>> filterlist = new ArrayList<>();
+    filterlist.add(FixedDBIDsFilter.class);
+    parametrizationConfig.addParameter(FileBasedDatabaseConnection.Parameterizer.FILTERS_ID, filterlist);
+    parametrizationConfig.addParameter(FixedDBIDsFilter.Parameterizer.IDSTART_ID, 1);
+
+//    List<Integer> indices = new ArrayList<>();
+//    indices.add(-1);
+//    parametrizationConfig.addParameter(NumberVectorLabelParser.Parameterizer.LABEL_INDICES_ID, indices);
 
     // create and initialize database
     Database db = ClassGenericsUtil.parameterizeOrAbort(StaticArrayDatabase.class, parametrizationConfig);
@@ -62,11 +74,11 @@ public class Utils {
    * @return
    */
   public static RStarTreeIndex<DoubleVector> createRStarTree(Relation<DoubleVector> relation, int pageSize){
-    /*
     // This is just to check if the DBIDs correspond to the line numbers in the CSV file TODO: Write test instead of this!
+    /*
     DBIDIter iter = relation.getDBIDs().iter();
     while (iter.valid()){
-      System.out.println(DBIDUtil.deref(iter) + " : " + relation.get(iter));
+      System.out.println(iter.internalGetIndex() + " : " + relation.get(iter));
       iter.advance();
     }
     */

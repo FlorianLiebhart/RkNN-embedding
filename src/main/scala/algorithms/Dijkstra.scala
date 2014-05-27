@@ -1,7 +1,7 @@
 package algorithms
 
 import scala.collection.mutable.{PriorityQueue}
-import scala.collection.mutable.LinkedHashMap
+import scala.collection.mutable.HashMap
 
 import graph.{SVertex, SGraph}
 import util.Utils._
@@ -10,11 +10,11 @@ import util.Utils._
 object Dijkstra {
 
 
-  def dijkstra(sGraph: SGraph, source: SVertex): LinkedHashMap[SVertex, Double] = {
+  def dijkstra(sGraph: SGraph, source: SVertex): HashMap[SVertex, Double] = {
 
     val h = new PriorityQueue[VD]()
-    var distances = new LinkedHashMap[SVertex, Double]()
-    var previous = new LinkedHashMap[SVertex, VD]()
+    var distances = new HashMap[SVertex, Double]()
+    var previous = new HashMap[SVertex, VD]()
 
     distances.put(source, 0)
 
@@ -26,7 +26,7 @@ object Dijkstra {
       h.enqueue((v,distances.get(v).get))
     }
 
-    var visitedNodes = LinkedHashMap[Integer, SVertex]()
+    var visitedNodes = HashMap[Integer, SVertex]()
 
     while (!h.isEmpty) {
       var n = h.dequeue()
