@@ -12,7 +12,7 @@ object GraphGen {
     require(numberOfVertices > 0)
     require(numberOfObjects >= 0 && numberOfObjects <= numberOfVertices)
     require(numberOfEdges > 0)
-    val max: Integer = (numberOfVertices * numberOfVertices - 1) / 2
+    val max: Integer = (numberOfVertices * (numberOfVertices - 1)) / 2
     require(numberOfEdges <= max)
 
     val t0 = System.currentTimeMillis()
