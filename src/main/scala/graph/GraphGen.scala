@@ -12,14 +12,14 @@ object GraphGen {
     require(numberOfVertices > 0)
     require(numberOfObjects >= 0 && numberOfObjects <= numberOfVertices)
     require(numberOfEdges > 0)
-    val max: Integer = (numberOfVertices * (numberOfVertices - 1)) / 2
+    val max: Integer = ((numberOfVertices.toDouble * (numberOfVertices.toDouble - 1)) / 2).toInt
     require(numberOfEdges <= max)
 
+    println("Generating graph with " + numberOfVertices + " nodes, " + numberOfEdges + " edges, " + numberOfObjects + " objects..." )
     val t0 = System.currentTimeMillis()
     GraphGenerator.getInstance().generateProbabilisticGraph(numberOfVertices, numberOfEdges, 0, numberOfObjects, weightOne)
     val t1 = System.currentTimeMillis()
-
-    println("Runtime: " + (t1-t0)/1000.0 + " sec. for generating Graph with " + numberOfVertices + " nodes, " + numberOfEdges + " edges, " + numberOfObjects + " objects." )
+    println("Graph generation finished. Runtime: " + (t1-t0) + " ms.")
 
     ProbabilisticGraph.getInstance()
 //    val graph = new SGraph

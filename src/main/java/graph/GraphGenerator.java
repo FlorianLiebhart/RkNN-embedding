@@ -30,12 +30,28 @@ public class GraphGenerator {
 	
 	public void generateProbabilisticGraph(int numberOfVertices, int numberOfEdges, int numberOfUncertainEdges, int numberOfObjects) {
         ProbabilisticGraph.getInstance().clear();
+
+        System.out.print("Creating nodes...");
         createNodes(ProbabilisticGraph.getInstance(), numberOfVertices);
+        System.out.print(" done.");
+
+        System.out.print(" Creating objects...");
         addRandomObjects(ProbabilisticGraph.getInstance(), numberOfObjects);
+        System.out.print(" done.");
+
+        System.out.print(" Setting nodes position...");
         GuiUtil.setNodesPosition(ProbabilisticGraph.getInstance());
+        System.out.print(" done.");
+
+        System.out.print(" Creating edges...");
         createEdgesAccordingNodesPosition(ProbabilisticGraph.getInstance(), numberOfEdges);
+        System.out.print(" done.");
+
         addRandomProbabilities(ProbabilisticGraph.getInstance(), numberOfUncertainEdges);
+
+        System.out.print(" Creating edge weights...");
         addWeights(ProbabilisticGraph.getInstance());
+        System.out.print(" done.");
 	}
 
     public void generateProbabilisticGraph(int numberOfVertices, int numberOfEdges, int numberOfUncertainEdges, int numberOfObjects, boolean weightOne) {
@@ -137,7 +153,7 @@ public class GraphGenerator {
 			}
 
 			int vertices = g.getAllVertices().size();
-			int max = (vertices * (vertices - 1)) / 2;
+			int max = new Double((new Integer(vertices).doubleValue() * new Integer(vertices - 1).doubleValue()) / 2).intValue();
 			if(numberOfEdges > max) {
 				throw new RuntimeException("Maximum number of edges: " + max);
 			}

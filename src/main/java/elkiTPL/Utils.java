@@ -55,10 +55,6 @@ public class Utils {
     parametrizationConfig.addParameter(FileBasedDatabaseConnection.Parameterizer.FILTERS_ID, filterlist);
     parametrizationConfig.addParameter(FixedDBIDsFilter.Parameterizer.IDSTART_ID, 1);
 
-//    List<Integer> indices = new ArrayList<>();
-//    indices.add(-1);
-//    parametrizationConfig.addParameter(NumberVectorLabelParser.Parameterizer.LABEL_INDICES_ID, indices);
-
     // create and initialize database
     Database db = ClassGenericsUtil.parameterizeOrAbort(StaticArrayDatabase.class, parametrizationConfig);
     parametrizationConfig.failOnErrors();

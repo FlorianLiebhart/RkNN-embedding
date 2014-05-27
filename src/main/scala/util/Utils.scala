@@ -18,6 +18,8 @@ object Utils {
   }
 
   def convertScalaToJavaGraph(sGraph: SGraph): graph.core.Graph = {
+    println("Converting Java graph to SGraph with " + sGraph.getAllVertices.size + " nodes, " + sGraph.getAllEdges.size + " edges...")
+
     val t0 = System.currentTimeMillis()
 
     val jGraph = new graph.core.Graph()
@@ -25,12 +27,13 @@ object Utils {
     sGraph.getAllEdges.map(e => jGraph.addEdge(convertScalaToJavaEdge(jGraph, e)))
 
     val t1 = System.currentTimeMillis()
-    println("Runtime: " + (t1-t0)/1000.0 + " sec. for converting SGraph to JGraph with " + sGraph.getAllVertices.size + " nodes, " + sGraph.getAllEdges.size  + " edges." )
+    println("Graph conversion finished. Runtime : " + (t1-t0) + " ms.")
 
     jGraph
   }
 
   def convertJavaToScalaGraph(jGraph: graph.core.Graph): SGraph = {
+    println("Converting SGraph to Java graph with " + jGraph.getAllVertices.size + " nodes, " + jGraph.getAllEdges.size + " edges...")
     val t0 = System.currentTimeMillis()
 
     val sGraph = new SGraph()
@@ -38,7 +41,7 @@ object Utils {
     jGraph.getAllEdges.map(e => sGraph.addEdge(convertJavaToScalaEdge(sGraph, e)))
 
     val t1 = System.currentTimeMillis()
-    println("Runtime: " + (t1-t0)/1000.0 + " sec. for converting JGraph to SGraph with " + jGraph.getAllVertices.size + " nodes, " + jGraph.getAllEdges.size + " edges." )
+    println("Graph conversion finished. Runtime : " + (t1-t0) + " ms.")
 
     sGraph
   }
