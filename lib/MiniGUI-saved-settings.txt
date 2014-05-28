@@ -64,3 +64,47 @@ NullAlgorithm
 RStar Tree Visualization
 -index.fill
 
+Eager Example
+-enableDebug
+true
+-dbc.in
+/Daten/Projekte/BA/RkNN/tplSimulation/exampleRTreeEager.csv
+-dbc.filter
+FixedDBIDsFilter
+-dbc.startid
+1
+-db.index
+tree.spatial.rstarvariants.rstar.RStarTreeFactory
+-pagefile.pagesize
+130
+-spatial.bulkstrategy
+SortTileRecursiveBulkSplit
+-algorithm
+NullAlgorithm
+-vis.window.title
+RStar Tree Visualization
+-index.fill
+
+TPL Example
+-enableDebug
+true
+-dbc.in
+/Daten/Projekte/BA/RkNN/tplSimulation/exampleRTreeTPL.csv
+-parser.labelIndices
+2
+-dbc.filter
+FixedDBIDsFilter
+-dbc.startid
+1
+-db.index
+tree.spatial.rstarvariants.rstar.RStarTreeFactory
+-pagefile.pagesize
+130
+-spatial.bulkstrategy
+SortTileRecursiveBulkSplit
+-algorithm
+NullAlgorithm
+-vis.window.title
+RStar Tree Visualization
+-index.fill
+

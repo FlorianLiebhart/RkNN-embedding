@@ -31,23 +31,22 @@ object RkNNComparator {
      * rknn query settings
      */
 
-    val exampleGraph = false  // true for using the example graph from TKDE - GraphRNN paper page 3,
+    val exampleGraph = true  // true for using the example graph from TKDE - GraphRNN paper page 3,
                              // false for generating a random graph
     val (sGraph, qID, refPoints, k, rStarTreePageSize)  =
       if (exampleGraph) {
         val sGraph            = createExampleGraph
         val qID               = 4
         val refPoints         = Seq(sGraph.getVertex(1), sGraph.getVertex(2))
-        val rStarTreePageSize = 300  // bytes: e.g. 1024 bytes; Erich recommendation: 25*8*dimensions (=> corresponds to around 25 entries/page)
+        val rStarTreePageSize = 130  // 130 bytes: Maximum entries in a directory node = 3; Maximum entries in a leaf node = 4
         val k                 = 2
-
 
         (sGraph, qID, refPoints, k, rStarTreePageSize)
       }
       else {   // randomly generated graph
-        val vertices          = 1000000
+        val vertices          = 1000
         val objects           = 100
-        val edges             = 1000000 //(vertices * (vertices-1)) / 2  // max 2.147.483.647; Vertex max: 65.536
+        val edges             = 3500 // from N-1 to N(N-1)/2  // max 2.147.483.647; Vertex max: 65.536
         val qID               = vertices / 2
         val numRefPoints      = 3
         val rStarTreePageSize = 1024  // bytes: e.g. 1024 bytes; Erich recommendation: 25*8*dimensions (=> corresponds to around 25 entries/page)
