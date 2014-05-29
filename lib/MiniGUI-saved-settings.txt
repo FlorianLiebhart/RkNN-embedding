@@ -49,7 +49,7 @@ true
 -dbc.filter
 FixedDBIDsFilter
 -dbc.startid
-1
+0
 -db.index
 tree.spatial.rstarvariants.rstar.RStarTreeFactory
 -pagefile.pagesize
@@ -60,6 +60,7 @@ SortTileRecursiveBulkSplit
 NullAlgorithm
 -vis.window.title
 rTree.csv
+-index.fill
 
 Eager
 -enableDebug

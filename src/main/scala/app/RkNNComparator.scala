@@ -50,7 +50,7 @@ object RkNNComparator {
 
       case "tpl"  =>
         val sGraph            = convertJavaToScalaGraph(XmlUtil.importGraphFromXml("exampleGraphXMLs/exampleGraphTPL.xml"))
-        val qID               = 7
+        val qID               = 15
         val refPoints         = Seq(sGraph.getVertex(4), sGraph.getVertex(11))
         val rStarTreePageSize = 150  // 130 bytes: (minimum for 2 dimensions); Max. entries in node = 3; Max. entries in leaf = 4
                                      // 178 bytes: (minimum for 3 dimensions); Max. entries in node = 3; Max. entries in leaf = 5
