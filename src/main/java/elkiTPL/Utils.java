@@ -1,29 +1,5 @@
 package elkiTPL;
 
-import de.lmu.ifi.dbs.elki.data.DoubleVector;
-import de.lmu.ifi.dbs.elki.data.type.TypeUtil;
-import de.lmu.ifi.dbs.elki.database.Database;
-import de.lmu.ifi.dbs.elki.database.StaticArrayDatabase;
-import de.lmu.ifi.dbs.elki.database.ids.DBID;
-import de.lmu.ifi.dbs.elki.database.ids.DBIDIter;
-import de.lmu.ifi.dbs.elki.database.ids.DBIDUtil;
-import de.lmu.ifi.dbs.elki.database.ids.distance.DistanceDBIDList;
-import de.lmu.ifi.dbs.elki.database.query.distance.SpatialDistanceQuery;
-import de.lmu.ifi.dbs.elki.database.relation.Relation;
-import de.lmu.ifi.dbs.elki.datasource.FileBasedDatabaseConnection;
-import de.lmu.ifi.dbs.elki.datasource.filter.FixedDBIDsFilter;
-import de.lmu.ifi.dbs.elki.datasource.parser.NumberVectorLabelParser;
-import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.EuclideanDistanceFunction;
-import de.lmu.ifi.dbs.elki.distance.distancevalue.DoubleDistance;
-import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.AbstractRTreeSettings;
-import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar.RStarTreeIndex;
-import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar.RStarTreeNode;
-import de.lmu.ifi.dbs.elki.persistent.LRUCache;
-import de.lmu.ifi.dbs.elki.persistent.MemoryPageFile;
-import de.lmu.ifi.dbs.elki.persistent.PageFile;
-import de.lmu.ifi.dbs.elki.utilities.ClassGenericsUtil;
-import de.lmu.ifi.dbs.elki.utilities.optionhandling.parameterization.ListParameterization;
-
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -37,6 +13,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import de.lmu.ifi.dbs.elki.data.DoubleVector;
+import de.lmu.ifi.dbs.elki.database.Database;
+import de.lmu.ifi.dbs.elki.database.StaticArrayDatabase;
+import de.lmu.ifi.dbs.elki.database.ids.DBID;
+import de.lmu.ifi.dbs.elki.database.ids.DBIDIter;
+import de.lmu.ifi.dbs.elki.database.ids.DBIDUtil;
+import de.lmu.ifi.dbs.elki.database.relation.Relation;
+import de.lmu.ifi.dbs.elki.datasource.FileBasedDatabaseConnection;
+import de.lmu.ifi.dbs.elki.datasource.filter.FixedDBIDsFilter;
+import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.AbstractRTreeSettings;
+import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar.RStarTreeIndex;
+import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar.RStarTreeNode;
+import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.strategies.bulk.SortTileRecursiveBulkSplit;
+import de.lmu.ifi.dbs.elki.persistent.MemoryPageFile;
+import de.lmu.ifi.dbs.elki.persistent.PageFile;
+import de.lmu.ifi.dbs.elki.utilities.ClassGenericsUtil;
+import de.lmu.ifi.dbs.elki.utilities.optionhandling.parameterization.ListParameterization;
 
 public class Utils {
 
@@ -82,6 +75,7 @@ public class Utils {
 
     PageFile<RStarTreeNode> memoryPageFile      = new MemoryPageFile<RStarTreeNode>(pageSize);
     AbstractRTreeSettings settings              = new AbstractRTreeSettings();
+    settings.setBulkStrategy(SortTileRecursiveBulkSplit.STATIC);
     RStarTreeIndex<DoubleVector> rStarTreeIndex = new RStarTreeIndex<DoubleVector>(relation, memoryPageFile, settings);
     rStarTreeIndex.initialize();
 
