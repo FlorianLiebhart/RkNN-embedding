@@ -18,9 +18,17 @@ object NaiveRkNN {
   def naiveRkNNs(graph: SGraph, q: SVertex, k: Integer): IndexedSeq[VD] = {
     val allGraphNodes            = graph.getAllVertices.toIndexedSeq
     val allGraphNodesWithObjects = allGraphNodes filter (_.containsObject) filterNot (_ equals q)
+
+    // If q doesn't contain an object, give it an object so that it will be found by the knn algorithm
+    if (!q.containsObject)
+      q.setObjectId(graph.getAllVertices.size)
+
     val allkNNs = allGraphNodesWithObjects map ( p =>
       (p, Eager.rangeNN(graph, p, k, Double.PositiveInfinity))
     )
+    // If q didn't contain an object before, remove the previously inserted object
+    if (q.getObjectId == graph.getAllVertices.size)
+      q.setObjectId(SVertex.NO_OBJECT)
 
     val rKnns = allkNNs collect {
       case (v, knns) if knns map( _._1 ) contains q => new VD(v, knns.find(y => (y._1 equals q)).get._2)
