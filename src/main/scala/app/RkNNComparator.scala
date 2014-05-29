@@ -3,11 +3,13 @@ package app
 import graph.{SVertex, GraphGen, SGraph}
 
 import util.Utils._
+import util.XmlUtil
 
 import algorithms.NaiveRkNN.naiveRkNNs
 import algorithms.Eager.eager
 import algorithms.EmbeddingAlgorithm
 import de.lmu.ifi.dbs.elki.database.ids.DBID
+import org.apache.batik.xml.XMLUtilities
 
 object RkNNComparator {
 
@@ -31,19 +33,32 @@ object RkNNComparator {
      * rknn query settings
      */
 
-    val exampleGraph = true  // true for using the example graph from TKDE - GraphRNN paper page 3,
-                             // false for generating a random graph
-    val (sGraph, qID, refPoints, k, rStarTreePageSize)  =
-      if (exampleGraph) {
-        val sGraph            = createExampleGraph
+    val exampleGraph = "tpl" // "eager"  for using the example graph from TKDE - GraphRNN paper page 3,
+                             // "tpl"    for using the example graph from the TPL page 748,
+                             // "random" for generating a random graph
+
+    val (sGraph, qID, refPoints, k, rStarTreePageSize)  = exampleGraph match {
+      case "eager" =>
+        val sGraph            = createExampleGraphEager
         val qID               = 4
         val refPoints         = Seq(sGraph.getVertex(1), sGraph.getVertex(2))
-        val rStarTreePageSize = 130  // 130 bytes: Maximum entries in a directory node = 3; Maximum entries in a leaf node = 4
+        val rStarTreePageSize = 130  // 130 bytes: (minimum for 2 dimensions); Max. entries in node = 3; Max. entries in leaf = 4
+                                     // 178 bytes: (minimum for 3 dimensions); Max. entries in node = 3; Max. entries in leaf = 5
         val k                 = 2
 
         (sGraph, qID, refPoints, k, rStarTreePageSize)
-      }
-      else {   // randomly generated graph
+
+      case "tpl"  =>
+        val sGraph            = convertJavaToScalaGraph(XmlUtil.importGraphFromXml("exampleGraphXMLs/exampleGraphTPL.xml"))
+        val qID               = 7
+        val refPoints         = Seq(sGraph.getVertex(4), sGraph.getVertex(11))
+        val rStarTreePageSize = 150  // 130 bytes: (minimum for 2 dimensions); Max. entries in node = 3; Max. entries in leaf = 4
+                                     // 178 bytes: (minimum for 3 dimensions); Max. entries in node = 3; Max. entries in leaf = 5
+        val k                 = 3
+
+        (sGraph, qID, refPoints, k, rStarTreePageSize)
+
+      case "random" =>  // randomly generated graph
         val vertices          = 1000
         val objects           = 100
         val edges             = 3500 // from N-1 to N(N-1)/2  // max 2.147.483.647; Vertex max: 65.536
@@ -61,7 +76,7 @@ object RkNNComparator {
         val refPoints = EmbeddingAlgorithm.createRefPoints(sGraph.getAllVertices, numRefPoints)
 
         (sGraph, qID, refPoints, k, rStarTreePageSize)
-      }
+    }
 
 
     /*

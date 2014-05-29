@@ -41,7 +41,48 @@ NullAlgorithm
 RStar Tree Visualization
 -index.fill
 
-RStar 4D
+rTree.csv
+-enableDebug
+true
+-dbc.in
+/Daten/Projekte/BA/RkNN/tplSimulation/rTree.csv
+-dbc.filter
+FixedDBIDsFilter
+-dbc.startid
+1
+-db.index
+tree.spatial.rstarvariants.rstar.RStarTreeFactory
+-pagefile.pagesize
+123
+-spatial.bulkstrategy
+SortTileRecursiveBulkSplit
+-algorithm
+NullAlgorithm
+-vis.window.title
+rTree.csv
+
+Eager
+-enableDebug
+true
+-dbc.in
+/Daten/Projekte/BA/RkNN/tplSimulation/exampleRTreeEager.csv
+-dbc.filter
+FixedDBIDsFilter
+-dbc.startid
+1
+-db.index
+tree.spatial.rstarvariants.rstar.RStarTreeFactory
+-pagefile.pagesize
+130
+-spatial.bulkstrategy
+SortTileRecursiveBulkSplit
+-algorithm
+NullAlgorithm
+-vis.window.title
+exampleRTreeEager.csv
+-index.fill
+
+Generated RTree 4D
 -enableDebug
 true
 -dbc.in
@@ -61,35 +102,14 @@ SortTileRecursiveBulkSplit
 -algorithm
 NullAlgorithm
 -vis.window.title
-RStar Tree Visualization
+exampleGeneratedRTree4D.csv
 -index.fill
 
-Eager Example
+Generated RTree 2D
 -enableDebug
 true
 -dbc.in
-/Daten/Projekte/BA/RkNN/tplSimulation/exampleRTreeEager.csv
--dbc.filter
-FixedDBIDsFilter
--dbc.startid
-1
--db.index
-tree.spatial.rstarvariants.rstar.RStarTreeFactory
--pagefile.pagesize
-130
--spatial.bulkstrategy
-SortTileRecursiveBulkSplit
--algorithm
-NullAlgorithm
--vis.window.title
-RStar Tree Visualization
--index.fill
-
-TPL Example
--enableDebug
-true
--dbc.in
-/Daten/Projekte/BA/RkNN/tplSimulation/exampleRTreeTPL.csv
+/Daten/Projekte/BA/RkNN/tplSimulation/exampleGeneratedRTree2D.csv
 -parser.labelIndices
 2
 -dbc.filter
@@ -99,12 +119,33 @@ FixedDBIDsFilter
 -db.index
 tree.spatial.rstarvariants.rstar.RStarTreeFactory
 -pagefile.pagesize
-130
+300
 -spatial.bulkstrategy
 SortTileRecursiveBulkSplit
 -algorithm
 NullAlgorithm
 -vis.window.title
 RStar Tree Visualization
+-index.fill
+
+My TPL Example
+-enableDebug
+true
+-dbc.in
+/Daten/Projekte/BA/RkNN/tplSimulation/exampleRTreeTPL.csv
+-dbc.filter
+FixedDBIDsFilter
+-dbc.startid
+0
+-db.index
+tree.spatial.rstarvariants.rstar.RStarTreeFactory
+-pagefile.pagesize
+150
+-spatial.bulkstrategy
+SortTileRecursiveBulkSplit
+-algorithm
+NullAlgorithm
+-vis.window.title
+exampleRTreeTPL.csv
 -index.fill
 

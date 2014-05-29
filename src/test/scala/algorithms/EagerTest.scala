@@ -3,7 +3,7 @@ package algorithms
 import org.scalatest.{FunSuite}
 import org.scalatest.matchers.ShouldMatchers
 import util.Utils.VD
-import util.Utils.createExampleGraph
+import util.Utils.createExampleGraphEager
 import util.Utils.t2ToOrdered
 import graph.core.Vertex
 
@@ -37,13 +37,13 @@ class EagerTest extends FunSuite with ShouldMatchers {
    *              - Checke, ob rangeNN die richtigen distanzen zurück gibt!
    */
   test("rangeNN all and only nearest neighbour nodes containing objects returned for infinite k and dist"){
-    val graph =  createExampleGraph
+    val graph =  createExampleGraphEager
     val knns = Eager.rangeNN(graph, graph.getVertex(3), Integer.MAX_VALUE, Double.PositiveInfinity).map(_._1)
     knns should have size 4
     knns.filterNot(_.containsObject) should be ('empty)
   }
   test("rangeNN returns all object-nodes in the correct order") {
-    val graph =  createExampleGraph
+    val graph =  createExampleGraphEager
     val knns = Eager.rangeNN(graph, graph.getVertex(3), Integer.MAX_VALUE, Double.PositiveInfinity).map(_._1)
     knns(0) should equal (graph.getVertex(6))
     knns(1) should equal (graph.getVertex(4))
@@ -51,14 +51,14 @@ class EagerTest extends FunSuite with ShouldMatchers {
     knns(3) should equal (graph.getVertex(7))
   }
   test("rangeNN returns only values smaller than e"){
-    val graph =  createExampleGraph
+    val graph =  createExampleGraphEager
     val knns = Eager.rangeNN(graph, graph.getVertex(2), Integer.MAX_VALUE, 5.0).map(_._1)
     knns should have size 2
     knns(0) should equal (graph.getVertex(5))
     knns(1) should equal (graph.getVertex(6))
   }
   test("rangeNN Grenzfall: Auch mehr als k Ergebnisse möglich, falls es beim 'letzten k' Nachbarn mit selbem Abstand gibt"){
-    val graph =  createExampleGraph
+    val graph =  createExampleGraphEager
     val knns = Eager.rangeNN(graph, graph.getVertex(7), 2, 11.0).map(_._1)
     knns should have size 3
     knns(0) should equal (graph.getVertex(5))
@@ -66,7 +66,7 @@ class EagerTest extends FunSuite with ShouldMatchers {
         || (knns(1) equals graph.getVertex(6)) && (knns(2) equals graph.getVertex(4)))
   }
   test("rangeNN does not return results if distance is 0.0"){
-    val graph =  createExampleGraph
+    val graph =  createExampleGraphEager
     val knns = Eager.rangeNN(graph, graph.getVertex(4), 1, 0.0).map(_._1)
     knns should be ('empty)
   }
@@ -77,14 +77,14 @@ class EagerTest extends FunSuite with ShouldMatchers {
    * TODO: Tests für generierte Graphen schreiben, nicht nur von den statischen
    */
   test("verify correctly verifies all valid rknns"){
-    val graph =  createExampleGraph
+    val graph =  createExampleGraphEager
     val isRkNN1 = Eager.verify(graph, new VD(graph.getVertex(6), 7.0), Integer.MAX_VALUE, graph.getVertex(4))
     val isRkNN2 = Eager.verify(graph, new VD(graph.getVertex(5), 8.0), Integer.MAX_VALUE, graph.getVertex(4))
     isRkNN1 should be (true)
     isRkNN2 should be (true)
   }
   test("verify correctly unverifies all invalid rknns"){
-    val graph =  createExampleGraph
+    val graph =  createExampleGraphEager
     val isRkNN1 = Eager.verify(graph, new VD(graph.getVertex(4), Double.PositiveInfinity), Integer.MAX_VALUE, graph.getVertex(1))
     val isRkNN2 = Eager.verify(graph, new VD(graph.getVertex(4), Double.PositiveInfinity), Integer.MAX_VALUE, graph.getVertex(2))
     val isRkNN3 = Eager.verify(graph, new VD(graph.getVertex(4), Double.PositiveInfinity), Integer.MAX_VALUE, graph.getVertex(3))
@@ -109,19 +109,19 @@ class EagerTest extends FunSuite with ShouldMatchers {
    */
   // specific
   test("eager all returned nodes contain objects"){
-    val graph = createExampleGraph
+    val graph = createExampleGraphEager
     val rknns = Eager.eager(graph, graph.getVertex(4), Integer.MAX_VALUE)
     rknns.filterNot(_._1.containsObject) should be ('empty)
   }
   // specific
   test("eager all returned nodes are rknns"){
-    val graph = createExampleGraph
+    val graph = createExampleGraphEager
     val rknns = Eager.eager(graph, graph.getVertex(4), Integer.MAX_VALUE)
     rknns.filterNot(x => Eager.verify(graph, x, Integer.MAX_VALUE, graph.getVertex(4))) should be ('empty)
   }
   // specific
   test("eager all possible rknns are being returned for maximum k"){
-    val graph = createExampleGraph
+    val graph = createExampleGraphEager
     val rknns = Eager.eager(graph, graph.getVertex(4), Integer.MAX_VALUE).map(_._1)
     rknns should have size 3
     rknns.contains(graph.getVertex(6)) should be (true)
@@ -129,21 +129,21 @@ class EagerTest extends FunSuite with ShouldMatchers {
     rknns.contains(graph.getVertex(7)) should be (true)
   }
   test("eager returns all object-nodes in the correct order") {
-    val graph =  createExampleGraph
+    val graph =  createExampleGraphEager
     val rknns = Eager.eager(graph, graph.getVertex(4), Integer.MAX_VALUE)
     rknns(0)._1 should equal (graph.getVertex(6))
     rknns(1)._1 should equal (graph.getVertex(5))
     rknns(2)._1 should equal (graph.getVertex(7))
   }
   test("eager returns the correct result on exampleGraph for k=1") {
-    val graph =  createExampleGraph
+    val graph =  createExampleGraphEager
     val rknns = Eager.eager(graph, graph.getVertex(4), 1)
     rknns should have size 2
     rknns(0)._1 should equal (graph.getVertex(6))
     rknns(1)._1 should equal (graph.getVertex(5))
   }
   test("eager Grenzfall: Auch mehr als k Ergebnisse möglich, falls es beim 'letzten k' nächste Nachbarn mit selbem Abstand gibt"){
-    val graph =  createExampleGraph
+    val graph =  createExampleGraphEager
     val rknns = Eager.eager(graph, graph.getVertex(5), 2)
     rknns should have size 3
     rknns(0)._1 should equal (graph.getVertex(4))
