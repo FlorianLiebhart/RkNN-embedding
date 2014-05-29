@@ -53,7 +53,7 @@ public class Utils {
     List<Class<?>> filterlist = new ArrayList<>();
     filterlist.add(FixedDBIDsFilter.class);
     parametrizationConfig.addParameter(FileBasedDatabaseConnection.Parameterizer.FILTERS_ID, filterlist);
-    parametrizationConfig.addParameter(FixedDBIDsFilter.Parameterizer.IDSTART_ID, 1);
+    parametrizationConfig.addParameter(FixedDBIDsFilter.Parameterizer.IDSTART_ID, 0);
 
     // create and initialize database
     Database db = ClassGenericsUtil.parameterizeOrAbort(StaticArrayDatabase.class, parametrizationConfig);
@@ -70,14 +70,12 @@ public class Utils {
    * @return
    */
   public static RStarTreeIndex<DoubleVector> createRStarTree(Relation<DoubleVector> relation, int pageSize){
-    // This is just to check if the DBIDs correspond to the line numbers in the CSV file TODO: Write test instead of this!
-    /*
-    DBIDIter iter = relation.getDBIDs().iter();
+    // Print out nodes and distances. This is also to check if the DBIDs correspond to the line numbers in the CSV file TODO: Write test instead of this!
+    /*DBIDIter iter = relation.getDBIDs().iter();
     while (iter.valid()){
       System.out.println(iter.internalGetIndex() + " : " + relation.get(iter));
       iter.advance();
-    }
-    */
+    }*/
 
     System.out.println("\nBuilding R*-Tree... (entries: " + relation.size() + ", page size: " + pageSize + " bytes)");
     long t0 = System.currentTimeMillis();
