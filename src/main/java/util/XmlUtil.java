@@ -2,6 +2,7 @@ package util;
 
 import graph.ProbabilisticGraph;
 import graph.core.Edge;
+import graph.core.Graph;
 import graph.core.Vertex;
 
 import java.io.File;
@@ -112,7 +113,7 @@ public class XmlUtil {
 		}
 	}
 	
-	public static void importGraphFromXml(String fileName) {
+	public static Graph importGraphFromXml(String fileName) {
 		ProbabilisticGraph.getInstance().clear();
 //		System.out.println("Reading graph from XML...");
 		try {
@@ -168,6 +169,7 @@ public class XmlUtil {
 		}
 		
 //		System.out.println("Reading graph from XML... DONE!");
+    return ProbabilisticGraph.getInstance();
 	}
 	
 	private static String getTagValue(String tag, Element element) {
