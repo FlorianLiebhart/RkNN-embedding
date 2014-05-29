@@ -93,7 +93,7 @@ object RkNNComparator {
     eagerRkNN(sGraph, qID, k)
 
     // Embedded algorithm
-    embeddedRkNN(sGraph, qID, k, refPoints, rStarTreePageSize)
+    embeddedRkNN(sGraph, qID, k, refPoints, rStarTreePageSize, withClipping = true)
   }
 
 
@@ -140,16 +140,16 @@ object RkNNComparator {
   def embeddedRkNN(jGraph: graph.core.Graph, qID: Integer, k: Integer, numRefPoints: Int) : Unit = {
     val sGraph    = convertJavaToScalaGraph(jGraph)
     val refPoints = EmbeddingAlgorithm.createRefPoints(sGraph.getAllVertices, numRefPoints)
-    embeddedRkNN(sGraph, qID, k, refPoints, rStarTreePageSize = 1024)
+    embeddedRkNN(sGraph, qID, k, refPoints, rStarTreePageSize = 1024, true)
   }
-  def embeddedRkNN(sGraph: SGraph          , qID: Integer, k: Integer, refPoints: Seq[SVertex], rStarTreePageSize: Int) : Unit = {
+  def embeddedRkNN(sGraph: SGraph          , qID: Integer, k: Integer, refPoints: Seq[SVertex], rStarTreePageSize: Int, withClipping: Boolean) : Unit = {
     val sQ     = sGraph.getVertex(qID)
 
     println("-----------Embedded:-----------")
     println(s"R${k}NNs for query point $qID")
 
     val t0            = System.currentTimeMillis()
-    val rkNNsEmbedded: IndexedSeq[(DBID, Double)] = EmbeddingAlgorithm.embeddedRKNNs(sGraph, sQ, k, refPoints, rStarTreePageSize)
+    val rkNNsEmbedded: IndexedSeq[(DBID, Double)] = EmbeddingAlgorithm.embeddedRKNNs(sGraph, sQ, k, refPoints, rStarTreePageSize, withClipping)
     val t1            = System.currentTimeMillis()
 
     println(s"Runtime: ${(t1 - t0)/1000.0} sec.\n")

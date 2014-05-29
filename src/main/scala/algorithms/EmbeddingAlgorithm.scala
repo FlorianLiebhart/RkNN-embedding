@@ -37,7 +37,7 @@ object EmbeddingAlgorithm {
    * @param rStarTreePageSize Determines how many points fit into one page. Felix: Mostly between 1024 und 8192 byte; Erich recommendation: 25*8*dimensions (=> corresponds to around 25 entries/page)
    * @return
    */
-  def embeddedRKNNs(sGraph: SGraph, sQ: SVertex, k: Int, refPoints: Seq[SVertex], rStarTreePageSize: Int): IndexedSeq[(DBID, Double)] = {
+  def embeddedRKNNs(sGraph: SGraph, sQ: SVertex, k: Int, refPoints: Seq[SVertex], rStarTreePageSize: Int, withClipping: Boolean): IndexedSeq[(DBID, Double)] = {
     val rTreePath  = "tplSimulation/rTree.csv"
     println(s"Reference Points: ${refPoints.mkString(",")}")
 
@@ -57,7 +57,7 @@ object EmbeddingAlgorithm {
     // create generic TPL rknn query
     val distanceFunction  = EuclideanDistanceFunction.STATIC
     val distanceQuery     = distanceFunction.instantiate(relation)
-    val gTPL              = new GenericTPLRkNNQuery[RStarTreeNode, SpatialEntry, DoubleVector, DoubleDistance](rStarTree, distanceQuery, false) // withClipping = false
+    val gTPL              = new GenericTPLRkNNQuery[RStarTreeNode, SpatialEntry, DoubleVector, DoubleDistance](rStarTree, distanceQuery, withClipping)
 /*
     // Generate random query point
     val coordinates: Array[Double] = new Array[Double](refPoints.size)
