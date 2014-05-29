@@ -24,7 +24,7 @@ object Utils {
 
     val jGraph = new graph.core.Graph()
     sGraph.getAllVertices.map(v => jGraph.addVertex(convertScalaToJavaVertex(v)))
-    sGraph.getAllEdges.map(e => jGraph.addEdge(convertScalaToJavaEdge(jGraph, e)))
+    sGraph.getAllEdges   .map(e => jGraph.addEdge  (convertScalaToJavaEdge(jGraph, e)))
 
     val t1 = System.currentTimeMillis()
     println("Graph conversion finished. Runtime : " + (t1-t0) + " ms.")
@@ -46,7 +46,7 @@ object Utils {
     sGraph
   }
 
-  def convertScalaToJavaVertex(sVertex: SVertex): graph.core.Vertex = {
+  private def convertScalaToJavaVertex(sVertex: SVertex): graph.core.Vertex = {
     val jVertex = new graph.core.Vertex(sVertex.id)
     if(sVertex.containsObject)
       jVertex.setObjectId(sVertex.getObjectId)
@@ -55,7 +55,7 @@ object Utils {
     jVertex
   }
 
-  def convertJavaToScalaVertex(jVertex: graph.core.Vertex): SVertex = {
+  private def convertJavaToScalaVertex(jVertex: graph.core.Vertex): SVertex = {
     val sVertex = new SVertex(jVertex.getId)
     if(jVertex.containsObject)
       sVertex.setObjectId(jVertex.getObjectId)
@@ -64,13 +64,13 @@ object Utils {
     sVertex
   }
 
-  def convertScalaToJavaEdge(jGraph: Graph, sEdge: SEdge): graph.core.Edge = {
+  private def convertScalaToJavaEdge(jGraph: Graph, sEdge: SEdge): graph.core.Edge = {
     val jEdge = new graph.core.Edge(jGraph.getVertex(sEdge.source.id), jGraph.getVertex(sEdge.target.id))
     jEdge.setWeight(sEdge.getWeight)
     jEdge
   }
 
-  def convertJavaToScalaEdge(sGraph: SGraph, jEdge: graph.core.Edge): SEdge = {
+  private def convertJavaToScalaEdge(sGraph: SGraph, jEdge: graph.core.Edge): SEdge = {
     val sEdge = new SEdge(sGraph.getVertex(jEdge.getSource.getId), sGraph.getVertex(jEdge.getTarget.getId))
     sEdge.setWeight(jEdge.getWeight)
     sEdge
@@ -80,7 +80,7 @@ object Utils {
   /**
    * @return A New example Graph from Figure 3 of paper TKDE - GraphRNN
    */
-  def createExampleGraph: SGraph = {
+  def createExampleGraphEager: SGraph = {
     val n1 = new SVertex(1)
     val n2 = new SVertex(2)
     val n3 = new SVertex(3)
@@ -140,5 +140,4 @@ object Utils {
 
     graph
   }
-
 }
