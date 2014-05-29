@@ -61,7 +61,7 @@ object RkNNComparator {
       case "random" =>  // randomly generated graph
         val vertices          = 1000
         val objects           = 100
-        val edges             = 3500 // from N-1 to N(N-1)/2  // max 2.147.483.647; Vertex max: 65.536
+        val edges             = 3500  // from N-1 to N(N-1)/2  // max 2.147.483.647; Vertex max: 65.536
         val qID               = vertices / 2
         val numRefPoints      = 3
         val rStarTreePageSize = 1024  // bytes: e.g. 1024 bytes; Erich recommendation: 25*8*dimensions (=> corresponds to around 25 entries/page)
