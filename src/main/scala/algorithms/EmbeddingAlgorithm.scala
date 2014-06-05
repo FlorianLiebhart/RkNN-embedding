@@ -41,7 +41,7 @@ object EmbeddingAlgorithm {
     val rTreePath  = "tplSimulation/rTree.csv"
     println(s"Reference Points: ${refPoints.mkString(",")}")
 
-    // create RTree CSV File
+    // create random RTree CSV File
     // Utils.generateCSVFile(refPoints.size, 100, rTreePath) // dimensions = numRefPoints, number of random vectors to be created = 100
 
     val refPointDistances: HashMap[SVertex, IndexedSeq[Double]] = createEmbedding(sGraph, refPoints) // key: Knoten, value: Liste mit Distanzen zu Referenzpunkte (? evtl: Flag ob Objekt auf Knoten)

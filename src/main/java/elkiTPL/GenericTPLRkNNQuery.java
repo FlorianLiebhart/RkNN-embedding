@@ -74,16 +74,16 @@ public class GenericTPLRkNNQuery<N extends SpatialNode<N,E>, E extends SpatialEn
   }
   
   
-  private PriorityQueue<SimpleEntry<Double, TPLEntry>> initializeAPL(){
-    PriorityQueue<SimpleEntry<Double, TPLEntry>> apl = new PriorityQueue<SimpleEntry<Double, TPLEntry>>(50, new Comparator<SimpleEntry<Double, TPLEntry>>() {
+  private PriorityQueue<SimpleEntry<Double, TPLEntry>> initializeMinHeap(){
+    PriorityQueue<SimpleEntry<Double, TPLEntry>> minHeap = new PriorityQueue<SimpleEntry<Double, TPLEntry>>(50, new Comparator<SimpleEntry<Double, TPLEntry>>() {
       public int compare(SimpleEntry<Double, TPLEntry> o1, SimpleEntry<Double, TPLEntry> o2) {
         return Double.compare(o1.getKey(), o2.getKey());
       }
     });
     
-    apl.add(new SimpleEntry<Double, TPLEntry>(0.0, new TPLEntry(tree.getRootEntry(), 0)));
+    minHeap.add(new SimpleEntry<Double, TPLEntry>(0.0, new TPLEntry(tree.getRootEntry(), 0)));
     
-    return apl;
+    return minHeap;
   }
   
   
@@ -101,85 +101,85 @@ public class GenericTPLRkNNQuery<N extends SpatialNode<N,E>, E extends SpatialEn
   
   @SuppressWarnings("unchecked")
   private ArrayList<ArrayList<?>> filter(O q, int k){
-    ArrayList<ArrayList<?>> res = new ArrayList<ArrayList<?>>();
+    ArrayList<ArrayList<?>> cndsRefs = new ArrayList<ArrayList<?>>(); // will contain cndSet and refSet
     
-    // initialize APL and insert (R-tree root, 0) to APL
-    PriorityQueue<SimpleEntry<Double, TPLEntry>> apl = initializeAPL();
-    
+    // initialize mindist heap and insert (R-tree root, 0)
+    PriorityQueue<SimpleEntry<Double, TPLEntry>>  minHeap = initializeMinHeap();
+
     // initialize CandidateSet
-    ArrayList<SpatialPointLeafEntry> candidateSet = initializeCandidateSet();
-    
+    ArrayList<SpatialPointLeafEntry>              cndSet  = initializeCandidateSet();
+
     // initialize RefinementSet
-    ArrayList<TPLEntry> refinementSet = initializeRefinementSet();
+    ArrayList<TPLEntry>                           refSet  = initializeRefinementSet();
     
-    double val = 0.0;
+    double k_trim_mindist = 0.0;
     
-    // while APL is not empty
-    while(!apl.isEmpty()) {
-      // entry=(se,key)=de-heap APL
-      SimpleEntry<Double, TPLEntry> entry = apl.poll();
-      E se = (E) entry.getValue().getEntry();
-      if (se.isLeafEntry()){
-        if (Arrays.equals(((SpatialPointLeafEntry) se).getValues(), q.getValues())){
+    // while minHeap is not empty
+    while(!minHeap.isEmpty()) {
+      // entry=(spatEntry,key)=de-heap minHeap
+      SimpleEntry<Double, TPLEntry> entry = minHeap.poll();
+      E spatEntry = (E) entry.getValue().getEntry();
+      if (spatEntry.isLeafEntry()){
+        if (Arrays.equals(((SpatialPointLeafEntry) spatEntry).getValues(), q.getValues())){
           continue;
         }
       }
 
       if (withClipping){
-        val = k_trim(q, k, candidateSet, se);
+        k_trim_mindist = k_trim(q, k, cndSet, spatEntry);
       } else {
-        val = prune(q, k, candidateSet, se);
+        k_trim_mindist = prune(q, k, cndSet, spatEntry);
       }
       
-      // if (trim(q, candidateSet, se) = infinite
-      if ( val == Double.POSITIVE_INFINITY) {
-        // then candidateSet = candidateSet + {se}
-        refinementSet.add(entry.getValue());
+      // if (trim(q, cndSet, spatEntry) = infinite
+      if ( k_trim_mindist == Double.POSITIVE_INFINITY) {
+        // then cndSet = cndSet + {spatEntry}
+        refSet.add(entry.getValue());
       } else { // entry may be or contain a candidate
-        // if se is data point
-        if(se.isLeafEntry()) {
-          // then candidateSet = candidateSet + {se}
-          candidateSet.add((SpatialPointLeafEntry) se);
+        // if spatEntry is data point
+        if(spatEntry.isLeafEntry()) {
+          // then cndSet = cndSet + {spatEntry}
+          cndSet.add((SpatialPointLeafEntry) spatEntry);
         } else { // else 
-          N node = tree.getNode(se);
-          // if se points to a leaf node node
+          N node = tree.getNode(spatEntry);
+          // if spatEntry points to a leaf node node
           if (node.isLeaf()){
             // for each point se2 in node ( sorted on dist(se2,q) )
             
             for(SpatialEntry se2 : ((AbstractNode<SpatialEntry>) node).getEntries()) {
               double distance = 0.0;
               if (withClipping)
-                distance = k_trim(q, k, candidateSet, se2);
+                distance = k_trim(q, k, cndSet, se2);
               else
-                distance = prune(q, k, candidateSet, se2);
+                distance = prune(q, k, cndSet, se2);
 
-              // if (trim(q, candidateSet, se2) != infinite)
+              // if (trim(q, cndSet, se2) != infinite)
               if(distance != Double.POSITIVE_INFINITY){
-                // then insert (se2, dist(p,q)) in APL
-                apl.add(new SimpleEntry<Double, TPLEntry>(distance, new TPLEntry(se2, entry.getValue().getDepth()+1)));
+                // then insert (se2, dist(p,q)) in minHeap
+                minHeap.add(new SimpleEntry<Double, TPLEntry>(distance, new TPLEntry(se2, entry.getValue().getDepth() + 1)));
               } else {
-                // refinementSet = refinementSet + {se2}
-                refinementSet.add(new TPLEntry(se2, entry.getValue().getDepth()+1));
+                // refSet = refSet + {se2}
+                refSet.add(new TPLEntry(se2, entry.getValue().getDepth() + 1));
               }
             }
-          } else { // else if se points to an intermediate node
+          } else { // else if spatEntry points to an intermediate node
             // for each entry N_i in node
             for (SpatialEntry N_i : ((AbstractNode<SpatialEntry>) node).getEntries()) {
-              // mindist(Nres_i, q) = trim(q, candidateSet, N_i)
+              // mindist(Nres_i, q) = trim(q, cndSet, N_i)
               double distance = 0.0;
               if (withClipping)
-                distance = k_trim(q, k, candidateSet, N_i);
+                distance = k_trim(q, k, cndSet, N_i);
               else
-                distance = prune(q, k, candidateSet, N_i);
+                distance = prune(q, k, cndSet, N_i);
               // if mindist(Nres_i, q) = infinite
               if (distance == Double.POSITIVE_INFINITY){
-                // refinementSet = refinementSet + {N_i}
+                // refSet = refSet + {N_i}
                 entry.getValue().addToDepth(1);
-                refinementSet.add(new TPLEntry(N_i, entry.getValue().getDepth()));
+                refSet.add(new TPLEntry(N_i, entry.getValue().getDepth()));
               } else {
-                // else insert (N_i, mindist(Nres_i, q)) in APL
+                // else insert (N_i, mindist(Nres_i, q)) in minHeap
                 entry.getValue().addToDepth(1);
-                apl.add(new SimpleEntry<Double, TPLEntry>(distance, new TPLEntry(N_i, entry.getValue().getDepth())));
+                minHeap.add(new SimpleEntry<Double, TPLEntry>(distance, new TPLEntry(N_i, entry.getValue().getDepth())));
               }
             }
           }
@@ -187,10 +187,10 @@ public class GenericTPLRkNNQuery<N extends SpatialNode<N,E>, E extends SpatialEn
       }
     }
     
-    res.add(candidateSet);
-    res.add(refinementSet);
+    cndsRefs.add(cndSet);
+    cndsRefs.add(refSet);
     
-    return res;
+    return cndsRefs;
   }
   
   
