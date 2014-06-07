@@ -20,7 +20,7 @@ import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar._
 import de.lmu.ifi.dbs.elki.index.tree.spatial.SpatialEntry
 import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.strategies.bulk.SortTileRecursiveBulkSplit
 
-import elkiTPL.{Utils, GenericTPLRkNNQuery}
+import elkiTPL.{Utils, TPLQuery}
 import graph.{SVertex, SGraph}
 
 /**
@@ -57,7 +57,7 @@ object EmbeddingAlgorithm {
     // create generic TPL rknn query
     val distanceFunction  = EuclideanDistanceFunction.STATIC
     val distanceQuery     = distanceFunction.instantiate(relation)
-    val gTPL              = new GenericTPLRkNNQuery[RStarTreeNode, SpatialEntry, DoubleVector, DoubleDistance](rStarTree, distanceQuery, withClipping)
+    val gTPL              = new TPLQuery[RStarTreeNode, SpatialEntry, DoubleVector, DoubleDistance](rStarTree, distanceQuery, withClipping)
 /*
     // Generate random query point
     val coordinates: Array[Double] = new Array[Double](refPoints.size)

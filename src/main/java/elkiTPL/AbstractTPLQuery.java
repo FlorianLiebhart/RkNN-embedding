@@ -28,10 +28,10 @@ import de.lmu.ifi.dbs.elki.distance.distancevalue.NumberDistance;
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public abstract class TPLRkNNQuery<O, D extends Distance<D>> extends AbstractRKNNQuery<O, D> {
+public abstract class AbstractTPLQuery<O, D extends Distance<D>> extends AbstractRKNNQuery<O, D> {
 
   
-  public TPLRkNNQuery(DistanceQuery<O,D> distancequery) {
+  public AbstractTPLQuery(DistanceQuery<O, D> distancequery) {
     super(distancequery);
   }
 

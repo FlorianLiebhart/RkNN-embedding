@@ -22,6 +22,8 @@ import de.lmu.ifi.dbs.elki.database.ids.distance.DistanceDBIDList;
 import de.lmu.ifi.dbs.elki.database.ids.generic.GenericDistanceDBIDList;
 import de.lmu.ifi.dbs.elki.database.query.distance.DistanceQuery;
 import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.EuclideanDistanceFunction;
+import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.MaximumDistanceFunction;
+import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.MinimumDistanceFunction;
 import de.lmu.ifi.dbs.elki.distance.distancevalue.Distance;
 import de.lmu.ifi.dbs.elki.index.tree.AbstractNode;
 import de.lmu.ifi.dbs.elki.index.tree.spatial.SpatialDirectoryEntry;
@@ -54,19 +56,19 @@ import de.lmu.ifi.dbs.elki.index.tree.spatial.SpatialPointLeafEntry;
  */
 
 
-public class GenericTPLRkNNQuery<N extends SpatialNode<N,E>, E extends SpatialEntry, O extends DoubleVector, D extends Distance<D>> extends TPLRkNNQuery<O, D> {
+public class TPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry, O extends DoubleVector, D extends Distance<D>> extends AbstractTPLQuery<O, D> {
 
   private SpatialIndexTree<N,E> tree;
   
-  private EuclideanDistanceFunction dist = EuclideanDistanceFunction.STATIC;
-  
+  private EuclideanDistanceFunction dist            = EuclideanDistanceFunction.STATIC;
+
   private int min_card;
   
   private boolean withClipping;
   
   
   @SuppressWarnings("unchecked")
-  public GenericTPLRkNNQuery(SpatialIndexTree<N,E> tree, DistanceQuery<O,D> distancequery, boolean withClipping){
+  public TPLQuery(SpatialIndexTree<N, E> tree, DistanceQuery<O, D> distancequery, boolean withClipping){
     super(distancequery);
     this.tree = tree;
     this.withClipping = withClipping;
@@ -85,8 +87,7 @@ public class GenericTPLRkNNQuery<N extends SpatialNode<N,E>, E extends SpatialEn
     
     return minHeap;
   }
-  
-  
+
   private ArrayList<SpatialPointLeafEntry> initializeCandidateSet(){
     ArrayList<SpatialPointLeafEntry> candidateSet = new ArrayList<SpatialPointLeafEntry>();
     return candidateSet;
@@ -98,7 +99,11 @@ public class GenericTPLRkNNQuery<N extends SpatialNode<N,E>, E extends SpatialEn
     return refinementSet;
   }
   
-  
+
+  /***********************************/
+  /*********** F I L T E R ***********/
+  /***********************************/
+
   @SuppressWarnings("unchecked")
   private ArrayList<ArrayList<?>> filter(O q, int k){
     ArrayList<ArrayList<?>> cndsRefs = new ArrayList<ArrayList<?>>(); // will contain cndSet and refSet
@@ -119,7 +124,7 @@ public class GenericTPLRkNNQuery<N extends SpatialNode<N,E>, E extends SpatialEn
       // entry=(spatEntry,key)=de-heap minHeap
       SimpleEntry<Double, TPLEntry> entry = minHeap.poll();
       E spatEntry = (E) entry.getValue().getEntry();
-      if (spatEntry.isLeafEntry()){
+      if (spatEntry.isLeafEntry()){  // throw away enheaped query node
         if (Arrays.equals(((SpatialPointLeafEntry) spatEntry).getValues(), q.getValues())){
           continue;
         }
@@ -193,7 +198,10 @@ public class GenericTPLRkNNQuery<N extends SpatialNode<N,E>, E extends SpatialEn
     return cndsRefs;
   }
   
-  
+
+  /***********************************/
+  /*********** R E F I N E ***********/
+  /***********************************/
   
   @SuppressWarnings("unchecked")
   private DistanceDBIDList<D> refine(O q, int k, ArrayList<SpatialPointLeafEntry> candidateSet, ArrayList<TPLEntry> refinementSet){
@@ -553,8 +561,8 @@ public class GenericTPLRkNNQuery<N extends SpatialNode<N,E>, E extends SpatialEn
     ArrayList<SpatialPointLeafEntry> candidateSet = new ArrayList<SpatialPointLeafEntry>();
     ArrayList<TPLEntry> refinementSet = new ArrayList<TPLEntry>();
     
-    candidateSet = (ArrayList<SpatialPointLeafEntry>) filtered.get(0);
-    refinementSet = (ArrayList<TPLEntry>) filtered.get(1);
+    candidateSet  = (ArrayList<SpatialPointLeafEntry>) filtered.get(0);
+    refinementSet = (ArrayList<TPLEntry>)              filtered.get(1);
     
     
     return refine(q, k, candidateSet, refinementSet);
