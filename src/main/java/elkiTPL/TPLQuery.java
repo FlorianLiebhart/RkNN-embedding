@@ -299,8 +299,11 @@ public class TPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry, O exte
     return result;
     
   }
-  
-  
+
+
+  /***********************************************/
+  /*********** R E F I N E - R O U N D ***********/
+  /***********************************************/
   
   private void k_refinement_round(O q, int k, ArrayList<SpatialPointLeafEntry> candidateSet,
       ArrayList<SpatialPointLeafEntry> refinementSetPoints, ArrayList<TPLEntry> refinementSetNodes,
@@ -383,7 +386,7 @@ public class TPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry, O exte
       }
     }
 
-    return EuclideanDistanceFunction.STATIC.doubleMinDist(q, entry);
+    return dist.doubleMinDist(q, entry);
   }
 
   
@@ -402,7 +405,7 @@ public class TPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry, O exte
         }
       }
     }
-    return EuclideanDistanceFunction.STATIC.doubleMinDist(q, Nres);
+    return dist.doubleMinDist(q, Nres);
   }
   
   
