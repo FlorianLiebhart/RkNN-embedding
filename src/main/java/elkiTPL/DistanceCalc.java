@@ -6,6 +6,7 @@ import de.lmu.ifi.dbs.elki.index.tree.spatial.SpatialDirectoryEntry;
 import de.lmu.ifi.dbs.elki.index.tree.spatial.SpatialEntry;
 import de.lmu.ifi.dbs.elki.index.tree.spatial.SpatialPointLeafEntry;
 
+// For Euclidean distances
 public class DistanceCalc {
 	
 	public static long distanceCalculations = 0;
@@ -76,7 +77,7 @@ public class DistanceCalc {
 	             if (Math.abs(mbr2.getMax(i)-mbr1.getMin(i))>localmax) localmax = Math.abs(mbr2.getMax(i)-mbr1.getMin(i));
 	             sumOfSquares += localmax * localmax;
 	         }
-	             }
+	     }
 	     distanceCalculations++;
 	     return (Math.sqrt(sumOfSquares));
 	 }

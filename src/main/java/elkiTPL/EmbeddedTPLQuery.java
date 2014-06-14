@@ -1,34 +1,23 @@
 package elkiTPL;
 
-import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.PriorityQueue;
-
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import de.lmu.ifi.dbs.elki.data.DoubleVector;
 import de.lmu.ifi.dbs.elki.data.HyperBoundingBox;
 import de.lmu.ifi.dbs.elki.data.NumberVector;
 import de.lmu.ifi.dbs.elki.data.spatial.SpatialComparable;
 import de.lmu.ifi.dbs.elki.data.spatial.SpatialUtil;
-import de.lmu.ifi.dbs.elki.database.ids.ArrayDBIDs;
-import de.lmu.ifi.dbs.elki.database.ids.DBID;
-import de.lmu.ifi.dbs.elki.database.ids.DBIDIter;
-import de.lmu.ifi.dbs.elki.database.ids.DBIDRef;
-import de.lmu.ifi.dbs.elki.database.ids.DBIDUtil;
+import de.lmu.ifi.dbs.elki.database.ids.*;
 import de.lmu.ifi.dbs.elki.database.ids.distance.DistanceDBIDList;
 import de.lmu.ifi.dbs.elki.database.ids.generic.GenericDistanceDBIDList;
 import de.lmu.ifi.dbs.elki.database.query.distance.DistanceQuery;
-import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.EuclideanDistanceFunction;
+import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.MaximumDistanceFunction;
 import de.lmu.ifi.dbs.elki.distance.distancevalue.Distance;
+import de.lmu.ifi.dbs.elki.distance.distancevalue.DoubleDistance;
 import de.lmu.ifi.dbs.elki.index.tree.AbstractNode;
-import de.lmu.ifi.dbs.elki.index.tree.spatial.SpatialDirectoryEntry;
-import de.lmu.ifi.dbs.elki.index.tree.spatial.SpatialEntry;
-import de.lmu.ifi.dbs.elki.index.tree.spatial.SpatialIndexTree;
-import de.lmu.ifi.dbs.elki.index.tree.spatial.SpatialNode;
-import de.lmu.ifi.dbs.elki.index.tree.spatial.SpatialPointLeafEntry;
+import de.lmu.ifi.dbs.elki.index.tree.spatial.*;
+
+import java.util.AbstractMap.SimpleEntry;
+import java.util.*;
 
 /*
  This file is part of ELKI:
@@ -54,22 +43,19 @@ import de.lmu.ifi.dbs.elki.index.tree.spatial.SpatialPointLeafEntry;
  */
 
 
-public class TPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry, O extends DoubleVector, D extends Distance<D>> extends AbstractTPLQuery<O, D> {
+public class EmbeddedTPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry, O extends DoubleVector, D extends Distance<D>> extends AbstractTPLQuery<O, D> {
 
   private SpatialIndexTree<N,E> tree;
-  
-  private EuclideanDistanceFunction dist = EuclideanDistanceFunction.STATIC;
+
+  private MaximumDistanceFunction maxDistFunction = MaximumDistanceFunction.STATIC;
 
   private int min_card;
-  
-  private boolean withClipping;
-  
-  
+
+
   @SuppressWarnings("unchecked")
-  public TPLQuery(SpatialIndexTree<N, E> tree, DistanceQuery<O, D> euclideandistancequery, boolean withClipping){
-    super(euclideandistancequery);
+  public EmbeddedTPLQuery(SpatialIndexTree<N, E> tree, DistanceQuery<O, D> distancequery){
+    super(distancequery);
     this.tree = tree;
-    this.withClipping = withClipping;
     min_card = (int) (0.4 * ((AbstractNode<SpatialEntry>) tree.getRoot()).getCapacity());
   }
   
@@ -128,12 +114,8 @@ public class TPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry, O exte
         }
       }
 
-      if (withClipping){
-        k_trim_mindist = k_trim(q, k, cndSet, spatEntry);
-      } else {
-        k_trim_mindist = prune(q, k, cndSet, spatEntry);
-      }
-      
+      k_trim_mindist = prune(q, k, cndSet, spatEntry);
+
       // if (trim(q, cndSet, spatEntry) = infinite
       if ( k_trim_mindist == Double.POSITIVE_INFINITY) {
         // then cndSet = cndSet + {spatEntry}
@@ -150,12 +132,7 @@ public class TPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry, O exte
             // for each point se2 in node ( sorted on dist(se2,q) )
             
             for(SpatialEntry se2 : ((AbstractNode<SpatialEntry>) node).getEntries()) {
-              double distance = 0.0;
-              if (withClipping)
-                distance = k_trim(q, k, cndSet, se2);
-              else
-                distance = prune(q, k, cndSet, se2);
-
+              double distance = prune(q, k, cndSet, se2);
               // if (trim(q, cndSet, se2) != infinite)
               if(distance != Double.POSITIVE_INFINITY){
                 // then insert (se2, dist(p,q)) in minHeap
@@ -169,11 +146,7 @@ public class TPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry, O exte
             // for each entry N_i in node
             for (SpatialEntry N_i : ((AbstractNode<SpatialEntry>) node).getEntries()) {
               // mindist(Nres_i, q) = trim(q, cndSet, N_i)
-              double distance = 0.0;
-              if (withClipping)
-                distance = k_trim(q, k, cndSet, N_i);
-              else
-                distance = prune(q, k, cndSet, N_i);
+              double distance = prune(q, k, cndSet, N_i);
               // if mindist(Nres_i, q) = infinite
               if (distance == Double.POSITIVE_INFINITY){
                 // refSet = refSet + {N_i}
@@ -219,13 +192,13 @@ public class TPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry, O exte
     
     HashMap<DBID, HashMap<Integer, TPLEntry>> toVisits = new HashMap<DBID, HashMap<Integer, TPLEntry>>();
     HashMap<DBID, Integer> count = new HashMap<DBID, Integer>();
-    ArrayList<SpatialPointLeafEntry> refinedCandidateSet = new ArrayList<SpatialPointLeafEntry>();
-    refinedCandidateSet = (ArrayList<SpatialPointLeafEntry>) candidateSet.clone();
+    ArrayList<SpatialPointLeafEntry> selfPrunedCandidateSet = new ArrayList<SpatialPointLeafEntry>();
+    selfPrunedCandidateSet = (ArrayList<SpatialPointLeafEntry>) candidateSet.clone();
     int removed = 0;
 
     
     
-    // for each point p in candidateSet
+    // for each point p in candidateSet   ( => *** self pruning ***)
     nextCandidate: for(int i = 0; i < candidateSet.size(); i++) {
       SpatialPointLeafEntry p = candidateSet.get(i);
       int counter = k; 
@@ -235,11 +208,13 @@ public class TPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry, O exte
         SpatialPointLeafEntry p2 = candidateSet.get(j);
         if (p != p2){
           // if dist(p,p2)<dist(p,q)
-          if (dist.doubleMinDist(p, p2) < dist.doubleMinDist(p, q)){
+          makesure(maxDistFunction.doubleDistance(p, p2) == maxDistFunction.doubleMinDist(p, p2));
+          makesure(maxDistFunction.doubleDistance(p, q) == maxDistFunction.doubleMinDist(p, q));
+          if (maxDistFunction.doubleDistance(p, p2) < maxDistFunction.doubleDistance(p, q)){
             counter--;
-            if (counter == 0){ // TODO: Better use counter <= 0
+            if (counter == 0){ // TO DO: Better use counter <= 0
               // candidateSet = candidateSet - {p}
-              refinedCandidateSet.remove(i-removed);
+              selfPrunedCandidateSet.remove(i - removed); // TO DO: This is very ugly! Das hier ist sau hässlich!
               removed++;
               // goto nextCandidate
               continue nextCandidate;
@@ -258,10 +233,10 @@ public class TPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry, O exte
     
     // repeat
     while(true){
-      k_refinement_round(q, k, refinedCandidateSet, refinementSetPoints, refinementSetNodes, count, toVisits, result);
+      k_refinement_round(q, k, selfPrunedCandidateSet, refinementSetPoints, refinementSetNodes, count, toVisits, result);
       
       // if candidateSet = {} return
-      if(refinedCandidateSet.isEmpty()) {
+      if(selfPrunedCandidateSet.isEmpty()) {
         break;
       }
       
@@ -297,7 +272,7 @@ public class TPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry, O exte
     return result;
     
   }
-
+  
 
   /***********************************************/
   /*********** R E F I N E - R O U N D ***********/
@@ -313,14 +288,16 @@ public class TPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry, O exte
       SpatialPointLeafEntry p = candidateSet.get(i);
       int counter = count.get(p.getDBID());
       
-      // for each point p2 in refinementSetPoints
+      // for each point p2 in refinementSetPoints: try to prune p with p2
       for (SpatialPointLeafEntry p2 : refinementSetPoints){
         // if dist(p,p2)<dist(p,q)
-        if (dist.doubleMinDist(p, p2) < dist.doubleMinDist(p, q)){
+        makesure(maxDistFunction.doubleDistance(p, p2) == maxDistFunction.doubleMinDist(p, p2));
+        makesure(maxDistFunction.doubleDistance(p, q) == maxDistFunction.doubleMinDist(p, q));
+        if (maxDistFunction.doubleDistance(p, p2) < maxDistFunction.doubleDistance(p, q)){
           // counter(p)--
           counter--;
           // if counter(p) = 0
-          if (counter == 0){  // TODO: Better use counter <= 0
+          if (counter == 0){  // TO DO: Better use counter <= 0
             // candidateSet = candidateSet - {p} -- false hit
             candidateSet.remove(i);
             i--;
@@ -331,11 +308,12 @@ public class TPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry, O exte
       }
       count.put(p.getDBID(), counter);
       
-      // for each node MBR entry in refinementSetNodes
+      // for each node MBR N entry in refinementSetNodes: try to prune p with N
       for(TPLEntry entry : refinementSetNodes) {
         SpatialEntry N = entry.getEntry();
         // if maxdist(p,entry)<dist(p,q) and min_card(entry)>=counter(p)
-        if (DistanceCalc.maxdist(p, N) < dist.doubleMinDist(p, q) && min_card >= counter){
+        // TODO: min_card seems to be wrong??
+        if (PruningHeuristic.maxDistVMMaximumNorm(p, N) < maxDistFunction.doubleDistance(p, q) && min_card >= counter){
           // candidateSet = candidateSet - {p}
           candidateSet.remove(i);
           i--;
@@ -344,16 +322,16 @@ public class TPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry, O exte
         }
       }
       
-      // for each node MBR entry in refinementSetNodes
+      // for each node MBR N entry in refinementSetNodes: Add N to toVisit(p)
       for(TPLEntry entry : refinementSetNodes) {
         SpatialDirectoryEntry N = (SpatialDirectoryEntry) entry.getEntry();
         // if mindist(p,entry)<dist(p,q)
-        if (dist.doubleMinDist(p, N) < dist.doubleMinDist(p, q)){
+        if (maxDistFunction.doubleMinDist(p, N) < maxDistFunction.doubleDistance(p, q)){
           // add entry in set toVisit(p)
           toVisits.get(p.getDBID()).put(N.getEntryID(), entry);
         }
       }
-      
+
       // if toVisit(p) = {}
       if (toVisits.get(p.getDBID()) != null && toVisits.get(p.getDBID()).size() == 0){
         // candidateSet = candidateSet - {p}
@@ -362,21 +340,23 @@ public class TPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry, O exte
         toVisits.remove(p.getDBID());
         // and report p -- actual result
         DBID dbid = p.getDBID();
-        D distance = (D) distanceQuery.distance(dbid, q);
+
+        D distance = (D) distanceQuery.distance(dbid, q); // TODO is this distance calculation correct? -> probably
         result.add(distance, dbid);
       }
     }
-    
   }
-  
-  
-  
-  
+
+
+  /**
+   * Checks if entry is closer to a k candidates than to q.
+   * If so, returns infinity (--> entry is pruned), else, returns the mindist from q to entry.
+   */
   private double prune (NumberVector<?> q, int k, ArrayList<SpatialPointLeafEntry> candidateSet, SpatialEntry entry){
     int pruneCount = 0;
 
     for(SpatialComparable candidate : candidateSet) {
-      if(PruningHeuristic.relationalTest(entry, q, candidate)) {
+      if(PruningHeuristic.relationalTestEmbedding(entry, q, candidate)) {
         pruneCount++;
       }
       if(pruneCount >= k) {
@@ -384,119 +364,15 @@ public class TPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry, O exte
       }
     }
 
-    return dist.doubleMinDist(q, entry);
+    return maxDistFunction.doubleMinDist(q, entry);
   }
 
-  
-  
-  private double k_trim (DoubleVector q, int k, ArrayList<SpatialPointLeafEntry> candidateSet, SpatialEntry entry){
-    SpatialComparable Nres = entry;
-    if (candidateSet.size() >= k){
-      ArrayList<ArrayList<SpatialPointLeafEntry>> subsets = getSubsets(candidateSet, k);
-      
-      for (int i = 0; i < subsets.size(); i++){
-        ArrayList<SpatialPointLeafEntry> current = subsets.get(i);
-        Nres = clipping(q, current, Nres);
+  private void makesure(boolean b) {
+    if (!b)
+      throw new IllegalArgumentException();
+  }
 
-        if (Nres == null){
-          return Double.POSITIVE_INFINITY;
-        }
-      }
-    }
-    return dist.doubleMinDist(q, Nres);
-  }
-  
-  
-  private static SpatialComparable clipping(DoubleVector q, ArrayList<SpatialPointLeafEntry> subset, SpatialComparable rect){
-    SpatialComparable result = null;
-    SpatialPointLeafEntry[] points = new SpatialPointLeafEntry[subset.size()];
-    for (int i = 0; i<subset.size(); i++){
-      points[i] = subset.get(i);
-    }
-    double min[] = new double[rect.getDimensionality()], max[] = new double[rect.getDimensionality()]; 
-    for(int i = 0; i < subset.size(); i++){
-      SpatialComparable sc;
-      //1)a) compute midpoint between q and points[i] => X
-      //  b) compute normal A of l, pointing to q => A
-      double[] x = new double[rect.getDimensionality()];
-      double[] a = new double[rect.getDimensionality()];
-      double[] z = new double[rect.getDimensionality()];
-      double c = 0, d = 0;
-      double alength = 0;
-      for(int j = 0; j < x.length; j++){
-        x[j] = (q.getValue(j)+points[i].getValues()[j])/2.0; 
-        a[j] = q.getValue(j)-x[j];
-        alength += a[j]*a[j];
-      }
-      //2)normalize a, and since since A*X=c, compute c =>c
-      //use the same loop to compute z and the dot product in d, for performance reasons
-      alength = Math.sqrt(alength);
-      for(int j = 0; j < a.length; j++){
-        a[j] /= alength;
-        c += a[j]*x[j];
-        z[j] = (a[j] > 0) ? rect.getMax(j) : rect.getMin(j);
-        d += a[j]*z[j];
-      }
-      d = c - d;
-      //6) if d > 0 return "No"
-      if(d > 0){
-        //mbr lies totally outside q's voronoi cell, hence it can be pruned totally
-        continue;
-      }
-      
-      //7) for each j:
-      for(int j = 0; j < a.length; j++){
-        if(a[j] == 0){
-          min[j] = rect.getMin(j);
-          max[j] = rect.getMax(j);
-        } else 
-        if(a[j] > 0){
-          max[j] = rect.getMax(j);
-          min[j] = Math.max(rect.getMin(j), rect.getMax(j)+d/a[j]);
-        } else 
-          if(a[j] < 0){
-          min[j] = rect.getMin(j);
-          max[j] = Math.min(rect.getMax(j), rect.getMin(j)+d/a[j]);
-          }
-      }
-      //sc is the part that can not be pruned by a point p, i.e. probably contains a candidate from point of view of point p
-      //since we have only k points, each part that can not be pruned by one point, can not be pruned during this iteration at all
-      //hence, we can compute the mbr of all these non-pruned parts and not prune this.
-      sc = new HyperBoundingBox(min,max); 
-      result = (result == null) ? sc : SpatialUtil.union(result, sc);
-    }
-    
-    return result;
-  }
-  
-  
-  
-  private void getSubsets (ArrayList<SpatialPointLeafEntry> candidateSet, int k, int id, ArrayList<SpatialPointLeafEntry> current, ArrayList<ArrayList<SpatialPointLeafEntry>> res){
-    
-    if (current.size() == k){
-      res.add(new ArrayList<>(current));
-      return;
-    } else {
-      if (id == candidateSet.size()) return;
-      SpatialPointLeafEntry x = candidateSet.get(id);
-      current.add(x);
-      //"guess" x is in the subset
-      getSubsets(candidateSet, k, id+1, current, res);
-      current.remove(x);
-      //"guess" x is not in the subset
-      getSubsets(candidateSet, k, id+1, current, res);
-    }
-    
-    return;
-  }
-  
-  private ArrayList<ArrayList<SpatialPointLeafEntry>> getSubsets (ArrayList<SpatialPointLeafEntry> candidateSet, int k){
-    ArrayList<ArrayList<SpatialPointLeafEntry>> res = new ArrayList<ArrayList<SpatialPointLeafEntry>>();
-    getSubsets(candidateSet, k, 0, new ArrayList<SpatialPointLeafEntry>(), res);
-    return res;
-  }
-  
-  
+
   private TPLEntry getLowestLevelNodeAppearingMostOften(HashMap<DBID, HashMap<Integer, TPLEntry>> toVisits) {
     int lowestLevel = 0;
     ArrayList<TPLEntry> lowestLevelNodes = new ArrayList<TPLEntry>();
@@ -549,7 +425,6 @@ public class TPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry, O exte
   @SuppressWarnings("unchecked")
   @Override
   public DistanceDBIDList<D> getRKNNForObject(O q, int k) {
-
     System.out.println("  Performing filter step...");
     long t0 = System.currentTimeMillis();
 
@@ -571,7 +446,6 @@ public class TPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry, O exte
 
   @Override
   public List<? extends DistanceDBIDList<D>> getRKNNForBulkDBIDs(ArrayDBIDs ids, int k) {
-    // TODO Auto-generated method stub
     List<DistanceDBIDList<D>> result = new ArrayList<DistanceDBIDList<D>>();
     
     for (DBIDIter iter = ids.iter(); iter.valid(); iter.advance()) {
@@ -585,7 +459,6 @@ public class TPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry, O exte
   @SuppressWarnings("unchecked")
   @Override
   public DistanceDBIDList<D> getRKNNForDBID(DBIDRef id, int k) {
-    // TODO Auto-generated method stub
     ArrayList<ArrayList<?>> filtered = filter(relation.get(id), k);
     
     ArrayList<SpatialPointLeafEntry> candidateSet = new ArrayList<SpatialPointLeafEntry>();

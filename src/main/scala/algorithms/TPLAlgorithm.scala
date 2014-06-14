@@ -9,7 +9,7 @@ import java.io.{BufferedWriter, FileWriter}
 import java.lang.IllegalArgumentException
 
 import de.lmu.ifi.dbs.elki.distance.distancevalue.{DoubleDistance}
-import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.{MaximumDistanceFunction, EuclideanDistanceFunction}
+import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.{EuclideanDistanceFunction}
 import de.lmu.ifi.dbs.elki.database.ids.distance.DistanceDBIDList
 import de.lmu.ifi.dbs.elki.database.ids.{DBIDRef, DBIDIter, DBID, DBIDUtil}
 import de.lmu.ifi.dbs.elki.database.Database
@@ -20,13 +20,13 @@ import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar._
 import de.lmu.ifi.dbs.elki.index.tree.spatial.SpatialEntry
 import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.strategies.bulk.SortTileRecursiveBulkSplit
 
-import elkiTPL.{EmbeddedTPLQuery, Utils}
+import elkiTPL.{Utils, TPLQuery}
 import graph.{SVertex, SGraph}
 
 /**
  * @author fliebhart
  */
-object EmbeddingAlgorithm {
+object TPLAlgorithm {
 
   /**
    *
@@ -35,9 +35,10 @@ object EmbeddingAlgorithm {
    * @param k
    * @param refPoints
    * @param rStarTreePageSize Determines how many points fit into one page. Felix: Mostly between 1024 und 8192 byte; Erich recommendation: 25*8*dimensions (=> corresponds to around 25 entries/page)
+   * @param withClipping
    * @return
    */
-  def embeddedRkNNs(sGraph: SGraph, sQ: SVertex, k: Int, refPoints: Seq[SVertex], rStarTreePageSize: Int): IndexedSeq[(DBID, Double)] = {
+  def tplRkNNs(sGraph: SGraph, sQ: SVertex, k: Int, refPoints: Seq[SVertex], rStarTreePageSize: Int, withClipping: Boolean): IndexedSeq[(DBID, Double)] = {
     val rTreePath  = "tplSimulation/rTree.csv"
     println(s"Reference Points: ${refPoints.mkString(",")}")
 
@@ -55,7 +56,7 @@ object EmbeddingAlgorithm {
     val rStarTree         = Utils.createRStarTree(relation, rStarTreePageSize)
 
     // create generic TPL rknn query
-    val tplEmbedded      = new EmbeddedTPLQuery[RStarTreeNode, SpatialEntry, DoubleVector, DoubleDistance](rStarTree, MaximumDistanceFunction.STATIC.instantiate(relation))
+    val tpl               = new TPLQuery[RStarTreeNode, SpatialEntry, DoubleVector, DoubleDistance](rStarTree, EuclideanDistanceFunction.STATIC.instantiate(relation), withClipping)
 /*
     // Generate random query point
     val coordinates: Array[Double] = new Array[Double](refPoints.size)
@@ -75,7 +76,7 @@ object EmbeddingAlgorithm {
     // Performing TPL rknn query
     println(s"Performing R${k}NN-query...")
     val t0 = System.currentTimeMillis()
-    val distanceDBIDList: DistanceDBIDList[DoubleDistance] = tplEmbedded.getRKNNForObject(queryObject, k)
+    val distanceDBIDList: DistanceDBIDList[DoubleDistance] = tpl.getRKNNForObject(queryObject, k)
     val t1 = System.currentTimeMillis()
     println(s"R${k}NN query performed in ${t1-t0} ms.\n")
 
