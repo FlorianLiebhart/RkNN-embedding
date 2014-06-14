@@ -170,7 +170,7 @@ public class PruningHeuristic {
    * @param mbr Node
    * @return
    */
-  public static double maxDistVMMaximumNorm(NumberVector <?> v, SpatialComparable mbr) {
+  public static double maxDistVMMaximumNorm(NumberVector<?> v, SpatialComparable mbr) {
     assert(v.getDimensionality() == mbr.getDimensionality()); // todo: (should never happen for my alg!) so check, and remove later or replace by minDim:
     //    final int dim1 = v.getDimensionality(), dim2 = mbr.getDimensionality();
     //    final int mindim = (dim1 < dim2) ? dim1 : dim2;
@@ -189,6 +189,30 @@ public class PruningHeuristic {
       }
     }
     return agg;
+  }
+
+  /**
+   * Calculates the maximum distance between two vectors using the Minimum norm
+   * (sum the values of v1 and v2 in each dimensionality, and take the minimum of these sums)
+   * @param v1
+   * @param v2
+   * @return
+   */
+  public static double vvMaxDistanceMinimumNorm(NumberVector<?> v1, NumberVector<?> v2){
+    assert(v1.getDimensionality() == v2.getDimensionality()); // todo: (should never happen for my alg!) so check, and remove later or replace by minDim
+
+    double minNormMaxDistance = Double.POSITIVE_INFINITY;
+
+    for (int d = 0; d < v1.getDimensionality(); d++) {
+      final double v1Value = v1.doubleValue(d);
+      final double v2Value = v2.doubleValue(d);
+      double vSum          = v2Value + v1Value;
+
+      if (vSum < minNormMaxDistance)
+        minNormMaxDistance = vSum;
+    }
+
+    return minNormMaxDistance;
   }
 
   /**
