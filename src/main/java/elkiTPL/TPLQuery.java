@@ -68,9 +68,9 @@ public class TPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry, O exte
   @SuppressWarnings("unchecked")
   public TPLQuery(SpatialIndexTree<N, E> tree, DistanceQuery<O, D> euclideandistancequery, boolean withClipping){
     super(euclideandistancequery);
-    this.tree = tree;
+    this.tree         = tree;
     this.withClipping = withClipping;
-    min_card = (int) (0.4 * ((AbstractNode<SpatialEntry>) tree.getRoot()).getCapacity());
+    min_card          = (int) (0.4 * ((AbstractNode<SpatialEntry>) tree.getRoot()).getCapacity());
   }
   
   

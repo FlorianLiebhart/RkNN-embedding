@@ -24,50 +24,66 @@ import java.util.*;
 
 public class EmbeddedTPLQuery {
 
-  private Relation<DoubleVector>                            relation;
-  private SpatialIndexTree<RStarTreeNode, SpatialEntry>     tree;
+  private final Relation<DoubleVector>                        relation;
+  private final SpatialIndexTree<RStarTreeNode, SpatialEntry> tree;
 
-  private final MaximumDistanceFunction                     maxDistFunction = MaximumDistanceFunction.STATIC;
-  private final DistanceQuery<DoubleVector, DoubleDistance> maxDistQuery;
+  private final MaximumDistanceFunction                       maxDistFunction = MaximumDistanceFunction.STATIC;
+  private final DistanceQuery<DoubleVector, DoubleDistance>   maxDistQuery;
 
-  private int                                               min_card;
+  private final int                                           min_card;
 
 
   public EmbeddedTPLQuery(SpatialIndexTree<RStarTreeNode, SpatialEntry> tree, Relation<DoubleVector> relation){
-    this.relation              = relation;
-    this.maxDistQuery          = maxDistFunction.instantiate(relation);
-    this.tree                  = tree;
-    this.min_card              = (int) (0.4 * ((AbstractNode<SpatialEntry>) tree.getRoot()).getCapacity());
+    this.relation     = relation;
+    this.maxDistQuery = maxDistFunction.instantiate(relation);
+    this.tree         = tree;
+    this.min_card     = (int) (0.4 * ((AbstractNode<SpatialEntry>) tree.getRoot()).getCapacity());
   }
-  
-  
+
+  /**
+   * @param q
+   * @param k
+   * @return
+   */
+  public DistanceDBIDList<DoubleDistance> getRKNNForObject(DoubleVector q, int k) {
+    System.out.println("  Performing filter step...");
+    long t0 = System.currentTimeMillis();
+
+    ArrayList<ArrayList<?>> filtered = filter(q, k);
+
+    long t1 = System.currentTimeMillis();
+    System.out.println("  Filter step done in " + (t1-t0) + " ms.");
+
+    ArrayList<SpatialPointLeafEntry> candidateSet = new ArrayList<SpatialPointLeafEntry>();
+    ArrayList<TPLEntry> refinementSet = new ArrayList<TPLEntry>();
+
+    candidateSet  = (ArrayList<SpatialPointLeafEntry>) filtered.get(0);
+    refinementSet = (ArrayList<TPLEntry>)              filtered.get(1);
+
+
+    return refine(q, k, candidateSet, refinementSet);
+  }
+
   private PriorityQueue<SimpleEntry<Double, TPLEntry>> initializeMinHeap(){
     PriorityQueue<SimpleEntry<Double, TPLEntry>> minHeap = new PriorityQueue<SimpleEntry<Double, TPLEntry>>(50, new Comparator<SimpleEntry<Double, TPLEntry>>() {
       public int compare(SimpleEntry<Double, TPLEntry> o1, SimpleEntry<Double, TPLEntry> o2) {
         return Double.compare(o1.getKey(), o2.getKey());
       }
     });
-    
+
     minHeap.add(new SimpleEntry<Double, TPLEntry>(0.0, new TPLEntry(tree.getRootEntry(), 0)));
-    
+
     return minHeap;
   }
-
-  private ArrayList<SpatialPointLeafEntry> initializeCandidateSet(){
-    ArrayList<SpatialPointLeafEntry> candidateSet = new ArrayList<SpatialPointLeafEntry>();
-    return candidateSet;
-  }
-  
-  
-  private ArrayList<TPLEntry> initializeRefinementSet(){
-    ArrayList<TPLEntry> refinementSet = new ArrayList<TPLEntry>();
-    return refinementSet;
-  }
-  
 
   /***********************************/
   /*********** F I L T E R ***********/
   /***********************************/
+  /**
+   * @param q
+   * @param k
+   * @return
+   */
   private ArrayList<ArrayList<?>> filter(DoubleVector q, int k){
     ArrayList<ArrayList<?>> cndsRefs = new ArrayList<ArrayList<?>>(); // will contain cndSet and refSet
     
@@ -75,10 +91,10 @@ public class EmbeddedTPLQuery {
     PriorityQueue<SimpleEntry<Double, TPLEntry>>  minHeap = initializeMinHeap();
 
     // initialize CandidateSet
-    ArrayList<SpatialPointLeafEntry>              cndSet  = initializeCandidateSet();
+    ArrayList<SpatialPointLeafEntry>              cndSet  = new ArrayList<SpatialPointLeafEntry>();
 
     // initialize RefinementSet
-    ArrayList<TPLEntry>                           refSet  = initializeRefinementSet();
+    ArrayList<TPLEntry>                           refSet  = new ArrayList<TPLEntry>();
     
     double k_trim_mindist = 0.0;
     
@@ -152,6 +168,13 @@ public class EmbeddedTPLQuery {
   /***********************************/
   /*********** R E F I N E ***********/
   /***********************************/
+  /**
+   * @param q
+   * @param k
+   * @param candidateSet
+   * @param refinementSet
+   * @return
+   */
   private DistanceDBIDList<DoubleDistance> refine(DoubleVector q, int k, ArrayList<SpatialPointLeafEntry> candidateSet, ArrayList<TPLEntry> refinementSet){
     
     ArrayList<SpatialPointLeafEntry> refinementSetPoints = new ArrayList<SpatialPointLeafEntry>();
@@ -185,8 +208,8 @@ public class EmbeddedTPLQuery {
         SpatialPointLeafEntry p2 = candidateSet.get(j);
         if (p != p2){
           // if dist(p,p2)<dist(p,q)
-          makesure(maxDistFunction.doubleDistance(p, p2) == maxDistFunction.doubleMinDist(p, p2));
-          makesure(maxDistFunction.doubleDistance(p, q) == maxDistFunction.doubleMinDist(p, q));
+          Utils.makesure(maxDistFunction.doubleDistance(p, p2) == maxDistFunction.doubleMinDist(p, p2));
+          Utils.makesure(maxDistFunction.doubleDistance(p, q) == maxDistFunction.doubleMinDist(p, q));
           if (maxDistFunction.doubleDistance(p, p2) < maxDistFunction.doubleDistance(p, q)){
             counter--;
             if (counter == 0){ // TO DO: Better use counter <= 0
@@ -254,7 +277,16 @@ public class EmbeddedTPLQuery {
   /***********************************************/
   /*********** R E F I N E - R O U N D ***********/
   /***********************************************/
-  
+  /**
+   * @param q
+   * @param k
+   * @param candidateSet
+   * @param refinementSetPoints
+   * @param refinementSetNodes
+   * @param count
+   * @param toVisits
+   * @param result
+   */
   private void k_refinement_round(DoubleVector q, int k, ArrayList<SpatialPointLeafEntry> candidateSet,
       ArrayList<SpatialPointLeafEntry> refinementSetPoints, ArrayList<TPLEntry> refinementSetNodes,
       HashMap<DBID, Integer> count, HashMap<DBID, HashMap<Integer, TPLEntry>> toVisits, 
@@ -268,8 +300,8 @@ public class EmbeddedTPLQuery {
       // for each point p2 in refinementSetPoints: try to prune p with p2
       for (SpatialPointLeafEntry p2 : refinementSetPoints){
         // if dist(p,p2)<dist(p,q)
-        makesure(maxDistFunction.doubleDistance(p, p2) == maxDistFunction.doubleMinDist(p, p2));
-        makesure(maxDistFunction.doubleDistance(p, q) == maxDistFunction.doubleMinDist(p, q));
+        Utils.makesure(maxDistFunction.doubleDistance(p, p2) == maxDistFunction.doubleMinDist(p, p2));
+        Utils.makesure(maxDistFunction.doubleDistance(p, q) == maxDistFunction.doubleMinDist(p, q));
         if (maxDistFunction.doubleDistance(p, p2) < maxDistFunction.doubleDistance(p, q)){
           // counter(p)--
           counter--;
@@ -324,10 +356,14 @@ public class EmbeddedTPLQuery {
     }
   }
 
-
   /**
    * Checks if entry is closer to a k candidates than to q.
    * If so, returns infinity (--> entry is pruned), else, returns the mindist from q to entry.
+   * @param q
+   * @param k
+   * @param candidateSet
+   * @param entry
+   * @return
    */
   private double prune (NumberVector<?> q, int k, ArrayList<SpatialPointLeafEntry> candidateSet, SpatialEntry entry){
     int pruneCount = 0;
@@ -344,12 +380,10 @@ public class EmbeddedTPLQuery {
     return maxDistFunction.doubleMinDist(q, entry);
   }
 
-  private void makesure(boolean b) {
-    if (!b)
-      throw new IllegalArgumentException();
-  }
-
-
+  /**
+   * @param toVisits
+   * @return
+   */
   private TPLEntry getLowestLevelNodeAppearingMostOften(HashMap<DBID, HashMap<Integer, TPLEntry>> toVisits) {
     int lowestLevel = 0;
     ArrayList<TPLEntry> lowestLevelNodes = new ArrayList<TPLEntry>();
@@ -391,30 +425,7 @@ public class EmbeddedTPLQuery {
         }
       }
     }
-    
-    
+
     return bestNode;
-  }
-  
-  
-  
-
-  public DistanceDBIDList<DoubleDistance> getRKNNForObject(DoubleVector q, int k) {
-    System.out.println("  Performing filter step...");
-    long t0 = System.currentTimeMillis();
-
-    ArrayList<ArrayList<?>> filtered = filter(q, k);
-
-    long t1 = System.currentTimeMillis();
-    System.out.println("  Filter step done in " + (t1-t0) + " ms.");
-    
-    ArrayList<SpatialPointLeafEntry> candidateSet = new ArrayList<SpatialPointLeafEntry>();
-    ArrayList<TPLEntry> refinementSet = new ArrayList<TPLEntry>();
-    
-    candidateSet  = (ArrayList<SpatialPointLeafEntry>) filtered.get(0);
-    refinementSet = (ArrayList<TPLEntry>)              filtered.get(1);
-    
-    
-    return refine(q, k, candidateSet, refinementSet);
   }
 }
