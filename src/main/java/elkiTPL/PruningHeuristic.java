@@ -192,7 +192,7 @@ public class PruningHeuristic {
   }
 
   /**
-   * Calculates the maximum distance between two vectors using the Minimum norm
+   * Calculates the minimum maxDist between two vectors using the minimum-norm
    * (sum the values of v1 and v2 in each dimensionality, and take the minimum of these sums)
    * @param v1
    * @param v2
@@ -201,18 +201,42 @@ public class PruningHeuristic {
   public static double vvMaxDistanceMinimumNorm(NumberVector<?> v1, NumberVector<?> v2){
     assert(v1.getDimensionality() == v2.getDimensionality()); // todo: (should never happen for my alg!) so check, and remove later or replace by minDim
 
-    double minNormMaxDistance = Double.POSITIVE_INFINITY;
+    double maxDistanceMinNorm = Double.POSITIVE_INFINITY;
 
     for (int d = 0; d < v1.getDimensionality(); d++) {
       final double v1Value = v1.doubleValue(d);
       final double v2Value = v2.doubleValue(d);
       double vSum          = v2Value + v1Value;
 
-      if (vSum < minNormMaxDistance)
-        minNormMaxDistance = vSum;
+      if (vSum < maxDistanceMinNorm)
+        maxDistanceMinNorm = vSum;
     }
 
-    return minNormMaxDistance;
+    return maxDistanceMinNorm;
+  }
+
+  /**
+   * Calculates the maximum minDist between two vectors using the maximum-norm
+   * (subtracts the values of v1 and v2 in each dimensionality, and take the maximum of these differences)
+   * @param v1
+   * @param v2
+   * @return
+   */
+  public static double vvMinDistanceMaximumNorm(NumberVector<?> v1, NumberVector<?> v2){
+    assert(v1.getDimensionality() == v2.getDimensionality()); // todo: (should never happen for my alg!) so check, and remove later or replace by minDim
+
+    double minDistanceMaxNorm = 0;
+
+    for (int d = 0; d < v1.getDimensionality(); d++) {
+      final double v1Value = v1.doubleValue(d);
+      final double v2Value = v2.doubleValue(d);
+      double vDiff         = Math.abs(v2Value - v1Value);
+
+      if (vDiff > minDistanceMaxNorm)
+        minDistanceMaxNorm = vDiff;
+    }
+
+    return minDistanceMaxNorm;
   }
 
   /**
