@@ -206,9 +206,7 @@ public class EmbeddedTPLQuery {
           SpatialPointLeafEntry p2 = candidateSet.get(j);
           if (p != p2){
             // if dist(p,p2)<dist(p,q)
-            Utils.makesure(maxDistFunction.doubleDistance(p, p2) == maxDistFunction.doubleMinDist(p, p2));
-            Utils.makesure(maxDistFunction.doubleDistance(p, q)  == maxDistFunction.doubleMinDist(p, q));
-            if (maxDistFunction.doubleDistance(p, p2) < maxDistFunction.doubleDistance(p, q)){ // evtl hier maxDistanz < minDistanz verwenden.
+            if (PruningHeuristic.vvMaxDistanceMinimumNorm(p, p2) < PruningHeuristic.vvMinDistanceMaximumNorm(p, q)){ // evtl hier maxDistanz < minDistanz verwenden.
               counter--;
               if (counter == 0){ // TO DO: Better use counter <= 0
                 // candidateSet = candidateSet - {p}
@@ -305,9 +303,7 @@ public class EmbeddedTPLQuery {
        */
       for (SpatialPointLeafEntry p2 : refinementSetPoints){
         // if dist(p,p2)<dist(p,q)
-        Utils.makesure(maxDistFunction.doubleDistance(p, p2) == maxDistFunction.doubleMinDist(p, p2));
-        Utils.makesure(maxDistFunction.doubleDistance(p, q) == maxDistFunction.doubleMinDist(p, q));
-        if (maxDistFunction.doubleDistance(p, p2) < maxDistFunction.doubleDistance(p, q)){
+        if (PruningHeuristic.vvMaxDistanceMinimumNorm(p, p2) < PruningHeuristic.vvMinDistanceMaximumNorm(p, q)){
           // counter(p)--
           counter--;
           // if counter(p) = 0
@@ -329,7 +325,7 @@ public class EmbeddedTPLQuery {
         SpatialEntry N = entry.getEntry();
         // if maxdist(p,entry)<dist(p,q) and min_card(entry)>=counter(p)
         // TODO: min_card seems to be wrong??
-        if (PruningHeuristic.maxDistVMMaximumNorm(p, N) < maxDistFunction.doubleDistance(p, q) && min_card >= counter){
+        if (PruningHeuristic.vmMaxDistMinimumNorm(p, N) < PruningHeuristic.vvMinDistanceMaximumNorm(p, q) && min_card >= counter){
           // candidateSet = candidateSet - {p}
           candidateSet.remove(i);
           i--;
@@ -344,7 +340,7 @@ public class EmbeddedTPLQuery {
       for(TPLEntry entry : refinementSetNodes) {
         SpatialDirectoryEntry N = (SpatialDirectoryEntry) entry.getEntry();
         // if mindist(p,entry)<dist(p,q)
-        if (maxDistFunction.doubleMinDist(p, N) < maxDistFunction.doubleDistance(p, q)){
+        if (PruningHeuristic.vmMinDistanceMaximumNorm(p, N) < PruningHeuristic.vvMinDistanceMaximumNorm(p, q)){
           // add entry in set toVisit(p)
           toVisits.get(p.getDBID()).put(N.getEntryID(), entry);
         }
@@ -388,7 +384,7 @@ public class EmbeddedTPLQuery {
       }
     }
 
-    return maxDistFunction.doubleMinDist(q, entry);
+    return PruningHeuristic.vmMinDistanceMaximumNorm(q, entry);
   }
 
   /**
