@@ -10,53 +10,34 @@ import de.lmu.ifi.dbs.elki.database.ids.*;
 import de.lmu.ifi.dbs.elki.database.ids.distance.DistanceDBIDList;
 import de.lmu.ifi.dbs.elki.database.ids.generic.GenericDistanceDBIDList;
 import de.lmu.ifi.dbs.elki.database.query.distance.DistanceQuery;
+import de.lmu.ifi.dbs.elki.database.relation.Relation;
 import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.MaximumDistanceFunction;
 import de.lmu.ifi.dbs.elki.distance.distancevalue.Distance;
 import de.lmu.ifi.dbs.elki.distance.distancevalue.DoubleDistance;
 import de.lmu.ifi.dbs.elki.index.tree.AbstractNode;
 import de.lmu.ifi.dbs.elki.index.tree.spatial.*;
+import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar.RStarTreeNode;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.*;
 
-/*
- This file is part of ELKI:
- Environment for Developing KDD-Applications Supported by Index-Structures
 
- Copyright (C) 2013
- Ludwig-Maximilians-Universität München
- Lehr- und Forschungseinheit für Datenbanksysteme
- ELKI Development Team
+public class EmbeddedTPLQuery {
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+  private Relation<DoubleVector>                            relation;
+  private SpatialIndexTree<RStarTreeNode, SpatialEntry>     tree;
 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
+  private final MaximumDistanceFunction                     maxDistFunction = MaximumDistanceFunction.STATIC;
+  private final DistanceQuery<DoubleVector, DoubleDistance> maxDistQuery;
 
- You should have received a copy of the GNU Affero General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+  private int                                               min_card;
 
 
-public class EmbeddedTPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry, O extends DoubleVector, D extends Distance<D>> extends AbstractTPLQuery<O, D> {
-
-  private SpatialIndexTree<N,E> tree;
-
-  private MaximumDistanceFunction maxDistFunction = MaximumDistanceFunction.STATIC;
-
-  private int min_card;
-
-
-  @SuppressWarnings("unchecked")
-  public EmbeddedTPLQuery(SpatialIndexTree<N, E> tree, DistanceQuery<O, D> distancequery){
-    super(distancequery);
-    this.tree = tree;
-    min_card = (int) (0.4 * ((AbstractNode<SpatialEntry>) tree.getRoot()).getCapacity());
+  public EmbeddedTPLQuery(SpatialIndexTree<RStarTreeNode, SpatialEntry> tree, Relation<DoubleVector> relation){
+    this.relation              = relation;
+    this.maxDistQuery          = maxDistFunction.instantiate(relation);
+    this.tree                  = tree;
+    this.min_card              = (int) (0.4 * ((AbstractNode<SpatialEntry>) tree.getRoot()).getCapacity());
   }
   
   
@@ -87,9 +68,7 @@ public class EmbeddedTPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry
   /***********************************/
   /*********** F I L T E R ***********/
   /***********************************/
-
-  @SuppressWarnings("unchecked")
-  private ArrayList<ArrayList<?>> filter(O q, int k){
+  private ArrayList<ArrayList<?>> filter(DoubleVector q, int k){
     ArrayList<ArrayList<?>> cndsRefs = new ArrayList<ArrayList<?>>(); // will contain cndSet and refSet
     
     // initialize mindist heap and insert (R-tree root, 0)
@@ -107,7 +86,7 @@ public class EmbeddedTPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry
     while(!minHeap.isEmpty()) {
       // entry=(spatEntry,key)=de-heap minHeap
       SimpleEntry<Double, TPLEntry> entry = minHeap.poll();
-      E spatEntry = (E) entry.getValue().getEntry();
+      SpatialEntry spatEntry = (SpatialEntry) entry.getValue().getEntry();
       if (spatEntry.isLeafEntry()){  // throw away enheaped query node
         if (Arrays.equals(((SpatialPointLeafEntry) spatEntry).getValues(), q.getValues())){
           continue;
@@ -126,7 +105,7 @@ public class EmbeddedTPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry
           // then cndSet = cndSet + {spatEntry}
           cndSet.add((SpatialPointLeafEntry) spatEntry);
         } else { // else 
-          N node = tree.getNode(spatEntry);
+          RStarTreeNode node = tree.getNode(spatEntry);
           // if spatEntry points to a leaf node node
           if (node.isLeaf()){
             // for each point se2 in node ( sorted on dist(se2,q) )
@@ -173,9 +152,7 @@ public class EmbeddedTPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry
   /***********************************/
   /*********** R E F I N E ***********/
   /***********************************/
-  
-  @SuppressWarnings("unchecked")
-  private DistanceDBIDList<D> refine(O q, int k, ArrayList<SpatialPointLeafEntry> candidateSet, ArrayList<TPLEntry> refinementSet){
+  private DistanceDBIDList<DoubleDistance> refine(DoubleVector q, int k, ArrayList<SpatialPointLeafEntry> candidateSet, ArrayList<TPLEntry> refinementSet){
     
     ArrayList<SpatialPointLeafEntry> refinementSetPoints = new ArrayList<SpatialPointLeafEntry>();
     ArrayList<TPLEntry> refinementSetNodes = new ArrayList<TPLEntry>();
@@ -229,7 +206,7 @@ public class EmbeddedTPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry
     }
     
     
-    GenericDistanceDBIDList<D> result = new GenericDistanceDBIDList<D>();
+    GenericDistanceDBIDList<DoubleDistance> result = new GenericDistanceDBIDList<DoubleDistance>();
     
     // repeat
     while(true){
@@ -253,7 +230,7 @@ public class EmbeddedTPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry
       }
       
       // and access bestNode
-      N node = tree.getNode((E) bestNode.getEntry());
+      RStarTreeNode node = tree.getNode((SpatialEntry) bestNode.getEntry());
       
       for(SpatialEntry e : ((AbstractNode<SpatialEntry>) node).getEntries()) {
         // if bestNode is leaf node
@@ -278,10 +255,10 @@ public class EmbeddedTPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry
   /*********** R E F I N E - R O U N D ***********/
   /***********************************************/
   
-  private void k_refinement_round(O q, int k, ArrayList<SpatialPointLeafEntry> candidateSet,
+  private void k_refinement_round(DoubleVector q, int k, ArrayList<SpatialPointLeafEntry> candidateSet,
       ArrayList<SpatialPointLeafEntry> refinementSetPoints, ArrayList<TPLEntry> refinementSetNodes,
       HashMap<DBID, Integer> count, HashMap<DBID, HashMap<Integer, TPLEntry>> toVisits, 
-      GenericDistanceDBIDList<D> result) {
+      GenericDistanceDBIDList<DoubleDistance> result) {
     
     // for each point p in candidateSet
     nextCandidate: for (int i = 0; i < candidateSet.size(); i++){
@@ -341,7 +318,7 @@ public class EmbeddedTPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry
         // and report p -- actual result
         DBID dbid = p.getDBID();
 
-        D distance = (D) distanceQuery.distance(dbid, q); // TODO is this distance calculation correct? -> probably
+        DoubleDistance distance = (DoubleDistance) maxDistQuery.distance(dbid, q); // TODO is this distance calculation correct? -> probably
         result.add(distance, dbid);
       }
     }
@@ -422,9 +399,7 @@ public class EmbeddedTPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry
   
   
 
-  @SuppressWarnings("unchecked")
-  @Override
-  public DistanceDBIDList<D> getRKNNForObject(O q, int k) {
+  public DistanceDBIDList<DoubleDistance> getRKNNForObject(DoubleVector q, int k) {
     System.out.println("  Performing filter step...");
     long t0 = System.currentTimeMillis();
 
@@ -442,32 +417,4 @@ public class EmbeddedTPLQuery<N extends SpatialNode<N,E>, E extends SpatialEntry
     
     return refine(q, k, candidateSet, refinementSet);
   }
-
-
-  @Override
-  public List<? extends DistanceDBIDList<D>> getRKNNForBulkDBIDs(ArrayDBIDs ids, int k) {
-    List<DistanceDBIDList<D>> result = new ArrayList<DistanceDBIDList<D>>();
-    
-    for (DBIDIter iter = ids.iter(); iter.valid(); iter.advance()) {
-      result.add(getRKNNForDBID(DBIDUtil.deref(iter), k));
-    }
-    
-    return result;
-  }
-
-
-  @SuppressWarnings("unchecked")
-  @Override
-  public DistanceDBIDList<D> getRKNNForDBID(DBIDRef id, int k) {
-    ArrayList<ArrayList<?>> filtered = filter(relation.get(id), k);
-    
-    ArrayList<SpatialPointLeafEntry> candidateSet = new ArrayList<SpatialPointLeafEntry>();
-    ArrayList<TPLEntry> refinementSet = new ArrayList<TPLEntry>();
-    
-    candidateSet = (ArrayList<SpatialPointLeafEntry>) filtered.get(0);
-    refinementSet = (ArrayList<TPLEntry>) filtered.get(1);
-    
-    return refine(relation.get(id), k, candidateSet, refinementSet);
-  }
-  
 }

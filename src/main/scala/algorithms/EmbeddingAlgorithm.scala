@@ -38,7 +38,7 @@ object EmbeddingAlgorithm {
    * @return
    */
   def embeddedRkNNs(sGraph: SGraph, sQ: SVertex, k: Int, refPoints: Seq[SVertex], rStarTreePageSize: Int): IndexedSeq[(DBID, Double)] = {
-    val rTreePath  = "tplSimulation/rTree.csv"
+    val rTreePath = "tplSimulation/rTree.csv"
     println(s"Reference Points: ${refPoints.mkString(",")}")
 
     // create random RTree CSV File
@@ -52,10 +52,10 @@ object EmbeddingAlgorithm {
     val relation: Relation[DoubleVector] = db(0).getRelation(TypeUtil.NUMBER_VECTOR_FIELD)
 
     // create RStar tree
-    val rStarTree         = Utils.createRStarTree(relation, rStarTreePageSize)
+    val rStarTree                        = Utils.createRStarTree(relation, rStarTreePageSize)
 
     // create generic TPL rknn query
-    val tplEmbedded      = new EmbeddedTPLQuery[RStarTreeNode, SpatialEntry, DoubleVector, DoubleDistance](rStarTree, MaximumDistanceFunction.STATIC.instantiate(relation))
+    val tplEmbedded                      = new EmbeddedTPLQuery(rStarTree, relation)
 /*
     // Generate random query point
     val coordinates: Array[Double] = new Array[Double](refPoints.size)
@@ -72,7 +72,7 @@ object EmbeddingAlgorithm {
     val queryObject: DoubleVector = relation.get(getDBIDRefFromVertex(relation, sQ))
 
 
-    // Performing TPL rknn query
+    // Performing embedded TPL rknn query
     println(s"Performing R${k}NN-query...")
     val t0 = System.currentTimeMillis()
     val distanceDBIDList: DistanceDBIDList[DoubleDistance] = tplEmbedded.getRKNNForObject(queryObject, k)
@@ -80,8 +80,9 @@ object EmbeddingAlgorithm {
     println(s"R${k}NN query performed in ${t1-t0} ms.\n")
 
 
-    var rkNNs: IndexedSeq[(DBID, Double)] = IndexedSeq.empty
+    var rkNNs    = IndexedSeq.empty[(DBID, Double)]
     val rkNNIter = distanceDBIDList.iter()
+
     while (rkNNIter.valid()) {
       rkNNs :+= (DBIDUtil.deref(rkNNIter), rkNNIter.getDistance.doubleValue)
       rkNNIter.advance()
