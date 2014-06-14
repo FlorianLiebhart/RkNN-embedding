@@ -7,7 +7,7 @@ import util.XmlUtil
 
 import algorithms.NaiveRkNN.naiveRkNNs
 import algorithms.Eager.eager
-import algorithms.{TPLAlgorithm, EmbeddingAlgorithm}
+import algorithms.{TPL, Embedding}
 import de.lmu.ifi.dbs.elki.database.ids.DBID
 import org.apache.batik.xml.XMLUtilities
 
@@ -73,7 +73,7 @@ object RkNNComparator {
         if (!sGraph.getVertex(qID).containsObject)
           sGraph.getVertex(qID).setObjectId(objects) // generated object IDs start with 0
 
-        val refPoints = EmbeddingAlgorithm.createRefPoints(sGraph.getAllVertices, numRefPoints)
+        val refPoints = Embedding.createRefPoints(sGraph.getAllVertices, numRefPoints)
 
         (sGraph, qID, refPoints, k, rStarTreePageSize)
     }
@@ -140,7 +140,7 @@ object RkNNComparator {
 
   def embeddedRkNN(jGraph: graph.core.Graph, qID: Integer, k: Integer, numRefPoints: Int) : Unit = {
     val sGraph    = convertJavaToScalaGraph(jGraph)
-    val refPoints = EmbeddingAlgorithm.createRefPoints(sGraph.getAllVertices, numRefPoints)
+    val refPoints = Embedding.createRefPoints(sGraph.getAllVertices, numRefPoints)
     embeddedRkNN(sGraph, qID, k, refPoints, rStarTreePageSize = 1024)
   }
   def embeddedRkNN(sGraph: SGraph, qID: Integer, k: Integer, refPoints: Seq[SVertex], rStarTreePageSize: Int) : Unit = {
@@ -150,7 +150,7 @@ object RkNNComparator {
     println(s"R${k}NNs for query point $qID")
 
     val t0            = System.currentTimeMillis()
-    val rkNNsEmbedded: IndexedSeq[(DBID, Double)] = EmbeddingAlgorithm.embeddedRkNNs(sGraph, sQ, k, refPoints, rStarTreePageSize)
+    val rkNNsEmbedded: IndexedSeq[(DBID, Double)] = Embedding.embeddedRkNNs(sGraph, sQ, k, refPoints, rStarTreePageSize)
     val t1            = System.currentTimeMillis()
 
     println(s"Runtime: ${(t1 - t0)/1000.0} sec.\n")
@@ -169,7 +169,7 @@ object RkNNComparator {
     println(s"R${k}NNs for query point $qID")
 
     val t0            = System.currentTimeMillis()
-    val rkNNsTPL: IndexedSeq[(DBID, Double)] = TPLAlgorithm.tplRkNNs(sGraph, sQ, k, refPoints, rStarTreePageSize, withClipping)
+    val rkNNsTPL: IndexedSeq[(DBID, Double)] = TPL.tplRkNNs(sGraph, sQ, k, refPoints, rStarTreePageSize, withClipping)
     val t1            = System.currentTimeMillis()
 
     println(s"Runtime: ${(t1 - t0)/1000.0} sec.\n")
