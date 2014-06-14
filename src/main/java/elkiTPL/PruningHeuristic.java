@@ -165,30 +165,56 @@ public class PruningHeuristic {
 	}
 
   /**
-   * Gets the maximum distance between a vector v and a node mbr, using the maximums norm (l-infinity-norm)
+   * Gets the minimum maxDist between a vector v and a node mbr, using the minimum-norm (l-infinity-norm)
    * @param v Vector
    * @param mbr Node
    * @return
    */
-  public static double maxDistVMMaximumNorm(NumberVector<?> v, SpatialComparable mbr) {
+  public static double vmMaxDistMinimumNorm(NumberVector<?> v, SpatialComparable mbr) {
     assert(v.getDimensionality() == mbr.getDimensionality()); // todo: (should never happen for my alg!) so check, and remove later or replace by minDim:
     //    final int dim1 = v.getDimensionality(), dim2 = mbr.getDimensionality();
     //    final int mindim = (dim1 < dim2) ? dim1 : dim2;
-    double agg = 0;
+    double maxDistanceMinNorm = 0;
 
     for (int d = 0; d < v.getDimensionality(); d++) {
-      final double vValue    = v.doubleValue(d);
-      final double mbrMax    = mbr.getMax(d);
-      double delta           = mbrMax - vValue;
+      final double vValue = v.doubleValue(d);
+      final double mbrMax = mbr.getMax(d);
+      double delta        = mbrMax - vValue;
 
       if (delta < 0.) {
         delta = vValue - mbr.getMin(d);
       }
-      if (delta > agg) {
-        agg = delta;
+      if (delta > maxDistanceMinNorm) {
+        maxDistanceMinNorm = delta;
       }
     }
-    return agg;
+    return maxDistanceMinNorm;
+  }
+
+  /**
+   * Gets the maximum minDist between a vector v and a node mbr, using the maximum-norm (l-infinity-norm)
+   * @param v Vector
+   * @param mbr Node
+   * @return
+   */
+  public static double vmMinDistanceMaximumNorm(NumberVector<?> v, SpatialComparable mbr) {
+    assert(v.getDimensionality() == mbr.getDimensionality()); // todo: (should never happen for my alg!) so check, and remove later or replace by minDim
+
+    double minDistanceMaxNorm = 0;
+
+    for (int d = 0; d < v.getDimensionality(); d++) {
+      final double vValue = v.doubleValue(d);
+      final double mbrMin = mbr.getMin(d);
+      double delta        = mbrMin - vValue;
+
+      if (delta < 0.) {
+        delta = vValue - mbr.getMax(d);
+      }
+      if (delta > minDistanceMaxNorm) {
+        minDistanceMaxNorm = delta;
+      }
+    }
+    return minDistanceMaxNorm;
   }
 
   /**
