@@ -70,17 +70,11 @@ public class Utils {
       iter.advance();
     }*/
 
-    System.out.println("\nBuilding R*-Tree... (entries: " + relation.size() + ", page size: " + pageSize + " bytes)");
-    long t0 = System.currentTimeMillis();
-
     PageFile<RStarTreeNode> memoryPageFile      = new MemoryPageFile<RStarTreeNode>(pageSize);
     AbstractRTreeSettings settings              = new AbstractRTreeSettings();
     settings.setBulkStrategy(SortTileRecursiveBulkSplit.STATIC);
     RStarTreeIndex<DoubleVector> rStarTreeIndex = new RStarTreeIndex<DoubleVector>(relation, memoryPageFile, settings);
     rStarTreeIndex.initialize();
-
-    long t1 = System.currentTimeMillis();
-    System.out.println("R*-Tree built in " + (t1-t0) + " ms.\n");
 
     return rStarTreeIndex;
   }
@@ -94,7 +88,7 @@ public class Utils {
    * @param csvPath
    * @throws IOException
    */
-  public static void generateCSVFile(int dimensions, int numPoints, String csvPath) throws IOException {
+  public static void generateRandomCSVFile(int dimensions, int numPoints, String csvPath) throws IOException {
     // create directories and file if non-existent
     Path pathToFile = Paths.get(csvPath);
     Files.createDirectories(pathToFile.getParent());

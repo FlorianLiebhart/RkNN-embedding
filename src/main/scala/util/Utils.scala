@@ -9,8 +9,44 @@ import scala.collection.JavaConversions._
  * Created: 28.01.14, 02:22
  * @author fliebhart
  */
+
+object Log {
+    val log = new StringBuilder()
+
+    def append(s: String) = {
+      log.append(s)
+      this
+    }
+
+    def appendln(s: String) = {
+      log.append(s + "\n")
+      this
+    }
+
+    def printFlush = {
+      print(log.toString)
+      log.clear()
+    }
+  }
+
 object Utils {
 
+  case class TimeDiff(tStart: java.lang.Long){
+    var tEnd: java.lang.Long = null
+
+    def this(tStart: java.lang.Long, tEnd: java.lang.Long) {
+      this(tStart)
+      this.tEnd = tEnd
+    }
+
+    override def toString: String = {
+      if(tEnd == null)
+        "END NOT SPECIFIED"
+      else {
+         s"{{{ ${tEnd - tStart} ms. }}}"
+       }
+    }
+  }
 
   type VD = Tuple2[SVertex, Double] // (Vertex, Distance from q)
   implicit def t2ToOrdered(thisT2: VD): Ordered[VD] = new Ordered[VD] {

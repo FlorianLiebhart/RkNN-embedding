@@ -13,10 +13,13 @@ import de.lmu.ifi.dbs.elki.distance.distancevalue.DoubleDistance;
 import de.lmu.ifi.dbs.elki.index.tree.AbstractNode;
 import de.lmu.ifi.dbs.elki.index.tree.spatial.*;
 import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar.RStarTreeNode;
+import util.*;
+import util.Utils.TimeDiff;
+import util.Log;
+
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.*;
-
 
 public class EmbeddedTPLQuery {
 
@@ -42,13 +45,14 @@ public class EmbeddedTPLQuery {
    * @return
    */
   public DistanceDBIDList<DoubleDistance> getRKNNForObject(DoubleVector q, int k) {
-    System.out.println("  Performing filter step...");
-    long t0 = System.currentTimeMillis();
+    Log.append("    - Performing filter step..");
+    Log.printFlush();
+    TimeDiff timeFilterStep = new TimeDiff(System.currentTimeMillis());
 
     ArrayList<ArrayList<?>> filtered = filter(q, k);
 
-    long t1 = System.currentTimeMillis();
-    System.out.println("  Filter step done in " + (t1-t0) + " ms.");
+    timeFilterStep.tEnd_$eq(System.currentTimeMillis());
+    Log.appendln(" done in " + timeFilterStep);
 
     ArrayList<SpatialPointLeafEntry> candidateSet  = new ArrayList<SpatialPointLeafEntry>();
     ArrayList<TPLEntry>              refinementSet = new ArrayList<TPLEntry>();
@@ -69,7 +73,17 @@ public class EmbeddedTPLQuery {
       }
     }
 
+    Log.appendln("    - After filtering: " + candidateSet.size() + " cnds, " + refinementSetPoints.size() + " refPoints, " + refinementSetNodes.size() + " refNodes.");
+
+    Log.append("    - Performing refinement step.. ");
+    Log.printFlush();
+    TimeDiff timeRefinementStep = new TimeDiff(System.currentTimeMillis());
+
     DistanceDBIDList<DoubleDistance> refined = refine(q, k, candidateSet, refinementSetPoints, refinementSetNodes);
+
+    timeRefinementStep.tEnd_$eq(System.currentTimeMillis());
+    Log.appendln(" done in " + timeRefinementStep);
+
 
     return refined;
   }

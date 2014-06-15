@@ -22,11 +22,14 @@ import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.strategies.bulk.Sort
 
 import elkiTPL.{EmbeddedTPLQuery, Utils}
 import graph.{SVertex, SGraph}
+import util.Utils.{VD, TimeDiff}
+import util.Log
 
 /**
  * @author fliebhart
  */
 object Embedding {
+
 
   /**
    *
@@ -37,57 +40,153 @@ object Embedding {
    * @param rStarTreePageSize Determines how many points fit into one page. Felix: Mostly between 1024 und 8192 byte; Erich recommendation: 25*8*dimensions (=> corresponds to around 25 entries/page)
    * @return
    */
-  def embeddedRkNNs(sGraph: SGraph, sQ: SVertex, k: Int, refPoints: Seq[SVertex], rStarTreePageSize: Int): IndexedSeq[(DBID, Double)] = {
+  def embeddedRkNNs(sGraph: SGraph, sQ: SVertex, k: Int, refPoints: Seq[SVertex], rStarTreePageSize: Int): IndexedSeq[(SVertex, Double)] = {
     val rTreePath = "tplSimulation/rTree.csv"
-    println(s"Reference Points: ${refPoints.mkString(",")}")
+    (s"Reference Points: ${refPoints.mkString(",")} \n")
 
-    // create random RTree CSV File
-    // Utils.generateCSVFile(refPoints.size, 100, rTreePath) // dimensions = numRefPoints, number of random vectors to be created = 100
+    /*
+     * 1. Preparation phase
+     */
+    Log.appendln(s"\n1. Start preparation phase (create: embedding, DB, R*Tree, query object)")
+    val timeAlgorithmPreparation = TimeDiff(System.currentTimeMillis)
+
+    /*
+     *    1.1 Create embedding
+     */
+    Log.append(s"  1.1 Creating embedding..")
+    val timeCreateEmbedding = TimeDiff(System.currentTimeMillis)
 
     val refPointDistances: HashMap[SVertex, IndexedSeq[Double]] = createEmbedding(sGraph, refPoints) // key: Knoten, value: Liste mit Distanzen zu Referenzpunkte (? evtl: Flag ob Objekt auf Knoten)
+
+    timeCreateEmbedding.tEnd = System.currentTimeMillis
+    Log.appendln(s" done in $timeCreateEmbedding")
+
+
+    /*
+     *    1.2 Create memory database (after writing CSV file)
+     */
+    Log.append(s"  1.2 Creating CSV file and DB..")
+    val timeCreateCSVandDB = TimeDiff(System.currentTimeMillis)
+
     writeRTreeCSVFile(refPointDistances, rTreePath)
+//    Utils.generateRandomCSVFile(refPoints.size, 100, rTreePath) // dimensions = numRefPoints, number of random vectors to be created = 100
+    val db: List[Database]                      = Utils.createDatabase(rTreePath).toList
+    val relation: Relation[DoubleVector]        = db(0).getRelation(TypeUtil.NUMBER_VECTOR_FIELD)
 
-    // create memory database
-    val db: List[Database]               = Utils.createDatabase(rTreePath).toList
-    val relation: Relation[DoubleVector] = db(0).getRelation(TypeUtil.NUMBER_VECTOR_FIELD)
+    timeCreateCSVandDB.tEnd = System.currentTimeMillis
+    Log.appendln(s" done in $timeCreateCSVandDB")
 
-    // create RStar tree
-    val rStarTree                        = Utils.createRStarTree(relation, rStarTreePageSize)
 
-    // create generic TPL rknn query
-    val tplEmbedded                      = new EmbeddedTPLQuery(rStarTree, relation)
-/*
+    /*
+     *    1.3 Create RStar tree index
+     */
+    Log.append(s"  1.3 Creating R*Tree index (entries: " + relation.size() + ", page size: " + rStarTreePageSize + " bytes).. ");
+    val timeCreateRStarTree = TimeDiff(System.currentTimeMillis)
+
+    val rStarTree: RStarTreeIndex[DoubleVector] = Utils.createRStarTree(relation, rStarTreePageSize)
+
+    timeCreateRStarTree.tEnd = System.currentTimeMillis
+    Log.appendln(s"  done in $timeCreateRStarTree")
+
+    /*
+     *    1.4 Create TPL rknn query and query object
+     */
+    Log.append(s"  1.4 Creating EmbeddedTPLQuery object and query object ..")
+    val timeCreateQuery = TimeDiff(System.currentTimeMillis)
+
+    val tplEmbedded                             = new EmbeddedTPLQuery(rStarTree, relation)
+    val queryObject: DoubleVector               = relation.get(getDBIDRefFromVertex(relation, sQ))
     // Generate random query point
+    /*
     val coordinates: Array[Double] = new Array[Double](refPoints.size)
       for (i <- 0 to refPoints.size-1) {
       coordinates(i) = Math.random()
     }
     val queryObject: DoubleVector = new DoubleVector(coordinates)
-    println("Generated query object: " + queryObject)
+    Log.appendln("Generated query object: " + queryObject)
 
     // random query object from the database
     val queryObject: DoubleVector = relation.get(Utils.getRandomDBObject(relation))
-    println(s"Random query object from database: $queryObject\n")
-*/
-    val queryObject: DoubleVector = relation.get(getDBIDRefFromVertex(relation, sQ))
+    Log.appendln(s"Random query object from database: $queryObject\n")
+    */
+
+    timeCreateQuery.tEnd = System.currentTimeMillis
+    Log.appendln(s" done in $timeCreateQuery")
 
 
-    // Performing embedded TPL rknn query
-    println(s"Performing R${k}NN-query...")
-    val t0 = System.currentTimeMillis()
+    timeAlgorithmPreparation.tEnd = System.currentTimeMillis
+    Log.appendln(s"Algorithm preparation done in $timeAlgorithmPreparation \n").printFlush
+
+    /*
+     * 2. Performing embedded TPL rknn query
+     */
+    Log.appendln(s"2. Performing R${k}NN-query...")
+    val timeTotalRknn = TimeDiff(System.currentTimeMillis)
+
+    /*
+     *    2.1 Filter-refinement in embedded space
+     */
+    Log.appendln(s"  2.1 Performing filter refinement in embedded space..")
+    val timeFilterRefEmbedding = TimeDiff(System.currentTimeMillis)
+
     val distanceDBIDList: DistanceDBIDList[DoubleDistance] = tplEmbedded.getRKNNForObject(queryObject, k)
-    val t1 = System.currentTimeMillis()
-    println(s"R${k}NN query performed in ${t1-t0} ms.\n")
+
+    timeFilterRefEmbedding.tEnd = System.currentTimeMillis
+    Log.appendln(s"  Filter Refinement in embedded space done in $timeFilterRefEmbedding \n").printFlush
+
+    /*
+     *    2.2 Refining the TPL rknn results on graph
+     */
+    Log.appendln(s"  2.2 Refining candidates on graph..")
+    val timeRefinementOnGraph = TimeDiff(System.currentTimeMillis)
 
 
-    var rkNNs    = IndexedSeq.empty[(DBID, Double)]
-    val rkNNIter = distanceDBIDList.iter()
+    /*
+     *        2.2.1 Mapping embedded candidates from DB to Graph
+     */
+    Log.append(s"    - Mapping candidates from DB to graph..")
+    val timeMappingFromDBtoGraph = TimeDiff(System.currentTimeMillis)
 
-    while (rkNNIter.valid()) {
-      rkNNs :+= (DBIDUtil.deref(rkNNIter), rkNNIter.getDistance.doubleValue)
-      rkNNIter.advance()
+    var filterRefinementResultsEmbedding = IndexedSeq.empty[(SVertex, Double)]
+    val iter = distanceDBIDList.iter()
+    while (iter.valid()) {
+      filterRefinementResultsEmbedding :+= (sGraph.getVertex(Integer.parseInt(DBIDUtil.deref(iter).toString)), iter.getDistance.doubleValue)
+      iter.advance()
     }
-    rkNNs
+
+    timeMappingFromDBtoGraph.tEnd = System.currentTimeMillis
+    Log.appendln(s" done in $timeMappingFromDBtoGraph")
+
+    /*
+     *        2.2.2 Refinement on graph
+     */
+    Log.append(s"    - Performing refinement on graph..")
+    val timePerformRefinementOnGraph = TimeDiff(System.currentTimeMillis)
+    // If q doesn't contain an object, give it an object so that it will be found by the knn algorithm
+    if (!sQ.containsObject)
+      sQ.setObjectId(sGraph.getAllVertices.size)
+
+    val allkNNs = filterRefinementResultsEmbedding map ( vd =>
+      (vd._1, Eager.rangeNN(sGraph, vd._1, k, Double.PositiveInfinity))
+    )
+    // If q didn't contain an object before, remove the previously inserted object
+    if (sQ.getObjectId == sGraph.getAllVertices.size)
+      sQ.setObjectId(SVertex.NO_OBJECT)
+
+    val rKnns = allkNNs collect {
+      case (v, knns) if knns map( _._1 ) contains sQ => new VD(v, knns.find(y => (y._1 equals sQ)).get._2)
+    }
+
+    timePerformRefinementOnGraph.tEnd = System.currentTimeMillis
+    Log.appendln(s" done in $timePerformRefinementOnGraph")
+
+    timeRefinementOnGraph.tEnd = System.currentTimeMillis
+    Log.appendln(s"  Refinement of candidates on graph done in $timeRefinementOnGraph")
+
+    timeTotalRknn.tEnd = System.currentTimeMillis
+    Log.appendln(s"R${k}NN query performed in $timeTotalRknn \n")
+
+    rKnns
   }
 
 

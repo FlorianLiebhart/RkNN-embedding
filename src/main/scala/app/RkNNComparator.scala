@@ -3,13 +3,13 @@ package app
 import graph.{SVertex, GraphGen, SGraph}
 
 import util.Utils._
+import util.Log
 import util.XmlUtil
 
 import algorithms.NaiveRkNN.naiveRkNNs
 import algorithms.Eager.eager
 import algorithms.{TPL, Embedding}
 import de.lmu.ifi.dbs.elki.database.ids.DBID
-import org.apache.batik.xml.XMLUtilities
 
 object RkNNComparator {
 
@@ -83,11 +83,13 @@ object RkNNComparator {
      * perfom queries
      */
 
-//    println("dijkstra:" + Dijkstra.dijkstra(sGraph, sGraph.getVertex(qID)).size + ", graph vertices" + sGraph.getAllVertices.size)
-    println("")
+//    Log.appendln("dijkstra:" + Dijkstra.dijkstra(sGraph, sGraph.getVertex(qID)).size + ", graph vertices" + sGraph.getAllVertices.size)
+    Log.appendln("")
 
     // Naive algorithm
     naiveRkNN(sGraph, qID, k)
+
+    Log.printFlush
 
     // Eager algorithm
     eagerRkNN(sGraph, qID, k)
@@ -95,6 +97,7 @@ object RkNNComparator {
     // Embedded algorithm
     embeddedRkNN(sGraph, qID, k, refPoints, rStarTreePageSize)
 //    tplRkNN(sGraph, qID, k, refPoints, rStarTreePageSize, withClipping = true)
+    Log.printFlush
   }
 
 
@@ -104,38 +107,34 @@ object RkNNComparator {
   def naiveRkNN(sGraph: SGraph          , qID: Integer, k: Integer) : Unit = {
     val sQ     = sGraph.getVertex(qID)
 
-    println("-----------Naive:-----------")
-    println(s"R${k}NNs for query point " + qID)
+    Log.appendln(s"-----------Naive R${k}NN for query point $qID:-----------\n")
 
-    val t0 = System.currentTimeMillis()
+    val timeNaiveRkNN = TimeDiff(System.currentTimeMillis)
     val rkNNsNaive = naiveRkNNs(sGraph, sQ, k)
-    val t1 = System.currentTimeMillis()
+    timeNaiveRkNN.tEnd = System.currentTimeMillis
 
-    println(s"Runtime: ${(t1 - t0)/1000.0} sec.\n")
-
-    println(s"Result r${k}NNs: ${if (rkNNsNaive.size == 0) "--" else ""}")
+    Log.appendln(s"Result r${k}NNs: ${if (rkNNsNaive.size == 0) "--" else ""}")
     for( v <- rkNNsNaive )
-      println(s"Node: ${v._1.id}  Dist: ${v._2}")
-    println("")
+      Log.appendln(s"Node: ${v._1.id}  Dist: ${v._2}")
+
+    Log.appendln(s"\nTotal Simple RkNN Runtime: $timeNaiveRkNN \n")
   }
 
   def eagerRkNN(jGraph: graph.core.Graph, qID: Integer, k: Integer) : Unit = eagerRkNN(convertJavaToScalaGraph(jGraph), qID, k)
   def eagerRkNN(sGraph: SGraph          , qID: Integer, k: Integer) : Unit = {
     val sQ     = sGraph.getVertex(qID)
 
-    println("-----------Eager:-----------")
-    println(s"R${k}NNs for query point " + qID)
+    Log.appendln(s"-----------Eager R${k}NN for query point $qID:-----------\n")
 
-    val t0 = System.currentTimeMillis()
+    val timeEagerRkNN = TimeDiff(System.currentTimeMillis)
     val rkNNsEager = eager(sGraph, sQ, k)
-    val t1 = System.currentTimeMillis()
+    timeEagerRkNN.tEnd = System.currentTimeMillis()
 
-    println(s"Runtime: ${(t1 - t0)/1000.0} sec.\n")
-
-    println(s"Result r${k}NNs: ${if (rkNNsEager.size == 0) "--" else ""}")
+    Log.appendln(s"Result r${k}NNs: ${if (rkNNsEager.size == 0) "--" else ""}")
     for( v <- rkNNsEager )
-      println(s"Node: ${v._1.id}  Dist: ${v._2}")
-    println("")
+      Log.appendln(s"Node: ${v._1.id}  Dist: ${v._2}")
+
+    Log.appendln(s"\nTotal Eager RkNN Runtime: $timeEagerRkNN \n")
   }
 
   def embeddedRkNN(jGraph: graph.core.Graph, qID: Integer, k: Integer, numRefPoints: Int) : Unit = {
@@ -146,37 +145,36 @@ object RkNNComparator {
   def embeddedRkNN(sGraph: SGraph, qID: Integer, k: Integer, refPoints: Seq[SVertex], rStarTreePageSize: Int) : Unit = {
     val sQ     = sGraph.getVertex(qID)
 
-    println("-----------Embedded:-----------")
-    println(s"R${k}NNs for query point $qID")
+    Log.appendln(s"-----------Embedded R${k}NN for query point $qID:-----------\n")
+    Log.printFlush
 
-    val t0            = System.currentTimeMillis()
-    val rkNNsEmbedded: IndexedSeq[(DBID, Double)] = Embedding.embeddedRkNNs(sGraph, sQ, k, refPoints, rStarTreePageSize)
-    val t1            = System.currentTimeMillis()
+    val timeEmbeddedRkNN = TimeDiff(System.currentTimeMillis)
+    val rkNNsEmbedded: IndexedSeq[(SVertex, Double)] = Embedding.embeddedRkNNs(sGraph, sQ, k, refPoints, rStarTreePageSize)
+    timeEmbeddedRkNN.tEnd = System.currentTimeMillis()
 
-    println(s"Runtime: ${(t1 - t0)/1000.0} sec.\n")
-
-    println(s"Result r${k}NNs: ${if (rkNNsEmbedded.size == 0) "--" else ""}")
+    Log.appendln(s"Result r${k}NNs: ${if (rkNNsEmbedded.size == 0) "--" else ""}")
     for( v <- rkNNsEmbedded )
-      println(s"Node: ${v._1.toString}  Dist: ${v._2}")
-    println("")
+      Log.appendln(s"Node: ${v._1.id}  Dist: ${v._2}")
+
+    Log.appendln(s"\nTotal Embedding RkNN Runtime: $timeEmbeddedRkNN \n")
   }
 
 
   def tplRkNN(sGraph: SGraph, qID: Integer, k: Integer, refPoints: Seq[SVertex], rStarTreePageSize: Int, withClipping: Boolean) : Unit = {
     val sQ     = sGraph.getVertex(qID)
 
-    println("-----------TPL:-----------")
-    println(s"R${k}NNs for query point $qID")
+    Log.appendln("-----------TPL:-----------")
+    Log.appendln(s"R${k}NNs for query point $qID")
 
     val t0            = System.currentTimeMillis()
     val rkNNsTPL: IndexedSeq[(DBID, Double)] = TPL.tplRkNNs(sGraph, sQ, k, refPoints, rStarTreePageSize, withClipping)
     val t1            = System.currentTimeMillis()
 
-    println(s"Runtime: ${(t1 - t0)/1000.0} sec.\n")
+    Log.appendln(s"Runtime: ${(t1 - t0)/1000.0} sec.\n")
 
-    println(s"Result r${k}NNs: ${if (rkNNsTPL.size == 0) "--" else ""}")
+    Log.appendln(s"Result r${k}NNs: ${if (rkNNsTPL.size == 0) "--" else ""}")
     for( v <- rkNNsTPL )
-      println(s"Node: ${v._1.toString}  Dist: ${v._2}")
-    println("")
+      Log.appendln(s"Node: ${v._1.toString}  Dist: ${v._2}")
+    Log.appendln("")
   }
 }

@@ -43,7 +43,7 @@ object TPL {
     println(s"Reference Points: ${refPoints.mkString(",")}")
 
     // create random RTree CSV File
-    // Utils.generateCSVFile(refPoints.size, 100, rTreePath) // dimensions = numRefPoints, number of random vectors to be created = 100
+    // Utils.generateRandomCSVFile(refPoints.size, 100, rTreePath) // dimensions = numRefPoints, number of random vectors to be created = 100
 
     val refPointDistances: HashMap[SVertex, IndexedSeq[Double]] = createEmbedding(sGraph, refPoints) // key: Knoten, value: Liste mit Distanzen zu Referenzpunkte (? evtl: Flag ob Objekt auf Knoten)
     writeRTreeCSVFile(refPointDistances, rTreePath)
