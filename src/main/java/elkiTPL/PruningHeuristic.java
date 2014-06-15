@@ -174,18 +174,22 @@ public class PruningHeuristic {
     assert(v.getDimensionality() == mbr.getDimensionality()); // todo: (should never happen for my alg!) so check, and remove later or replace by minDim:
     //    final int dim1 = v.getDimensionality(), dim2 = mbr.getDimensionality();
     //    final int mindim = (dim1 < dim2) ? dim1 : dim2;
-    double maxDistanceMinNorm = 0;
+    double maxDistanceMinNorm = Double.POSITIVE_INFINITY;
 
     for (int d = 0; d < v.getDimensionality(); d++) {
-      final double vValue = v.doubleValue(d);
-      final double mbrMax = mbr.getMax(d);
-      double delta        = mbrMax - vValue;
+      final double vValue                   = v.doubleValue(d);
+      final double mbrMin                   = mbr.getMin(d);
+      final double mbrMax                   = mbr.getMax(d);
+      double delta                          = mbrMax - vValue;
+      double mbrFarthestPointFromVInThisDim = mbrMax;
 
       if (delta < 0.) {
-        delta = vValue - mbr.getMin(d);
+        delta = vValue - mbrMin;
+        mbrFarthestPointFromVInThisDim = mbrMin;
       }
-      if (delta > maxDistanceMinNorm) {
-        maxDistanceMinNorm = delta;
+      double maxDistInThisDim = mbrFarthestPointFromVInThisDim + vValue;
+      if (maxDistInThisDim < maxDistanceMinNorm) {
+        maxDistanceMinNorm = maxDistInThisDim;
       }
     }
     return maxDistanceMinNorm;
