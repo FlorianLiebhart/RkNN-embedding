@@ -1,18 +1,14 @@
 package elkiTPL;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import de.lmu.ifi.dbs.elki.data.DoubleVector;
-import de.lmu.ifi.dbs.elki.data.HyperBoundingBox;
 import de.lmu.ifi.dbs.elki.data.NumberVector;
 import de.lmu.ifi.dbs.elki.data.spatial.SpatialComparable;
-import de.lmu.ifi.dbs.elki.data.spatial.SpatialUtil;
 import de.lmu.ifi.dbs.elki.database.ids.*;
 import de.lmu.ifi.dbs.elki.database.ids.distance.DistanceDBIDList;
 import de.lmu.ifi.dbs.elki.database.ids.generic.GenericDistanceDBIDList;
 import de.lmu.ifi.dbs.elki.database.query.distance.DistanceQuery;
 import de.lmu.ifi.dbs.elki.database.relation.Relation;
 import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.MaximumDistanceFunction;
-import de.lmu.ifi.dbs.elki.distance.distancevalue.Distance;
 import de.lmu.ifi.dbs.elki.distance.distancevalue.DoubleDistance;
 import de.lmu.ifi.dbs.elki.index.tree.AbstractNode;
 import de.lmu.ifi.dbs.elki.index.tree.spatial.*;
@@ -54,14 +50,14 @@ public class EmbeddedTPLQuery {
     long t1 = System.currentTimeMillis();
     System.out.println("  Filter step done in " + (t1-t0) + " ms.");
 
-    ArrayList<SpatialPointLeafEntry> candidateSet = new ArrayList<SpatialPointLeafEntry>();
-    ArrayList<TPLEntry> refinementSet = new ArrayList<TPLEntry>();
+    ArrayList<SpatialPointLeafEntry> candidateSet  = new ArrayList<SpatialPointLeafEntry>();
+    ArrayList<TPLEntry>              refinementSet = new ArrayList<TPLEntry>();
 
     candidateSet  = (ArrayList<SpatialPointLeafEntry>) filtered.get(0);
     refinementSet = (ArrayList<TPLEntry>)              filtered.get(1);
 
     ArrayList<SpatialPointLeafEntry> refinementSetPoints = new ArrayList<SpatialPointLeafEntry>();
-    ArrayList<TPLEntry> refinementSetNodes               = new ArrayList<TPLEntry>();
+    ArrayList<TPLEntry>              refinementSetNodes  = new ArrayList<TPLEntry>();
 
     // split refinementSet in refinementSetPoints and refinementSetNodes
     for(TPLEntry entry : refinementSet) {
@@ -78,17 +74,6 @@ public class EmbeddedTPLQuery {
     return refined;
   }
 
-  private PriorityQueue<SimpleEntry<Double, TPLEntry>> initializeMinHeap(){
-    PriorityQueue<SimpleEntry<Double, TPLEntry>> minHeap = new PriorityQueue<SimpleEntry<Double, TPLEntry>>(50, new Comparator<SimpleEntry<Double, TPLEntry>>() {
-      public int compare(SimpleEntry<Double, TPLEntry> o1, SimpleEntry<Double, TPLEntry> o2) {
-        return Double.compare(o1.getKey(), o2.getKey());
-      }
-    });
-
-    minHeap.add(new SimpleEntry<Double, TPLEntry>(0.0, new TPLEntry(tree.getRootEntry(), 0)));
-
-    return minHeap;
-  }
 
   /***********************************/
   /*********** F I L T E R ***********/
@@ -185,13 +170,16 @@ public class EmbeddedTPLQuery {
    * @param refinementSetNodes
    * @return
    */
-  private DistanceDBIDList<DoubleDistance> refine(DoubleVector q, int k, ArrayList<SpatialPointLeafEntry> candidateSet, ArrayList<SpatialPointLeafEntry> refinementSetPoints, ArrayList<TPLEntry> refinementSetNodes){
-    
+  private DistanceDBIDList<DoubleDistance> refine(DoubleVector q,
+                                                  int k,
+                                                  ArrayList<SpatialPointLeafEntry> candidateSet,
+                                                  ArrayList<SpatialPointLeafEntry> refinementSetPoints,
+                                                  ArrayList<TPLEntry> refinementSetNodes){
+
     HashMap<DBID, HashMap<Integer, TPLEntry>> toVisits               = new HashMap<DBID, HashMap<Integer, TPLEntry>>();
     HashMap<DBID, Integer>                    count                  = new HashMap<DBID, Integer>();
     ArrayList<SpatialPointLeafEntry>          selfPrunedCandidateSet = (ArrayList<SpatialPointLeafEntry>) candidateSet.clone();
     int removed = 0;
-
     
     /*
      * SELF PRUNING of candidates
@@ -286,11 +274,14 @@ public class EmbeddedTPLQuery {
    * @param toVisits
    * @param result
    */
-  private void k_refinement_round(DoubleVector q, int k, ArrayList<SpatialPointLeafEntry> candidateSet,
-      ArrayList<SpatialPointLeafEntry> refinementSetPoints, ArrayList<TPLEntry> refinementSetNodes,
-      HashMap<DBID, Integer> count, HashMap<DBID, HashMap<Integer, TPLEntry>> toVisits,
-      GenericDistanceDBIDList<DoubleDistance> result) {
-
+  private void k_refinement_round(DoubleVector                              q,
+                                  int                                       k,
+                                  ArrayList<SpatialPointLeafEntry>          candidateSet,
+                                  ArrayList<SpatialPointLeafEntry>          refinementSetPoints,
+                                  ArrayList<TPLEntry>                       refinementSetNodes,
+                                  HashMap<DBID, Integer>                    count,
+                                  HashMap<DBID, HashMap<Integer, TPLEntry>> toVisits,
+                                  GenericDistanceDBIDList<DoubleDistance>   result) {
     /*
      * do refinement for each point p in candidateSet
      */
@@ -434,5 +425,17 @@ public class EmbeddedTPLQuery {
     }
 
     return bestNode;
+  }
+
+  private PriorityQueue<SimpleEntry<Double, TPLEntry>> initializeMinHeap(){
+    PriorityQueue<SimpleEntry<Double, TPLEntry>> minHeap = new PriorityQueue<SimpleEntry<Double, TPLEntry>>(50, new Comparator<SimpleEntry<Double, TPLEntry>>() {
+      public int compare(SimpleEntry<Double, TPLEntry> o1, SimpleEntry<Double, TPLEntry> o2) {
+        return Double.compare(o1.getKey(), o2.getKey());
+      }
+    });
+
+    minHeap.add(new SimpleEntry<Double, TPLEntry>(0.0, new TPLEntry(tree.getRootEntry(), 0)));
+
+    return minHeap;
   }
 }
