@@ -21,6 +21,9 @@ import util.Log;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.*;
 
+import static elkiTPL.PruningHeuristic.vmMaxDistMinimumNorm;
+import static elkiTPL.PruningHeuristic.vmMinDistanceMaximumNorm;
+
 public class EmbeddedTPLQuery {
 
   private final Relation<DoubleVector>                        relation;
@@ -44,45 +47,30 @@ public class EmbeddedTPLQuery {
    * @param k
    * @return
    */
-  public DistanceDBIDList<DoubleDistance> getRKNNForObject(DoubleVector q, int k) {
+  public HashMap<DBID, Double> getRKNNForObject(DoubleVector q, int k) {
     Log.append("    - Performing filter step..");
     Log.printFlush();
     TimeDiff timeFilterStep = new TimeDiff(System.currentTimeMillis());
 
     ArrayList<ArrayList<?>> filtered = filter(q, k);
 
+    ArrayList<SpatialPointLeafEntry> candidateSet        = (ArrayList<SpatialPointLeafEntry>) filtered.get(0);
+    ArrayList<SpatialPointLeafEntry> refinementSetPoints = (ArrayList<SpatialPointLeafEntry>) filtered.get(1);
+    ArrayList<TPLEntry>              refinementSetNodes  = (ArrayList<TPLEntry>) filtered.get(2);
+
     timeFilterStep.tEnd_$eq(System.currentTimeMillis());
     Log.appendln(" done in " + timeFilterStep);
-
-    ArrayList<SpatialPointLeafEntry> candidateSet  = new ArrayList<SpatialPointLeafEntry>();
-    ArrayList<TPLEntry>              refinementSet = new ArrayList<TPLEntry>();
-
-    candidateSet  = (ArrayList<SpatialPointLeafEntry>) filtered.get(0);
-    refinementSet = (ArrayList<TPLEntry>)              filtered.get(1);
-
-    ArrayList<SpatialPointLeafEntry> refinementSetPoints = new ArrayList<SpatialPointLeafEntry>();
-    ArrayList<TPLEntry>              refinementSetNodes  = new ArrayList<TPLEntry>();
-
-    // split refinementSet in refinementSetPoints and refinementSetNodes
-    for(TPLEntry entry : refinementSet) {
-      if(entry.getEntry().isLeafEntry()) {
-        refinementSetPoints.add((SpatialPointLeafEntry) entry.getEntry());
-      }
-      else {
-        refinementSetNodes.add(entry);
-      }
-    }
-
     Log.appendln("    - After filtering: " + candidateSet.size() + " cnds, " + refinementSetPoints.size() + " refPoints, " + refinementSetNodes.size() + " refNodes.");
 
-    Log.append("    - Performing refinement step.. ");
+    Log.append("    - Performing refinement step..");
     Log.printFlush();
     TimeDiff timeRefinementStep = new TimeDiff(System.currentTimeMillis());
 
-    DistanceDBIDList<DoubleDistance> refined = refine(q, k, candidateSet, refinementSetPoints, refinementSetNodes);
+    HashMap<DBID, Double> refined = refine(q, k, candidateSet, refinementSetPoints, refinementSetNodes);
 
     timeRefinementStep.tEnd_$eq(System.currentTimeMillis());
     Log.appendln(" done in " + timeRefinementStep);
+    Log.appendln("    - After refining: " + refined.size() + " cnds");
 
 
     return refined;
@@ -100,17 +88,18 @@ public class EmbeddedTPLQuery {
   private ArrayList<ArrayList<?>> filter(DoubleVector q, int k){
     ArrayList<ArrayList<?>> cndsRefs = new ArrayList<ArrayList<?>>(); // will contain cndSet and refSet
     
-    PriorityQueue<SimpleEntry<Double, TPLEntry>>  minHeap = initializeMinHeap();                    // initialize mindist heap and insert (R-tree root, 0)
-    ArrayList<SpatialPointLeafEntry>              cndSet  = new ArrayList<SpatialPointLeafEntry>(); // initialize Candidate Set
-    ArrayList<TPLEntry>                           refSet  = new ArrayList<TPLEntry>();              // initialize Refinement Set
-    
+    PriorityQueue<SimpleEntry<Double, TPLEntry>>  minHeap      = initializeMinHeap();                    // initialize mindist heap and insert (R-tree root, 0)
+    ArrayList<SpatialPointLeafEntry>              cndSet       = new ArrayList<SpatialPointLeafEntry>(); // initialize candidate set
+    ArrayList<SpatialPointLeafEntry>              refSetPoints = new ArrayList<SpatialPointLeafEntry>(); // initialize refinement points set
+    ArrayList<TPLEntry>                           refSetNodes  = new ArrayList<TPLEntry>();              // initialize refinement nodes set
+
     double k_trim_mindist = 0.0;
     
     // while minHeap is not empty
     while(!minHeap.isEmpty()) {
       // entry=(spatEntry,key)=de-heap minHeap
-      SimpleEntry<Double, TPLEntry> entry = minHeap.poll();
-      SpatialEntry spatEntry = (SpatialEntry) entry.getValue().getEntry();
+      TPLEntry tplEntry = minHeap.poll().getValue();
+      SpatialEntry spatEntry = tplEntry.getEntry();
       if (spatEntry.isLeafEntry()){  // throw away enheaped query node
         if (Arrays.equals(((SpatialPointLeafEntry) spatEntry).getValues(), q.getValues())){
           continue;
@@ -122,7 +111,10 @@ public class EmbeddedTPLQuery {
       // if (trim(q, cndSet, spatEntry) = infinite
       if ( k_trim_mindist == Double.POSITIVE_INFINITY) {
         // then cndSet = cndSet + {spatEntry}
-        refSet.add(entry.getValue());
+        if (spatEntry.isLeafEntry())
+          refSetPoints.add((SpatialPointLeafEntry) spatEntry);
+        else
+          refSetNodes.add(tplEntry);
       } else { // entry may be or contain a candidate
         // if spatEntry is data point
         if(spatEntry.isLeafEntry()) {
@@ -139,10 +131,10 @@ public class EmbeddedTPLQuery {
               // if (trim(q, cndSet, se2) != infinite)
               if(distance != Double.POSITIVE_INFINITY){
                 // then insert (se2, dist(p,q)) in minHeap
-                minHeap.add(new SimpleEntry<Double, TPLEntry>(distance, new TPLEntry(se2, entry.getValue().getDepth() + 1)));
+                minHeap.add(new SimpleEntry<Double, TPLEntry>(distance, new TPLEntry(se2, tplEntry.getDepth() + 1)));
               } else {
                 // refSet = refSet + {se2}
-                refSet.add(new TPLEntry(se2, entry.getValue().getDepth() + 1));
+                refSetPoints.add((SpatialPointLeafEntry) se2);
               }
             }
           } else { // else if spatEntry points to an intermediate node
@@ -153,12 +145,12 @@ public class EmbeddedTPLQuery {
               // if mindist(Nres_i, q) = infinite
               if (distance == Double.POSITIVE_INFINITY){
                 // refSet = refSet + {N_i}
-                entry.getValue().addToDepth(1);
-                refSet.add(new TPLEntry(N_i, entry.getValue().getDepth()));
+                tplEntry.addToDepth(1);
+                refSetNodes.add(new TPLEntry(N_i, tplEntry.getDepth()));
               } else {
                 // else insert (N_i, mindist(Nres_i, q)) in minHeap
-                entry.getValue().addToDepth(1);
-                minHeap.add(new SimpleEntry<Double, TPLEntry>(distance, new TPLEntry(N_i, entry.getValue().getDepth())));
+                tplEntry.addToDepth(1);
+                minHeap.add(new SimpleEntry<Double, TPLEntry>(distance, new TPLEntry(N_i, tplEntry.getDepth())));
               }
             }
           }
@@ -167,7 +159,8 @@ public class EmbeddedTPLQuery {
     }
     
     cndsRefs.add(cndSet);
-    cndsRefs.add(refSet);
+    cndsRefs.add(refSetPoints);
+    cndsRefs.add(refSetNodes);
     
     return cndsRefs;
   }
@@ -184,11 +177,11 @@ public class EmbeddedTPLQuery {
    * @param refinementSetNodes
    * @return
    */
-  private DistanceDBIDList<DoubleDistance> refine(DoubleVector q,
-                                                  int k,
-                                                  ArrayList<SpatialPointLeafEntry> candidateSet,
-                                                  ArrayList<SpatialPointLeafEntry> refinementSetPoints,
-                                                  ArrayList<TPLEntry> refinementSetNodes){
+  private HashMap<DBID, Double> refine(DoubleVector                     q,
+                                       int                              k,
+                                       ArrayList<SpatialPointLeafEntry> candidateSet,
+                                       ArrayList<SpatialPointLeafEntry> refinementSetPoints,
+                                       ArrayList<TPLEntry>              refinementSetNodes){
 
     HashMap<DBID, HashMap<Integer, TPLEntry>> toVisits               = new HashMap<DBID, HashMap<Integer, TPLEntry>>();
     HashMap<DBID, Integer>                    count                  = new HashMap<DBID, Integer>();
@@ -227,7 +220,7 @@ public class EmbeddedTPLQuery {
     }
     
     
-    GenericDistanceDBIDList<DoubleDistance> results = new GenericDistanceDBIDList<DoubleDistance>();
+    HashMap<DBID, Double> results = new HashMap<DBID, Double>();
 
     while(true){
       k_refinement_round(q, k, selfPrunedCandidateSet, refinementSetPoints, refinementSetNodes, count, toVisits, results);
@@ -286,7 +279,7 @@ public class EmbeddedTPLQuery {
    * @param refinementSetNodes
    * @param count
    * @param toVisits
-   * @param result
+   * @param results
    */
   private void k_refinement_round(DoubleVector                              q,
                                   int                                       k,
@@ -295,7 +288,7 @@ public class EmbeddedTPLQuery {
                                   ArrayList<TPLEntry>                       refinementSetNodes,
                                   HashMap<DBID, Integer>                    count,
                                   HashMap<DBID, HashMap<Integer, TPLEntry>> toVisits,
-                                  GenericDistanceDBIDList<DoubleDistance>   result) {
+                                  HashMap<DBID, Double>                     results) {
     /*
      * do refinement for each point p in candidateSet
      */
@@ -330,7 +323,7 @@ public class EmbeddedTPLQuery {
         SpatialEntry N = entry.getEntry();
         // if maxdist(p,entry)<dist(p,q) and min_card(entry)>=counter(p)
         // TODO: min_card seems to be wrong??
-        if (PruningHeuristic.vmMaxDistMinimumNorm(p, N) < PruningHeuristic.vvMinDistanceMaximumNorm(p, q) && min_card >= counter){
+        if (vmMaxDistMinimumNorm(p, N) < PruningHeuristic.vvMinDistanceMaximumNorm(p, q) && min_card >= counter){
           // candidateSet = candidateSet - {p}
           candidateSet.remove(i);
           i--;
@@ -363,13 +356,13 @@ public class EmbeddedTPLQuery {
         DBID dbid = p.getDBID();
 
         DoubleDistance distance = (DoubleDistance) maxDistQuery.distance(dbid, q); // TODO is this distance calculation correct? -> probably
-        result.add(distance, dbid);
+        results.put(dbid, distance.doubleValue());
       }
     }
   }
 
   /**
-   * Checks if entry is closer to k candidates than to q.
+   * Checks if maxdist between entry and k candidates is smaller than its mindist to q.
    * If so, returns infinity (--> entry is pruned), else, returns the mindist from q to entry.
    * @param q
    * @param k
@@ -379,17 +372,20 @@ public class EmbeddedTPLQuery {
    */
   private double prune (NumberVector<?> q, int k, ArrayList<SpatialPointLeafEntry> candidateSet, SpatialEntry entry){
     int pruneCount = 0;
+    double qEntryMinDist = vmMinDistanceMaximumNorm(q, entry);
 
-    for(SpatialComparable candidate : candidateSet) {
-      if(PruningHeuristic.relationalTestEmbedding(entry, q, candidate)) {
+    for(SpatialPointLeafEntry cnd : candidateSet) {
+
+      double cndEntryMaxDist = vmMaxDistMinimumNorm(cnd, entry);
+
+      if (cndEntryMaxDist < qEntryMinDist)
         pruneCount++;
       }
       if(pruneCount >= k) {
         return Double.POSITIVE_INFINITY;
       }
-    }
 
-    return PruningHeuristic.vmMinDistanceMaximumNorm(q, entry);
+    return qEntryMinDist;
   }
 
   /**
