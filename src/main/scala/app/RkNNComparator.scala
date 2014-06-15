@@ -33,7 +33,7 @@ object RkNNComparator {
      * rknn query settings
      */
 
-    val exampleGraph = "tpl" // "eager"  for using the example graph from TKDE - GraphRNN paper page 3,
+    val exampleGraph = "file" // "eager"  for using the example graph from TKDE - GraphRNN paper page 3,
                              // "tpl"    for using the example graph from the TPL page 748,
                              // "random" for generating a random graph
 
@@ -49,7 +49,8 @@ object RkNNComparator {
         (sGraph, qID, refPoints, k, rStarTreePageSize)
 
       case "tpl"  =>
-        val sGraph            = convertJavaToScalaGraph(XmlUtil.importGraphFromXml("exampleGraphXMLs/exampleGraphTPL.xml"))
+//        val sGraph            = convertJavaToScalaGraph(XmlUtil.importGraphFromXml("exampleGraphXMLs/exampleGraphTPL.xml"))
+        val sGraph            = convertJavaToScalaGraph(XmlUtil.importGraphFromXml("exampleGraphXMLs/exampleGraphTPLAllObjects.xml"))
         val qID               = 15
         val refPoints         = Seq(sGraph.getVertex(4), sGraph.getVertex(11))
 //                                .++(Seq(sGraph.getVertex(13),sGraph.getVertex(5),sGraph.getVertex(16)))
@@ -57,13 +58,24 @@ object RkNNComparator {
         // 130 bytes: (minimum for 2 dimensions); Max. entries in node = 3; Max. entries in leaf = 4
         // 178 bytes: (minimum for 3 dimensions); Max. entries in node = 3; Max. entries in leaf = 5
         val rStarTreePageSize = refPoints.size match {
+          case 1 => 100
           case 2 => 150
-          case 3 => 190
-
+          case 3 => 200
           case 4 => 250
           case 5 => 300
         }
         val k                 = 3
+
+        (sGraph, qID, refPoints, k, rStarTreePageSize)
+
+      case "file" =>
+        val sGraph            = convertJavaToScalaGraph(XmlUtil.importGraphFromXml("exampleGraphXMLs/1000Nodes4000EdgesAllObjects.xml"))
+        val qID               = 200
+//        val numRefPoints      = 3
+        val rStarTreePageSize = 1024
+        val k                 = 3
+//        val refPoints         = Embedding.createRefPoints(sGraph.getAllVertices, numRefPoints)
+        val refPoints         = Seq(sGraph.getVertex(446), sGraph.getVertex(649), sGraph.getVertex(496))
 
         (sGraph, qID, refPoints, k, rStarTreePageSize)
 
@@ -77,10 +89,6 @@ object RkNNComparator {
         val k                 = 2
 
         val sGraph            = GraphGen.generateScalaGraph(vertices, edges, objects, weightOne = false)
-
-        // insert a new object in query node, if non existent
-        if (!sGraph.getVertex(qID).containsObject)
-          sGraph.getVertex(qID).setObjectId(objects) // generated object IDs start with 0
 
         val refPoints = Embedding.createRefPoints(sGraph.getAllVertices, numRefPoints)
 
