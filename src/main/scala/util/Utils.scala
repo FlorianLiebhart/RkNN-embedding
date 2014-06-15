@@ -41,12 +41,18 @@ object Utils {
 
     override def toString: String = {
       if(tEnd == null)
-        "END NOT SPECIFIED"
+        throw new RuntimeException("End time of TimeDiff not specified")
       else {
          s"{{{ ${tEnd - tStart} ms. }}}"
        }
     }
   }
+
+  /**
+   * Throws IllegalArgumentException if b is false
+   * @param b
+   */
+  def makesure(b: Boolean, errMsg: String) = if (!b) throw new IllegalArgumentException(errMsg)
 
   type VD = Tuple2[SVertex, Double] // (Vertex, Distance from q)
   implicit def t2ToOrdered(thisT2: VD): Ordered[VD] = new Ordered[VD] {

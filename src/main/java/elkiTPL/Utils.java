@@ -128,13 +128,4 @@ public class Utils {
 
     return DBIDUtil.deref(iter);
   }
-
-  /**
-   * Throws IllegalArgumentException if b is false
-   * @param b
-   */
-  public static void makesure(boolean b) {
-    if (!b)
-      throw new IllegalArgumentException();
-  }
 }
