@@ -65,22 +65,30 @@ object Embedding {
     /*
      *    1.2 Create memory database (after writing CSV file)
      */
-    Log.append(s"  1.2 Creating CSV file and DB..")
-    val timeCreateCSVandDB = TimeDiff(System.currentTimeMillis)
+    Log.append(s"  - Creating CSV file..")
+    val timeCreateCSV = TimeDiff(System.currentTimeMillis)
 
     writeRTreeCSVFile(refPointDistances, rTreePath)
 //    Utils.generateRandomCSVFile(refPoints.size, 100, rTreePath) // dimensions = numRefPoints, number of random vectors to be created = 100
+
+    timeCreateCSV.tEnd = System.currentTimeMillis
+    Log.appendln(s" done in $timeCreateCSV")
+
+    Log.append(s"  - Creating file based Database..")
+    val timeCreateDB = TimeDiff(System.currentTimeMillis)
+
     val db: List[Database]                      = Utils.createDatabase(rTreePath).toList
     val relation: Relation[DoubleVector]        = db(0).getRelation(TypeUtil.NUMBER_VECTOR_FIELD)
 
-    timeCreateCSVandDB.tEnd = System.currentTimeMillis
-    Log.appendln(s" done in $timeCreateCSVandDB")
+    timeCreateDB.tEnd = System.currentTimeMillis
+    Log.appendln(s" done in $timeCreateDB")
+
 
 
     /*
      *    1.3 Create RStar tree index
      */
-    Log.append(s"  1.3 Creating R*Tree index (entries: " + relation.size() + ", page size: " + rStarTreePageSize + " bytes).. ");
+    Log.append(s"  - Creating R*Tree index (entries: " + relation.size() + ", page size: " + rStarTreePageSize + " bytes).. ");
     val timeCreateRStarTree = TimeDiff(System.currentTimeMillis)
 
     val rStarTree: RStarTreeIndex[DoubleVector] = Utils.createRStarTree(relation, rStarTreePageSize)
@@ -91,7 +99,7 @@ object Embedding {
     /*
      *    1.4 Create TPL rknn query and query object
      */
-    Log.append(s"  1.4 Creating EmbeddedTPLQuery object and query object ..")
+    Log.append(s"  - Creating EmbeddedTPLQuery object and query object ..")
     val timeCreateQuery = TimeDiff(System.currentTimeMillis)
 
     val tplEmbedded                             = new EmbeddedTPLQuery(rStarTree, relation)

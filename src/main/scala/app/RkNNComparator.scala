@@ -49,11 +49,20 @@ object RkNNComparator {
         (sGraph, qID, refPoints, k, rStarTreePageSize)
 
       case "tpl"  =>
-        val sGraph            = convertJavaToScalaGraph(XmlUtil.importGraphFromXml("exampleGraphXMLs/exampleGraphTPLAllObjects.xml"))
+        val sGraph            = convertJavaToScalaGraph(XmlUtil.importGraphFromXml("exampleGraphXMLs/exampleGraphTPL.xml"))
         val qID               = 15
         val refPoints         = Seq(sGraph.getVertex(4), sGraph.getVertex(11))
-        val rStarTreePageSize = 150  // 130 bytes: (minimum for 2 dimensions); Max. entries in node = 3; Max. entries in leaf = 4
-                                     // 178 bytes: (minimum for 3 dimensions); Max. entries in node = 3; Max. entries in leaf = 5
+//                                .++(Seq(sGraph.getVertex(13),sGraph.getVertex(5),sGraph.getVertex(16)))
+
+        // 130 bytes: (minimum for 2 dimensions); Max. entries in node = 3; Max. entries in leaf = 4
+        // 178 bytes: (minimum for 3 dimensions); Max. entries in node = 3; Max. entries in leaf = 5
+        val rStarTreePageSize = refPoints.size match {
+          case 2 => 150
+          case 3 => 190
+
+          case 4 => 250
+          case 5 => 300
+        }
         val k                 = 3
 
         (sGraph, qID, refPoints, k, rStarTreePageSize)
@@ -102,15 +111,16 @@ object RkNNComparator {
 
 
 
-
   def naiveRkNN(jGraph: graph.core.Graph, qID: Integer, k: Integer) : Unit = naiveRkNN(convertJavaToScalaGraph(jGraph), qID, k)
   def naiveRkNN(sGraph: SGraph          , qID: Integer, k: Integer) : Unit = {
     val sQ     = sGraph.getVertex(qID)
 
     Log.appendln(s"-----------Naive R${k}NN for query point $qID:-----------\n")
 
-    val timeNaiveRkNN = TimeDiff(System.currentTimeMillis)
-    val rkNNsNaive = naiveRkNNs(sGraph, sQ, k)
+    val timeNaiveRkNN  = TimeDiff(System.currentTimeMillis)
+
+    val rkNNsNaive     = naiveRkNNs(sGraph, sQ, k)
+
     timeNaiveRkNN.tEnd = System.currentTimeMillis
 
     Log.appendln(s"Result r${k}NNs: ${if (rkNNsNaive.size == 0) "--" else ""}")
@@ -126,8 +136,10 @@ object RkNNComparator {
 
     Log.appendln(s"-----------Eager R${k}NN for query point $qID:-----------\n")
 
-    val timeEagerRkNN = TimeDiff(System.currentTimeMillis)
-    val rkNNsEager = eager(sGraph, sQ, k)
+    val timeEagerRkNN  = TimeDiff(System.currentTimeMillis)
+
+    val rkNNsEager     = eager(sGraph, sQ, k)
+
     timeEagerRkNN.tEnd = System.currentTimeMillis()
 
     Log.appendln(s"Result r${k}NNs: ${if (rkNNsEager.size == 0) "--" else ""}")
@@ -148,9 +160,11 @@ object RkNNComparator {
     Log.appendln(s"-----------Embedded R${k}NN for query point $qID:-----------\n")
     Log.printFlush
 
-    val timeEmbeddedRkNN = TimeDiff(System.currentTimeMillis)
+    val timeEmbeddedRkNN                             = TimeDiff(System.currentTimeMillis)
+
     val rkNNsEmbedded: IndexedSeq[(SVertex, Double)] = Embedding.embeddedRkNNs(sGraph, sQ, k, refPoints, rStarTreePageSize)
-    timeEmbeddedRkNN.tEnd = System.currentTimeMillis()
+
+    timeEmbeddedRkNN.tEnd                            = System.currentTimeMillis()
 
     Log.appendln(s"Result r${k}NNs: ${if (rkNNsEmbedded.size == 0) "--" else ""}")
     for( v <- rkNNsEmbedded )
@@ -166,11 +180,13 @@ object RkNNComparator {
     Log.appendln("-----------TPL:-----------")
     Log.appendln(s"R${k}NNs for query point $qID")
 
-    val t0            = System.currentTimeMillis()
-    val rkNNsTPL: IndexedSeq[(DBID, Double)] = TPL.tplRkNNs(sGraph, sQ, k, refPoints, rStarTreePageSize, withClipping)
-    val t1            = System.currentTimeMillis()
+    val timeTPLRkNN                          = TimeDiff(System.currentTimeMillis)
 
-    Log.appendln(s"Runtime: ${(t1 - t0)/1000.0} sec.\n")
+    val rkNNsTPL: IndexedSeq[(DBID, Double)] = TPL.tplRkNNs(sGraph, sQ, k, refPoints, rStarTreePageSize, withClipping)
+
+    timeTPLRkNN.tEnd                     = System.currentTimeMillis()
+
+    Log.appendln(s"Runtime: $timeTPLRkNN")
 
     Log.appendln(s"Result r${k}NNs: ${if (rkNNsTPL.size == 0) "--" else ""}")
     for( v <- rkNNsTPL )
