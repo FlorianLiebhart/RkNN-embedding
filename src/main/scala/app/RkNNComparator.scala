@@ -172,7 +172,7 @@ object RkNNComparator {
 
   def embeddedRkNN(jGraph: graph.core.Graph, qID: Integer, k: Integer, numRefPoints: Int) : Unit = {
     val sGraph    = convertJavaToScalaGraph(jGraph)
-    val refPoints = Embedding.createRefPoints(sGraph.getAllVertices, numRefPoints)
+    val refPoints = Embedding.createRefPoints(sGraph.getAllVertices, numRefPoints, qID)
     embeddedRkNN(sGraph, qID, k, refPoints, rStarTreePageSize = 1024)
   }
   def embeddedRkNN(sGraph: SGraph, qID: Integer, k: Integer, refPoints: Seq[SVertex], rStarTreePageSize: Int) : Unit = {
@@ -183,7 +183,7 @@ object RkNNComparator {
 
     val timeEmbeddedRkNN = TimeDiff()
 
-    val rkNNsEmbedded: IndexedSeq[(SVertex, Double)] = Embedding.embeddedRkNNs(sGraph, sQ, k, refPoints, rStarTreePageSize)
+    val rkNNsEmbedded: Seq[(SVertex, Double)] = Embedding.embeddedRkNNs(sGraph, sQ, k, refPoints, rStarTreePageSize)
 
     timeEmbeddedRkNN.end
 
@@ -203,7 +203,7 @@ object RkNNComparator {
 
     val timeTPLRkNN                          = TimeDiff()
 
-    val rkNNsTPL: IndexedSeq[(DBID, Double)] = TPL.tplRkNNs(sGraph, sQ, k, refPoints, rStarTreePageSize, withClipping)
+    val rkNNsTPL: Seq[(DBID, Double)] = TPL.tplRkNNs(sGraph, sQ, k, refPoints, rStarTreePageSize, withClipping)
 
     timeTPLRkNN.end
 

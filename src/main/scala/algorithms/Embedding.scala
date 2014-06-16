@@ -36,7 +36,7 @@ object Embedding {
    * @param rStarTreePageSize Determines how many points fit into one page. Felix: Mostly between 1024 und 8192 byte; Erich recommendation: 25*8*dimensions (=> corresponds to around 25 entries/page)
    * @return
    */
-  def embeddedRkNNs(sGraph: SGraph, sQ: SVertex, k: Int, refPoints: Seq[SVertex], rStarTreePageSize: Int): IndexedSeq[(SVertex, Double)] = {
+  def embeddedRkNNs(sGraph: SGraph, sQ: SVertex, k: Int, refPoints: Seq[SVertex], rStarTreePageSize: Int): Seq[(SVertex, Double)] = {
     val rTreePath        = "tplSimulation/rTree.csv"
     val numberOfVertices = sGraph.getAllVertices.size
     Log.appendln(s"\nReference Points: ${refPoints.mkString(",")} \n")
@@ -56,7 +56,7 @@ object Embedding {
 //    makesure(refPoints.filterNot(_.containsObject).isEmpty, "All reference points must contain objects!")
 //    makesure(sQ.containsObject, "The query point must contain an object!")
     val refPointDistances: HashMap[SVertex, IndexedSeq[Double]] = createEmbedding(sGraph, refPoints) // key: Knoten, value: Liste mit Distanzen zu Referenzpunkte (? evtl: Flag ob Objekt auf Knoten)
-//    val refPointDistancesContainingObjects = refPointDistances.filter(x => x._1.containsObject)
+    val refPointDistancesContainingObjects                      = refPointDistances.filter(x => x._1.containsObject || x._1 == sQ)
 
     timeCreateEmbedding.end
     Log.appendln(s" done in $timeCreateEmbedding")
@@ -68,7 +68,7 @@ object Embedding {
     Log.append(s"  - Creating CSV file..")
     val timeCreateCSV = TimeDiff()
 
-    writeRTreeCSVFile(refPointDistances, rTreePath)
+    val dbidVertexIDMapping: MutableHashMap[String, SVertex] = writeRTreeCSVFile(refPointDistancesContainingObjects, rTreePath)
 //    Utils.generateRandomCSVFile(refPoints.size, 100, rTreePath) // dimensions = numRefPoints, number of random vectors to be created = 100
 
     timeCreateCSV.end
@@ -103,7 +103,7 @@ object Embedding {
     val timeCreateQuery = TimeDiff()
 
     val tplEmbedded                             = new EmbeddedTPLQuery(rStarTree, relation)
-    val queryObject: DoubleVector               = relation.get(getDBIDRefFromVertex(relation, sQ))
+    val queryObject: DoubleVector               = relation.get(getDBIDRefFromVertex(relation, sQ, dbidVertexIDMapping))
     // Generate random query point
     /*
     val coordinates: Array[Double] = new Array[Double](refPoints.size)
@@ -151,9 +151,8 @@ object Embedding {
     Log.append(s"    - Mapping candidates from DB to graph..")
     val timeMappingFromDBtoGraph = TimeDiff()
 
-    var filterRefinementResultsEmbedding = IndexedSeq.empty[SVertex]
-    embeddingTPLResultDBIDs map { dbid =>
-      filterRefinementResultsEmbedding :+= sGraph.getVertex(Integer.parseInt(DBIDUtil.deref(dbid).toString))
+    val filterRefinementResultsEmbedding = embeddingTPLResultDBIDs map { dbid =>
+      dbidVertexIDMapping.get(DBIDUtil.deref(dbid).toString).get
     }
 
 
@@ -232,7 +231,7 @@ object Embedding {
    * @param destPath
    * @return
    */
-  def writeRTreeCSVFile(vectorsMap: HashMap[SVertex, IndexedSeq[Double]], destPath: String) {
+  def writeRTreeCSVFile(vectorsMap: HashMap[SVertex, IndexedSeq[Double]], destPath: String): MutableHashMap[String, SVertex] = {
     // create directories and file if non-existent
     val pathToFile = Paths.get(destPath)
     Files.createDirectories(pathToFile.getParent)
@@ -241,19 +240,28 @@ object Embedding {
     val fw  = new FileWriter(destPath, false) // false = overwrite current file content
     val out = new BufferedWriter(fw)
 
+    val dbidVertexIDMapping = MutableHashMap[String, SVertex]()
+    var i = 0
+
     out.write(
-      vectorsMap.toSeq.sortWith(_._1.id < _._1.id).map( vector =>
+      ( for (vector <- vectorsMap)
+      yield {
+        dbidVertexIDMapping.put(i.toString, vector._1)
+        i+=1
         vector._2.mkString(";") //+ ";" + vector._1.id
-      ) mkString "\n"
+      }) mkString "\n"
     )
     out.close()
+
+    dbidVertexIDMapping
   }
 
 
-  def getDBIDRefFromVertex(relation: Relation[DoubleVector], vertex: SVertex): DBIDRef = {
+  def getDBIDRefFromVertex(relation: Relation[DoubleVector], vertex: SVertex, dbidVertexIDMapping: MutableHashMap[String, SVertex] ): DBIDRef = {
+    val dbid = Integer.parseInt(dbidVertexIDMapping.find(_._2 == vertex).get._1)
     val iter = relation.iterDBIDs
     while (iter.valid) {
-      if (iter.internalGetIndex == vertex.id)
+      if (iter.internalGetIndex == dbid)
         return iter
       iter.advance()
     }
