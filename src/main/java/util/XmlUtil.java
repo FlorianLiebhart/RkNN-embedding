@@ -40,9 +40,9 @@ public class XmlUtil {
 	private static final String EDGE_WEIGHT = "Weight";
 	private static final String EDGE_PROB   = "Probability";
 
-	public static void importGraphToXml(ProbabilisticGraph graph, String saveLocation) {
+	public static void saveGraphToXml(Graph graph, String saveLocation) {
 		try {
-			System.out.println("Saving graph... (Location: " + saveLocation + ")");
+			System.out.print("Saving graph... (Location: " + saveLocation + ")");
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 			
@@ -76,7 +76,7 @@ public class XmlUtil {
 			Element edges = doc.createElement(EDGES);
 			Vector<Edge> gEdges = graph.getAllEdges();
 			for(Edge e : gEdges) {
-				Element edge = doc.createElement(EDGE);
+				Element edge   = doc.createElement(EDGE);
 				Element source = doc.createElement(EDGE_SOURCE);
 				Element target = doc.createElement(EDGE_TARGET);
 				Element weight = doc.createElement(EDGE_WEIGHT);
@@ -85,7 +85,7 @@ public class XmlUtil {
 				source.appendChild(doc.createTextNode((Integer.toString(e.getSource().getId()))));
 				target.appendChild(doc.createTextNode((Integer.toString(e.getTarget().getId()))));
 				weight.appendChild(doc.createTextNode((Double.toString(e.getWeight()))));
-				prob.appendChild(doc.createTextNode(Double.toString(graph.getProbability(e))));
+				prob.appendChild(doc.createTextNode("1.0"));
 				
 				edge.appendChild(source);
 				edge.appendChild(target);
@@ -103,7 +103,7 @@ public class XmlUtil {
 			// output for testing
 			transfomer.transform(source, result);
 			
-			System.out.println("Saving graph... DONE!");
+			System.out.println(" .. done.");
 		} catch(ParserConfigurationException e) {
 			e.printStackTrace();
 		} catch(TransformerConfigurationException e) {
@@ -119,8 +119,8 @@ public class XmlUtil {
 		try {
 			File file = new File(fileName);
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(file);
+			DocumentBuilder dBuilder         = dbFactory.newDocumentBuilder();
+			Document doc                     = dBuilder.parse(file);
 			
 			NodeList nodeList = doc.getElementsByTagName(NODE);
 			for(int i = 0; i < nodeList.getLength(); i++) {
@@ -129,9 +129,9 @@ public class XmlUtil {
 					Element e = (Element) node;
 					// read values
 					Vertex v = new Vertex(Integer.parseInt(getTagValue(NODE_ID, e)));
-					int oId = Integer.parseInt(getTagValue(OBJECT_ID, e));
-					int x = Integer.parseInt(getTagValue(NODE_X, e));
-					int y = Integer.parseInt(getTagValue(NODE_Y, e));
+					int oId  = Integer.parseInt(getTagValue(OBJECT_ID, e));
+					int x    = Integer.parseInt(getTagValue(NODE_X, e));
+					int y    = Integer.parseInt(getTagValue(NODE_Y, e));
 					v.setNodeLocation(x, y);
 					v.setObjectId(oId);
 					ProbabilisticGraph.getInstance().addVertex(v);
@@ -147,7 +147,7 @@ public class XmlUtil {
 					Vertex target = ProbabilisticGraph.getInstance().getVertex(Integer.parseInt(getTagValue(EDGE_TARGET, e)));
 					Edge edge = new Edge(source, target);
 					double weight = Double.parseDouble(getTagValue(EDGE_WEIGHT, e));
-					double prob = Double.parseDouble(getTagValue(EDGE_PROB, e));
+					double prob   = 1.0;//Double.parseDouble(getTagValue(EDGE_PROB, e));
 					edge.setWeight(weight);
 					ProbabilisticGraph.getInstance().addEdge(edge);
 					ProbabilisticGraph.getInstance().setProbability(edge, prob);

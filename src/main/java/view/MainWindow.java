@@ -657,7 +657,7 @@ public class MainWindow extends JFrame implements ActionListener, Observer {
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			String file = fc.getSelectedFile().getAbsolutePath();
 			graphPanel.updateNodeModelPositions();
-			XmlUtil.importGraphToXml(ProbabilisticGraph.getInstance(), file);
+			XmlUtil.saveGraphToXml(ProbabilisticGraph.getInstance(), file);
 			updateStatusBar("Graph saved to " + file);
 		}
 	}
