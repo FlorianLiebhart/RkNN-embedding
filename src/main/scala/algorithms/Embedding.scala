@@ -9,25 +9,17 @@ import java.nio.file.{Files, Paths}
 import java.io.{BufferedWriter, FileWriter}
 import java.lang.IllegalArgumentException
 
-import de.lmu.ifi.dbs.elki.distance.distancevalue.{DoubleDistance}
-import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.{MaximumDistanceFunction, EuclideanDistanceFunction}
-import de.lmu.ifi.dbs.elki.database.ids.distance.DistanceDBIDList
-import de.lmu.ifi.dbs.elki.database.ids.{DBIDRef, DBIDIter, DBID, DBIDUtil}
+import de.lmu.ifi.dbs.elki.database.ids.{DBIDRef, DBID, DBIDUtil}
 import de.lmu.ifi.dbs.elki.database.Database
 import de.lmu.ifi.dbs.elki.database.relation.Relation
 import de.lmu.ifi.dbs.elki.data.{DoubleVector}
 import de.lmu.ifi.dbs.elki.data.`type`.TypeUtil
 import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar._
-import de.lmu.ifi.dbs.elki.index.tree.spatial.SpatialEntry
-import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.strategies.bulk.SortTileRecursiveBulkSplit
 
 import elkiTPL.{EmbeddedTPLQuery, Utils}
 import graph.{SVertex, SGraph}
 import util.Utils.{VD, TimeDiff}
-import util.Utils.makesure
 import util.Log
-import scala.collection.{mutable, JavaConverters}
-import java.lang
 
 /**
  * @author fliebhart
@@ -52,20 +44,20 @@ object Embedding {
      * 1. Preparation phase
      */
     Log.appendln(s"1. Start preparation phase (create: embedding, DB, R*Tree, query object)")
-    val timeAlgorithmPreparation = TimeDiff(System.currentTimeMillis)
+    val timeAlgorithmPreparation = TimeDiff()
 
     /*
      *    1.1 Create embedding
      */
     Log.append(s"  1.1 Creating embedding..")
-    val timeCreateEmbedding = TimeDiff(System.currentTimeMillis)
+    val timeCreateEmbedding = TimeDiff()
 
 //    makesure(refPoints.filterNot(_.containsObject).isEmpty, "All reference points must contain objects!")
 //    makesure(sQ.containsObject, "The query point must contain an object!")
     val refPointDistances: HashMap[SVertex, IndexedSeq[Double]] = createEmbedding(sGraph, refPoints) // key: Knoten, value: Liste mit Distanzen zu Referenzpunkte (? evtl: Flag ob Objekt auf Knoten)
 //    val refPointDistancesContainingObjects = refPointDistances.filter(x => x._1.containsObject)
 
-    timeCreateEmbedding.tEnd = System.currentTimeMillis
+    timeCreateEmbedding.end
     Log.appendln(s" done in $timeCreateEmbedding")
 
 
@@ -73,21 +65,21 @@ object Embedding {
      *    1.2 Write CSV + Create memory database
      */
     Log.append(s"  - Creating CSV file..")
-    val timeCreateCSV = TimeDiff(System.currentTimeMillis)
+    val timeCreateCSV = TimeDiff()
 
     writeRTreeCSVFile(refPointDistances, rTreePath)
 //    Utils.generateRandomCSVFile(refPoints.size, 100, rTreePath) // dimensions = numRefPoints, number of random vectors to be created = 100
 
-    timeCreateCSV.tEnd = System.currentTimeMillis
+    timeCreateCSV.end
     Log.appendln(s" done in $timeCreateCSV")
 
     Log.append(s"  - Creating file based Database..")
-    val timeCreateDB = TimeDiff(System.currentTimeMillis)
+    val timeCreateDB = TimeDiff()
 
     val db: List[Database]               = Utils.createDatabase(rTreePath).toList
     val relation: Relation[DoubleVector] = db(0).getRelation(TypeUtil.NUMBER_VECTOR_FIELD)
 
-    timeCreateDB.tEnd = System.currentTimeMillis
+    timeCreateDB.end
     Log.appendln(s" done in $timeCreateDB")
 
 
@@ -96,18 +88,18 @@ object Embedding {
      *    1.3 Create RStar tree index
      */
     Log.append(s"  - Creating R*Tree index (entries: " + relation.size() + ", page size: " + rStarTreePageSize + " bytes)..");
-    val timeCreateRStarTree = TimeDiff(System.currentTimeMillis)
+    val timeCreateRStarTree = TimeDiff()
 
     val rStarTree: RStarTreeIndex[DoubleVector] = Utils.createRStarTree(relation, rStarTreePageSize)
 
-    timeCreateRStarTree.tEnd = System.currentTimeMillis
+    timeCreateRStarTree.end
     Log.appendln(s" done in $timeCreateRStarTree")
 
     /*
      *    1.4 Create TPL rknn query and query object
      */
     Log.append(s"  - Creating EmbeddedTPLQuery object and query object ..")
-    val timeCreateQuery = TimeDiff(System.currentTimeMillis)
+    val timeCreateQuery = TimeDiff()
 
     val tplEmbedded                             = new EmbeddedTPLQuery(rStarTree, relation)
     val queryObject: DoubleVector               = relation.get(getDBIDRefFromVertex(relation, sQ))
@@ -125,38 +117,38 @@ object Embedding {
     Log.appendln(s"Random query object from database: $queryObject\n")
     */
 
-    timeCreateQuery.tEnd = System.currentTimeMillis
+    timeCreateQuery.end
     Log.appendln(s" done in $timeCreateQuery")
 
-    timeAlgorithmPreparation.tEnd = System.currentTimeMillis
+    timeAlgorithmPreparation.end
     Log.appendln(s"Algorithm preparation done in $timeAlgorithmPreparation \n").printFlush
 
     /*
      * 2. Performing embedded TPL rknn query
      */
     Log.appendln(s"2. Performing R${k}NN-query...")
-    val timeTotalRknn = TimeDiff(System.currentTimeMillis)
+    val timeTotalRknn = TimeDiff()
     /*
      *    2.1 Filter-refinement in embedded space
      */
     Log.appendln(s"  2.1 Performing filter refinement in embedded space..")
-    val timeFilterRefEmbedding = TimeDiff(System.currentTimeMillis)
+    val timeFilterRefEmbedding = TimeDiff()
 
-    val embeddingTPLResultDBIDs: Seq[DBID] = tplEmbedded.getRKNNForObject(queryObject, k).keys.toSeq
+    val embeddingTPLResultDBIDs: Seq[DBID] = tplEmbedded.filterRefinement(queryObject, k).keys.toSeq
 
-    timeFilterRefEmbedding.tEnd = System.currentTimeMillis
+    timeFilterRefEmbedding.end
     Log.appendln(s"  Filter Refinement in embedded space done in $timeFilterRefEmbedding \n").printFlush
 
     /*
      *    2.2 Refining the TPL rknn results on graph
      */
     Log.appendln(s"  2.2 Refining candidates on graph..")
-    val timeRefinementOnGraph = TimeDiff(System.currentTimeMillis)
+    val timeRefinementOnGraph = TimeDiff()
     /*
      *        2.2.1 Mapping embedded candidates from DB to Graph
      */
     Log.append(s"    - Mapping candidates from DB to graph..")
-    val timeMappingFromDBtoGraph = TimeDiff(System.currentTimeMillis)
+    val timeMappingFromDBtoGraph = TimeDiff()
 
     var filterRefinementResultsEmbedding = IndexedSeq.empty[SVertex]
     embeddingTPLResultDBIDs map { dbid =>
@@ -164,14 +156,14 @@ object Embedding {
     }
 
 
-    timeMappingFromDBtoGraph.tEnd = System.currentTimeMillis
+    timeMappingFromDBtoGraph.end
     Log.appendln(s" done in $timeMappingFromDBtoGraph")
 
     /*
      *        2.2.2 Refinement on graph
      */
     Log.append(s"    - Performing refinement of ${filterRefinementResultsEmbedding.size} candidates on graph..")
-    val timePerformRefinementOnGraph = TimeDiff(System.currentTimeMillis)
+    val timePerformRefinementOnGraph = TimeDiff()
     // If q doesn't contain an object, give it an object so that it will be found by the knn algorithm
     if (!sQ.containsObject)
       sQ.setObjectId(sGraph.getAllVertices.size)
@@ -187,13 +179,13 @@ object Embedding {
       case (v, knns) if knns map( _._1 ) contains sQ => new VD(v, knns.find(y => (y._1 equals sQ)).get._2)
     }
 
-    timePerformRefinementOnGraph.tEnd = System.currentTimeMillis
+    timePerformRefinementOnGraph.end
     Log.appendln(s" done in $timePerformRefinementOnGraph")
 
-    timeRefinementOnGraph.tEnd = System.currentTimeMillis
+    timeRefinementOnGraph.end
     Log.appendln(s"  Refinement of candidates on graph done in $timeRefinementOnGraph")
 
-    timeTotalRknn.tEnd = System.currentTimeMillis
+    timeTotalRknn.end
     Log.appendln(s"R${k}NN query performed in $timeTotalRknn \n")
 
     rKnns.sortWith((x,y) => (x._2 < y._2) || (x._2 == y._2) && (x._1.id < y._1.id))
@@ -258,7 +250,7 @@ object Embedding {
 
 
   def getDBIDRefFromVertex(relation: Relation[DoubleVector], vertex: SVertex): DBIDRef = {
-    val iter = relation.getDBIDs.iter
+    val iter = relation.iterDBIDs
     while (iter.valid) {
       if (iter.internalGetIndex == vertex.id)
         return iter
@@ -274,12 +266,4 @@ object Embedding {
     }
   }
 
-
-
-  /*
-  def getReverseKNearestNeighbours(graph: SGraph, q: SVertex, k: Int): IndexedSeq[VD] = {
-    var RkNN_q         = IndexedSeq.empty[VD]
-    RkNN_q.sortWith((x,y) => (x._2 < y._2) || (x._2 == y._2) && (x._1.id < y._1.id))
-  }
-  */
 }

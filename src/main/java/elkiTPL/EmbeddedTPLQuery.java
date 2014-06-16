@@ -21,6 +21,7 @@ import util.Log;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.*;
 
+import static elkiTPL.PruningHeuristic.partialPruned;
 import static elkiTPL.PruningHeuristic.vmMaxDistMinimumNorm;
 import static elkiTPL.PruningHeuristic.vmMinDistanceMaximumNorm;
 
@@ -47,10 +48,10 @@ public class EmbeddedTPLQuery {
    * @param k
    * @return
    */
-  public HashMap<DBID, Double> getRKNNForObject(DoubleVector q, int k) {
+  public HashMap<DBID, Double> filterRefinement(DoubleVector q, int k) {
     Log.append("    - Performing filter step..");
     Log.printFlush();
-    TimeDiff timeFilterStep = new TimeDiff(System.currentTimeMillis());
+    TimeDiff timeFilterStep = new TimeDiff();
 
     ArrayList<ArrayList<?>> filtered = filter(q, k);
 
@@ -58,20 +59,45 @@ public class EmbeddedTPLQuery {
     ArrayList<SpatialPointLeafEntry> refinementSetPoints = (ArrayList<SpatialPointLeafEntry>) filtered.get(1);
     ArrayList<TPLEntry>              refinementSetNodes  = (ArrayList<TPLEntry>) filtered.get(2);
 
-    timeFilterStep.tEnd_$eq(System.currentTimeMillis());
+    timeFilterStep.end();
     Log.appendln(" done in " + timeFilterStep);
     Log.appendln("    - After filtering: " + candidateSet.size() + " cnds, " + refinementSetPoints.size() + " refPoints, " + refinementSetNodes.size() + " refNodes.");
 
-    Log.append("    - Performing refinement step..");
+
+
+    // A candidate p is an early result, if for k other candidates p': MaxDist(q, p) <= MinDist(p', q)
+    TimeDiff timeEarlyResult = new TimeDiff();
+
+    SpatialPointLeafEntry kthCandidate = candidateSet.get(k-1);
+    double minDistKthCndQ              = PruningHeuristic.vvMinDistanceMaximumNorm(q, kthCandidate);
+
+    ArrayList<SpatialPointLeafEntry> cndSetEarlyResultsRemoved = (ArrayList<SpatialPointLeafEntry>) candidateSet.clone();
+    ArrayList<SpatialPointLeafEntry> earlyResults                = new ArrayList<SpatialPointLeafEntry>();
+
+    double counter = 0;
+    for (SpatialPointLeafEntry cnd : candidateSet){
+      double maxDistCndQ = PruningHeuristic.vvMaxDistanceMinimumNorm(q, cnd);
+      if (maxDistCndQ <= minDistKthCndQ)
+        counter ++;
+      if (counter >= k) {
+        earlyResults.add(cnd);
+        cndSetEarlyResultsRemoved.remove(cnd);
+      }
+    }
+
+    timeEarlyResult.end();
+    Log.appendln("    - Early results: " + earlyResults.size() + " of " + candidateSet.size() + " candidates. Remaining candidates: " + cndSetEarlyResultsRemoved.size() + ".. done in " + timeEarlyResult);
+
+
+    Log.appendln("    - Performing refinement step..");
     Log.printFlush();
-    TimeDiff timeRefinementStep = new TimeDiff(System.currentTimeMillis());
+    TimeDiff timeRefinementStep = new TimeDiff();
 
     HashMap<DBID, Double> refined = refine(q, k, candidateSet, refinementSetPoints, refinementSetNodes);
 
-    timeRefinementStep.tEnd_$eq(System.currentTimeMillis());
-    Log.appendln(" done in " + timeRefinementStep);
+    timeRefinementStep.end();
+    Log.appendln("    Refinement step done in " + timeRefinementStep);
     Log.appendln("    - After refining: " + refined.size() + " cnds");
-
 
     return refined;
   }
@@ -191,6 +217,9 @@ public class EmbeddedTPLQuery {
     /*
      * SELF PRUNING of candidates
      */
+    TimeDiff timeSelfPruning = new TimeDiff();
+
+    // todo (maybe small optimization): Remove init of toVisit(p) from here, do it on demand in refinement,
     // for each point p in candidateSet
     nextCandidate: for(int i = 0; i < candidateSet.size(); i++) {
         SpatialPointLeafEntry p = candidateSet.get(i);
@@ -201,7 +230,7 @@ public class EmbeddedTPLQuery {
           SpatialPointLeafEntry p2 = candidateSet.get(j);
           if (p != p2){
             // if dist(p,p2)<dist(p,q)
-            if (PruningHeuristic.vvMaxDistanceMinimumNorm(p, p2) < PruningHeuristic.vvMinDistanceMaximumNorm(p, q)){ // evtl hier maxDistanz < minDistanz verwenden.
+            if (PruningHeuristic.vvMaxDistanceMinimumNorm(p, p2) < PruningHeuristic.vvMinDistanceMaximumNorm(p, q)){
               counter--;
               if (counter == 0){ // TO DO: Better use counter <= 0
                 // candidateSet = candidateSet - {p}
@@ -218,7 +247,9 @@ public class EmbeddedTPLQuery {
         // if p is not eliminated initialize toVisit(p)={}
         toVisits.put(p.getDBID(), new HashMap<Integer, TPLEntry>());
     }
-    
+
+    timeSelfPruning.end();
+    Log.appendln("      - Self pruned: " + (candidateSet.size() - selfPrunedCandidateSet.size()) + " of " + candidateSet.size() + " candidates.. done in " + timeSelfPruning);
     
     HashMap<DBID, Double> results = new HashMap<DBID, Double>();
 
@@ -322,7 +353,8 @@ public class EmbeddedTPLQuery {
       for(TPLEntry entry : refinementSetNodes) {
         SpatialEntry N = entry.getEntry();
         // if maxdist(p,entry)<dist(p,q) and min_card(entry)>=counter(p)
-        // TODO: min_card seems to be wrong??
+        // TODO: min_card seems to be wrong? -> No false misses, but less pruning of true misses possible (min_card is
+        // smaller than necessary), if k > min_card
         if (vmMaxDistMinimumNorm(p, N) < PruningHeuristic.vvMinDistanceMaximumNorm(p, q) && min_card >= counter){
           // candidateSet = candidateSet - {p}
           candidateSet.remove(i);

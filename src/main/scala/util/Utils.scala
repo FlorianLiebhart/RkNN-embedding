@@ -31,17 +31,18 @@ object Log {
 
 object Utils {
 
-  case class TimeDiff(tStart: java.lang.Long){
-    var tEnd: java.lang.Long = null
+  case class TimeDiff(){
+    val tStart: java.lang.Long = System.currentTimeMillis
+    private var tEnd: java.lang.Long = null
 
-    def this(tStart: java.lang.Long, tEnd: java.lang.Long) {
-      this(tStart)
-      this.tEnd = tEnd
-    }
+    def end   = tEnd   = System.currentTimeMillis
 
     override def toString: String = {
+      if(tStart == null)
+        throw new RuntimeException("Start time of TimeDiff not specified")
       if(tEnd == null)
         throw new RuntimeException("End time of TimeDiff not specified")
+
       else {
          s"{{{ ${tEnd - tStart} ms. }}}"
        }

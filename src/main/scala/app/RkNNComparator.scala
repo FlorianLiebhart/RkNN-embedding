@@ -125,11 +125,11 @@ object RkNNComparator {
 
     Log.appendln(s"-----------Naive R${k}NN for query point $qID:-----------\n")
 
-    val timeNaiveRkNN  = TimeDiff(System.currentTimeMillis)
+    val timeNaiveRkNN  = TimeDiff()
 
     val rkNNsNaive     = naiveRkNNs(sGraph, sQ, k)
 
-    timeNaiveRkNN.tEnd = System.currentTimeMillis
+    timeNaiveRkNN.end
 
     Log.appendln(s"Result r${k}NNs: ${if (rkNNsNaive.size == 0) "--" else ""}")
     for( v <- rkNNsNaive )
@@ -144,11 +144,11 @@ object RkNNComparator {
 
     Log.appendln(s"-----------Eager R${k}NN for query point $qID:-----------\n")
 
-    val timeEagerRkNN  = TimeDiff(System.currentTimeMillis)
+    val timeEagerRkNN  = TimeDiff()
 
     val rkNNsEager     = eager(sGraph, sQ, k)
 
-    timeEagerRkNN.tEnd = System.currentTimeMillis()
+    timeEagerRkNN.end
 
     Log.appendln(s"Result r${k}NNs: ${if (rkNNsEager.size == 0) "--" else ""}")
     for( v <- rkNNsEager )
@@ -168,11 +168,11 @@ object RkNNComparator {
     Log.appendln(s"-----------Embedded R${k}NN for query point $qID:-----------\n")
     Log.printFlush
 
-    val timeEmbeddedRkNN                             = TimeDiff(System.currentTimeMillis)
+    val timeEmbeddedRkNN = TimeDiff()
 
     val rkNNsEmbedded: IndexedSeq[(SVertex, Double)] = Embedding.embeddedRkNNs(sGraph, sQ, k, refPoints, rStarTreePageSize)
 
-    timeEmbeddedRkNN.tEnd                            = System.currentTimeMillis()
+    timeEmbeddedRkNN.end
 
     Log.appendln(s"Result r${k}NNs: ${if (rkNNsEmbedded.size == 0) "--" else ""}")
     for( v <- rkNNsEmbedded )
@@ -188,11 +188,11 @@ object RkNNComparator {
     Log.appendln("-----------TPL:-----------")
     Log.appendln(s"R${k}NNs for query point $qID")
 
-    val timeTPLRkNN                          = TimeDiff(System.currentTimeMillis)
+    val timeTPLRkNN                          = TimeDiff()
 
     val rkNNsTPL: IndexedSeq[(DBID, Double)] = TPL.tplRkNNs(sGraph, sQ, k, refPoints, rStarTreePageSize, withClipping)
 
-    timeTPLRkNN.tEnd                     = System.currentTimeMillis()
+    timeTPLRkNN.end
 
     Log.appendln(s"Runtime: $timeTPLRkNN")
 
