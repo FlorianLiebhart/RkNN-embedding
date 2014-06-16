@@ -48,7 +48,7 @@ public class EmbeddedTPLQuery {
    * @param k
    * @return
    */
-  public HashMap<DBID, Double> filterRefinement(DoubleVector q, int k) {
+  public ArrayList<DBID> filterRefinement(DoubleVector q, int k) {
     Log.append("    - Performing filter step..");
     Log.printFlush();
     TimeDiff timeFilterStep = new TimeDiff();
@@ -93,7 +93,7 @@ public class EmbeddedTPLQuery {
     Log.printFlush();
     TimeDiff timeRefinementStep = new TimeDiff();
 
-    HashMap<DBID, Double> refined = refine(q, k, candidateSet, refinementSetPoints, refinementSetNodes);
+    ArrayList<DBID> refined = refine(q, k, candidateSet, refinementSetPoints, refinementSetNodes);
 
     timeRefinementStep.end();
     Log.appendln("    Refinement step done in " + timeRefinementStep);
@@ -203,11 +203,11 @@ public class EmbeddedTPLQuery {
    * @param refinementSetNodes
    * @return
    */
-  private HashMap<DBID, Double> refine(DoubleVector                     q,
-                                       int                              k,
-                                       ArrayList<SpatialPointLeafEntry> candidateSet,
-                                       ArrayList<SpatialPointLeafEntry> refinementSetPoints,
-                                       ArrayList<TPLEntry>              refinementSetNodes){
+  private ArrayList<DBID> refine(DoubleVector                     q,
+                                 int                              k,
+                                 ArrayList<SpatialPointLeafEntry> candidateSet,
+                                 ArrayList<SpatialPointLeafEntry> refinementSetPoints,
+                                 ArrayList<TPLEntry>              refinementSetNodes){
 
     HashMap<DBID, HashMap<Integer, TPLEntry>> toVisits               = new HashMap<DBID, HashMap<Integer, TPLEntry>>();
     HashMap<DBID, Integer>                    count                  = new HashMap<DBID, Integer>();
@@ -251,7 +251,7 @@ public class EmbeddedTPLQuery {
     timeSelfPruning.end();
     Log.appendln("      - Self pruned: " + (candidateSet.size() - selfPrunedCandidateSet.size()) + " of " + candidateSet.size() + " candidates.. done in " + timeSelfPruning);
     
-    HashMap<DBID, Double> results = new HashMap<DBID, Double>();
+    ArrayList<DBID> results = new ArrayList<DBID>();
 
     while(true){
       k_refinement_round(q, k, selfPrunedCandidateSet, refinementSetPoints, refinementSetNodes, count, toVisits, results);
@@ -319,7 +319,7 @@ public class EmbeddedTPLQuery {
                                   ArrayList<TPLEntry>                       refinementSetNodes,
                                   HashMap<DBID, Integer>                    count,
                                   HashMap<DBID, HashMap<Integer, TPLEntry>> toVisits,
-                                  HashMap<DBID, Double>                     results) {
+                                  ArrayList<DBID>                           results) {
     /*
      * do refinement for each point p in candidateSet
      */
@@ -388,7 +388,7 @@ public class EmbeddedTPLQuery {
         DBID dbid = p.getDBID();
 
         DoubleDistance distance = (DoubleDistance) maxDistQuery.distance(dbid, q); // TODO is this distance calculation correct? -> probably
-        results.put(dbid, distance.doubleValue());
+        results.add(dbid);
       }
     }
   }

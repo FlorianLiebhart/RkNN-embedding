@@ -134,7 +134,7 @@ object Embedding {
     Log.appendln(s"  2.1 Performing filter refinement in embedded space..")
     val timeFilterRefEmbedding = TimeDiff()
 
-    val embeddingTPLResultDBIDs: Seq[DBID] = tplEmbedded.filterRefinement(queryObject, k).keys.toSeq
+    val embeddingTPLResultDBIDs: Seq[DBID] = tplEmbedded.filterRefinement(queryObject, k)
 
     timeFilterRefEmbedding.end
     Log.appendln(s"  Filter Refinement in embedded space done in $timeFilterRefEmbedding \n").printFlush
