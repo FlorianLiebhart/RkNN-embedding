@@ -4,6 +4,8 @@ import graph.GraphGenerator
 import scala.util.Random
 import graph.core.Edge
 
+import util.Utils.makesure
+
 /**
  * Created: 04.02.14, 16:42
  * @author fliebhart
@@ -11,11 +13,11 @@ import graph.core.Edge
 object GraphGen {
 
   def generateJavaGraph(numberOfVertices: Integer, numberOfEdges: Integer, numberOfObjects: Integer, weightOne: Boolean): graph.core.Graph = {
-    require(numberOfVertices > 0)
-    require(numberOfObjects >= 0 && numberOfObjects <= numberOfVertices)
-    require(numberOfEdges > 0)
+    makesure(numberOfVertices > 0,                                        s"Number of vertices ($numberOfVertices) must be > 0")
+    makesure(numberOfObjects >= 0 && numberOfObjects <= numberOfVertices, s"Number of objects ($numberOfObjects) must be >= 0 and <= number of vertices ($numberOfVertices)")
+    makesure(numberOfEdges > numberOfVertices - 1,                        s"number of edges must be > ${numberOfVertices-1} (number of vertices - 1).")
     val max: Integer = ((numberOfVertices.toDouble * (numberOfVertices.toDouble - 1)) / 2).toInt
-    require(numberOfEdges <= max)
+    makesure(numberOfEdges <= max,                                        s"Number of edges ($numberOfEdges) must be <= $max for ${numberOfVertices} vertices")
 
     println("Generating graph with " + numberOfVertices + " nodes, " + numberOfEdges + " edges, " + numberOfObjects + " objects..." )
     val t0 = System.currentTimeMillis()
