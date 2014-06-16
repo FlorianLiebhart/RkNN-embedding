@@ -44,3 +44,4 @@ src/main/java/rweeks/*
 tplSimulation/rTree.csv
 lib/*
 !lib/MiniGUI-saved-settings.txt
+exampleGraphXMLs/generatedGraph.xml
