@@ -90,7 +90,8 @@ object RkNNComparator {
         val nrOfRowsAndCols   = Math.sqrt(actualVertices)
         val rowEdges          = nrOfRowsAndCols * (nrOfRowsAndCols - 1)
         val minEdges          = rowEdges + (nrOfRowsAndCols - 1)
-        val maxEdges          = (nrOfRowsAndCols - 1) * (Math.pow(nrOfRowsAndCols, 2))
+        val maxEdges          = (nrOfRowsAndCols - 1) * (Math.pow(nrOfRowsAndCols, 2))    // Maximum Edges: all edges between all rows: cols * (rows - 1)
+                                                                                          //             +  all edges between each col:  (cols - 1) * (rows * rows)
 
         val edges             = 1 * (maxEdges - minEdges) + minEdges   // generally for a graph: from N-1 to N(N-1)/2 // Int Overflow at: max 2.147.483.647 => Vertex max: 65.536
 
@@ -102,7 +103,7 @@ object RkNNComparator {
         val sGraph            = GraphGen.generateScalaGraph(actualVertices, edges.toInt, objects.toInt, edgeMaxWeight = 10)
         val jGraph            = convertScalaToJavaGraph(sGraph)
         XmlUtil.saveGraphToXml(jGraph, "exampleGraphXMLs/generatedGraph.xml")
-        val refPoints = Embedding.createRefPoints(sGraph.getAllVertices, numRefPoints)
+        val refPoints = Embedding.createRefPoints(sGraph.getAllVertices, numRefPoints, qID)
 
         (sGraph, qID, refPoints, k, rStarTreePageSize)
     }

@@ -197,8 +197,8 @@ object Embedding {
    * Takes a list of vertices and creates numRefPoints random reference points.
    * @return A list of random vertices
    */
-  def createRefPoints(vertices: Seq[SVertex], numRefPoints: Integer): Seq[SVertex] =
-    new Random(System.currentTimeMillis).shuffle(vertices) take numRefPoints
+  def createRefPoints(vertices: Seq[SVertex], numRefPoints: Integer, qID: Integer): Seq[SVertex] =
+    new Random(System.currentTimeMillis).shuffle(vertices.filterNot(_.id == qID)) take numRefPoints
 
 
   /**
