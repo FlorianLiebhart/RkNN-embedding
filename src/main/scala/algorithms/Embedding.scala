@@ -37,7 +37,8 @@ object Embedding {
    * @return
    */
   def embeddedRkNNs(sGraph: SGraph, sQ: SVertex, k: Int, refPoints: Seq[SVertex], rStarTreePageSize: Int): IndexedSeq[(SVertex, Double)] = {
-    val rTreePath = "tplSimulation/rTree.csv"
+    val rTreePath        = "tplSimulation/rTree.csv"
+    val numberOfVertices = sGraph.getAllVertices.size
     Log.appendln(s"\nReference Points: ${refPoints.mkString(",")} \n")
 
     /*
@@ -166,13 +167,13 @@ object Embedding {
     val timePerformRefinementOnGraph = TimeDiff()
     // If q doesn't contain an object, give it an object so that it will be found by the knn algorithm
     if (!sQ.containsObject)
-      sQ.setObjectId(sGraph.getAllVertices.size)
+      sQ.setObjectId(numberOfVertices)
 
     val allkNNs = filterRefinementResultsEmbedding map ( vertex =>
       (vertex, Eager.rangeNN(sGraph, vertex, k, Double.PositiveInfinity))
     )
     // If q didn't contain an object before, remove the previously inserted object
-    if (sQ.getObjectId == sGraph.getAllVertices.size)
+    if (sQ.getObjectId == numberOfVertices)
       sQ.setObjectId(SVertex.NO_OBJECT)
 
     val rKnns = allkNNs collect {
