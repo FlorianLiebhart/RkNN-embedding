@@ -10,6 +10,7 @@ import algorithms.NaiveRkNN.naiveRkNNs
 import algorithms.Eager.eager
 import algorithms.{TPL, Embedding}
 import de.lmu.ifi.dbs.elki.database.ids.DBID
+import scala.util.Random
 
 object RkNNComparator {
 
@@ -33,7 +34,7 @@ object RkNNComparator {
      * rknn query settings
      */
 
-    val exampleGraph = "file" // "eager"  for using the example graph from TKDE - GraphRNN paper page 3,
+    val exampleGraph = "random" // "eager"  for using the example graph from TKDE - GraphRNN paper page 3,
                              // "tpl"    for using the example graph from the TPL page 748,
                              // "random" for generating a random graph
 
@@ -80,16 +81,27 @@ object RkNNComparator {
         (sGraph, qID, refPoints, k, rStarTreePageSize)
 
       case "random" =>  // randomly generated graph
-        val vertices          = 1000
-        val objects           = 100
-        val edges             = 3500  // from N-1 to N(N-1)/2  // max 2.147.483.647; Vertex max: 65.536
-        val qID               = vertices / 2
+        // vertices may be a little less than what defined here, since the floored sqrt will be squared
+        val vertices          = 1000 // Max. 1 Million! (so that there won't be an integer overflow for max-edges)
+        val actualVertices    = Math.pow(Math.sqrt(vertices).floor, 2).toInt
+
+        val objects           = 0.05 * actualVertices
+
+        val nrOfRowsAndCols   = Math.sqrt(actualVertices)
+        val rowEdges          = nrOfRowsAndCols * (nrOfRowsAndCols - 1)
+        val minEdges          = rowEdges + (nrOfRowsAndCols - 1)
+        val maxEdges          = (nrOfRowsAndCols - 1) * (Math.pow(nrOfRowsAndCols, 2))
+
+        val edges             = 1 * (maxEdges - minEdges) + minEdges   // generally for a graph: from N-1 to N(N-1)/2 // Int Overflow at: max 2.147.483.647 => Vertex max: 65.536
+
+        val qID               = new Random(System.currentTimeMillis).nextInt(actualVertices+1)
         val numRefPoints      = 3
-        val rStarTreePageSize = 1024  // bytes: e.g. 1024 bytes; Erich recommendation: 25*8*dimensions (=> corresponds to around 25 entries/page)
-        val k                 = 2
+        val rStarTreePageSize = 25 * 8 * numRefPoints  // bytes: e.g. 1024 bytes; Erich recommendation: 25*8*dimensions (=> corresponds to around 25 entries/page)
+        val k                 = 3
 
-        val sGraph            = GraphGen.generateScalaGraph(vertices, edges, objects, weightOne = false)
-
+        val sGraph            = GraphGen.generateScalaGraph(actualVertices, edges.toInt, objects.toInt, edgeMaxWeight = 10)
+        val jGraph            = convertScalaToJavaGraph(sGraph)
+        XmlUtil.saveGraphToXml(jGraph, "exampleGraphXMLs/generatedGraph.xml")
         val refPoints = Embedding.createRefPoints(sGraph.getAllVertices, numRefPoints)
 
         (sGraph, qID, refPoints, k, rStarTreePageSize)
