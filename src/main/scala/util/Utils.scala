@@ -61,30 +61,30 @@ object Utils {
   }
 
   def convertScalaToJavaGraph(sGraph: SGraph): graph.core.Graph = {
-    println("Converting SGraph to Java graph with " + sGraph.getAllVertices.size + " nodes, " + sGraph.getAllEdges.size + " edges...")
+    print("\nConverting SGraph to Java graph with " + sGraph.getAllVertices.size + " nodes, " + sGraph.getAllEdges.size + " edges..")
 
-    val t0 = System.currentTimeMillis()
+    val timeConvertScalaToJavaGraph = TimeDiff()
 
     val jGraph = new graph.core.Graph()
     sGraph.getAllVertices.map(v => jGraph.addVertex(convertScalaToJavaVertex(v)))
     sGraph.getAllEdges   .map(e => jGraph.addEdge  (convertScalaToJavaEdge(jGraph, e)))
 
-    val t1 = System.currentTimeMillis()
-    println("Graph conversion finished. Runtime : " + (t1-t0) + " ms.")
+    timeConvertScalaToJavaGraph.end
+    println(s" done in $timeConvertScalaToJavaGraph\n")
 
     jGraph
   }
 
   def convertJavaToScalaGraph(jGraph: graph.core.Graph): SGraph = {
-    println("Converting Java graph to SGraph with " + jGraph.getAllVertices.size + " nodes, " + jGraph.getAllEdges.size + " edges...")
-    val t0 = System.currentTimeMillis()
+    print("Converting Java graph to SGraph with " + jGraph.getAllVertices.size + " nodes, " + jGraph.getAllEdges.size + " edges..")
+    val timeConvertJavaToScalaGraph = TimeDiff()
 
     val sGraph = new SGraph()
     jGraph.getAllVertices.map(v => sGraph.addVertex(convertJavaToScalaVertex(v)))
     jGraph.getAllEdges.map(e => sGraph.addEdge(convertJavaToScalaEdge(sGraph, e)))
 
-    val t1 = System.currentTimeMillis()
-    println("Graph conversion finished. Runtime : " + (t1-t0) + " ms.")
+    timeConvertJavaToScalaGraph.end
+    println(s" done in $timeConvertJavaToScalaGraph")
 
     sGraph
   }
