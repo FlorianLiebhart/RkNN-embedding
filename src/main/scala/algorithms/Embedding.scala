@@ -30,16 +30,16 @@ object Embedding {
   /**
    *
    * @param sGraph
-   * @param sQ
+   * @param q
    * @param k
-   * @param refPoints
+   * @param numRefPoints
    * @param rStarTreePageSize Determines how many points fit into one page. Felix: Mostly between 1024 und 8192 byte; Erich recommendation: 25*8*dimensions (=> corresponds to around 25 entries/page)
+   * @refPoints In case you want to use predefined reference points. numRefPoints won't make a difference then.
    * @return
    */
-  def embeddedRkNNs(sGraph: SGraph, sQ: SVertex, k: Int, refPoints: Seq[SVertex], rStarTreePageSize: Int): Seq[(SVertex, Double)] = {
+  def embeddedRkNNs(sGraph: SGraph, q: SVertex, k: Int, numRefPoints: Integer, rStarTreePageSize: Int, predefinedRefPoints: Seq[SVertex] = null): Seq[(SVertex, Double)] = {
     val rTreePath        = "tplSimulation/rTree.csv"
     val numberOfVertices = sGraph.getAllVertices.size
-    Log.appendln(s"\nReference Points: ${refPoints.mkString(",")} \n")
 
     /*
      * 1. Preparation phase
@@ -50,13 +50,19 @@ object Embedding {
     /*
      *    1.1 Create embedding
      */
-    Log.append(s"  1.1 Creating embedding..")
+    Log.append(s"  - Creating refpoints and embedding..")
     val timeCreateEmbedding = TimeDiff()
 
-//    makesure(refPoints.filterNot(_.containsObject).isEmpty, "All reference points must contain objects!")
-//    makesure(sQ.containsObject, "The query point must contain an object!")
+    val refPoints: Seq[SVertex] =
+      if(numRefPoints == -1)
+        predefinedRefPoints
+      else {
+        Embedding.createRefPoints(sGraph.getAllVertices, numRefPoints, q)
+      }
+    //    Log.appendln(s"\nReference Points: ${refPoints.mkString(",")} \n")
+
     val refPointDistances: HashMap[SVertex, IndexedSeq[Double]] = createEmbedding(sGraph, refPoints) // key: Knoten, value: Liste mit Distanzen zu Referenzpunkte (? evtl: Flag ob Objekt auf Knoten)
-    val refPointDistancesContainingObjects                      = refPointDistances.filter(x => x._1.containsObject || x._1 == sQ)
+    val refPointDistancesContainingObjects                      = refPointDistances.filter(x => x._1.containsObject || x._1 == q)
 
     timeCreateEmbedding.end
     Log.appendln(s" done in $timeCreateEmbedding")
@@ -88,7 +94,7 @@ object Embedding {
     /*
      *    1.3 Create RStar tree index
      */
-    Log.append(s"  - Creating R*Tree index (entries: " + relation.size() + ", page size: " + rStarTreePageSize + " bytes)..");
+    Log.append(s"  - Creating R*Tree index (entries: " + relation.size() + ", page size: " + rStarTreePageSize + " bytes)..")
     val timeCreateRStarTree = TimeDiff()
 
     val rStarTree: RStarTreeIndex[DoubleVector] = Utils.createRStarTree(relation, rStarTreePageSize)
@@ -99,29 +105,13 @@ object Embedding {
     /*
      *    1.4 Create TPL rknn query and query object
      */
-    Log.append(s"  - Creating EmbeddedTPLQuery object and query object ..")
-    val timeCreateQuery = TimeDiff()
-
     val tplEmbedded                             = new EmbeddedTPLQuery(rStarTree, relation)
-    val queryObject: DoubleVector               = relation.get(getDBIDRefFromVertex(relation, sQ, dbidVertexIDMapping))
-    // Generate random query point
-    /*
-    val coordinates: Array[Double] = new Array[Double](refPoints.size)
-      for (i <- 0 to refPoints.size-1) {
-      coordinates(i) = Math.random()
-    }
-    val queryObject: DoubleVector = new DoubleVector(coordinates)
-    Log.appendln("Generated query object: " + queryObject)
+    val queryObject: DoubleVector               = relation.get(getDBIDRefFromVertex(relation, q, dbidVertexIDMapping))
 
-    // random query object from the database
-    val queryObject: DoubleVector = relation.get(Utils.getRandomDBObject(relation))
-    Log.appendln(s"Random query object from database: $queryObject\n")
-    */
-
-    timeCreateQuery.end
-    Log.appendln(s" done in $timeCreateQuery")
 
     timeAlgorithmPreparation.end
+
+    Log.runTimeEmbeddingPreparation = timeAlgorithmPreparation.diff
     Log.appendln(s"Algorithm preparation done in $timeAlgorithmPreparation \n").printFlush
 
     /*
@@ -162,21 +152,23 @@ object Embedding {
     /*
      *        2.2.2 Refinement on graph
      */
-    Log.append(s"    - Performing refinement of ${filterRefinementResultsEmbedding.size} candidates on graph..")
+    val candidatesToRefineOnGraph = filterRefinementResultsEmbedding.size
+    Log.nodesToVerify             = candidatesToRefineOnGraph
+    Log.append(s"    - Performing refinement of ${candidatesToRefineOnGraph} candidates on graph..")
     val timePerformRefinementOnGraph = TimeDiff()
     // If q doesn't contain an object, give it an object so that it will be found by the knn algorithm
-    if (!sQ.containsObject)
-      sQ.setObjectId(numberOfVertices)
+    if (!q.containsObject)
+      q.setObjectId(numberOfVertices)
 
-    val allkNNs = filterRefinementResultsEmbedding map ( vertex =>
-      (vertex, Eager.rangeNN(sGraph, vertex, k, Double.PositiveInfinity))
+    val allkNNs = filterRefinementResultsEmbedding map ( refResult =>
+      (refResult, Eager.rangeNN(sGraph, refResult, k, Double.PositiveInfinity))
     )
     // If q didn't contain an object before, remove the previously inserted object
-    if (sQ.getObjectId == numberOfVertices)
-      sQ.setObjectId(SVertex.NO_OBJECT)
+    if (q.getObjectId == numberOfVertices)
+      q.setObjectId(SVertex.NO_OBJECT)
 
     val rKnns = allkNNs collect {
-      case (v, knns) if knns map( _._1 ) contains sQ => new VD(v, knns.find(y => (y._1 equals sQ)).get._2)
+      case (v, knns) if (knns map( _._1 ) contains q) => new VD(v, knns.find(y => (y._1 equals q)).get._2)
     }
 
     timePerformRefinementOnGraph.end
@@ -186,6 +178,7 @@ object Embedding {
     Log.appendln(s"  Refinement of candidates on graph done in $timeRefinementOnGraph")
 
     timeTotalRknn.end
+    Log.runTimeRknnQuery = timeTotalRknn.diff
     Log.appendln(s"R${k}NN query performed in $timeTotalRknn \n")
 
     rKnns.sortWith((x,y) => (x._2 < y._2) || (x._2 == y._2) && (x._1.id < y._1.id))
@@ -196,8 +189,9 @@ object Embedding {
    * Takes a list of vertices and creates numRefPoints random reference points.
    * @return A list of random vertices
    */
-  def createRefPoints(vertices: Seq[SVertex], numRefPoints: Integer, qID: Integer): Seq[SVertex] =
-    new Random(System.currentTimeMillis).shuffle(vertices.filterNot(_.id == qID)) take numRefPoints
+  def createRefPoints(vertices: Seq[SVertex], numRefPoints: Integer, q: SVertex): Seq[SVertex] = {
+    new Random(System.currentTimeMillis).shuffle(vertices.filterNot(_ == q)) take numRefPoints
+  }
 
 
   /**

@@ -180,7 +180,7 @@ public abstract class AbstractChartWindow extends JFrame implements ActionListen
 	}
 
 	protected void startCalculation() {
-		System.out.println("Start calculation");
+		util.Log.appendln("Start calculation");
 		updater = new SwingWorker<Object, Void>() {
 			private int counter = 0; // for green marking
 			
@@ -207,7 +207,7 @@ public abstract class AbstractChartWindow extends JFrame implements ActionListen
 							}
 							
 							if(counter % GuiConstants.GREENMARKER_STEPCOUNT == 0) {
-								System.out.println("*** START GREEN BAR CALCULATION! ***");
+								util.Log.appendln("*** START GREEN BAR CALCULATION! ***");
 								greenColumns.clear();
 								for(Object sortedVal : sorted) {
 									double aFreq = (double) results.get(sortedVal);
@@ -232,7 +232,7 @@ public abstract class AbstractChartWindow extends JFrame implements ActionListen
 									if(ergebnis >= ChartConstants.SIGNIFICANCE_STD_VAL) { 
 										greenColumns.add(sortedVal.toString());
 									}
-									System.out.println("Col= " + sortedVal + "\tResult= " + ergebnis + 
+									util.Log.appendln("Col= " + sortedVal + "\tResult= " + ergebnis + 
 											           "\t[Max. Dev @ " + ChartConstants.CONFIDENCE_STD_VAL + " ; Sig. Level @ " + 
 											           ChartConstants.SIGNIFICANCE_STD_VAL + "]");
 								}
@@ -387,7 +387,7 @@ public abstract class AbstractChartWindow extends JFrame implements ActionListen
 			for(int i = 0; i < sorted.length; i++) {
 				if(col == i) {
 					if(greenColumns.contains(sorted[i].toString())) {
-//						System.out.println("GREEN -> column: " + col + " (" + sorted[i].toString() + ")");
+//						util.Log.appendln("GREEN -> column: " + col + " (" + sorted[i].toString() + ")");
 						return Color.green;
 					}
 				}

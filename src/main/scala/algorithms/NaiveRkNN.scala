@@ -1,33 +1,32 @@
 package algorithms
 
 import graph.{SGraph, SVertex}
-import scala.collection.JavaConversions._
 import util.Utils.VD
-import scala.collection.mutable.PriorityQueue
-import util.Utils.t2ToOrdered
+import util.Log
 
 object NaiveRkNN {
 
   /**
    *
-   * @param graph
+   * @param sGraph
    * @param q
    * @param k
    * @return Sorted rknns
    */
-  def naiveRkNNs(graph: SGraph, q: SVertex, k: Integer): IndexedSeq[VD] = {
-    val allGraphNodes            = graph.getAllVertices.toIndexedSeq
+  def naiveRkNNs(sGraph: SGraph, q: SVertex, k: Integer): IndexedSeq[VD] = {
+    val allGraphNodes            = sGraph.getAllVertices.toIndexedSeq
     val allGraphNodesWithObjects = allGraphNodes filter (_.containsObject) filterNot (_ equals q)
+    Log.nodesToVerify = allGraphNodesWithObjects.size
 
     // If q doesn't contain an object, give it an object so that it will be found by the knn algorithm
     if (!q.containsObject)
-      q.setObjectId(graph.getAllVertices.size)
+      q.setObjectId(sGraph.getAllVertices.size)
 
     val allkNNs = allGraphNodesWithObjects map ( p =>
-      (p, Eager.rangeNN(graph, p, k, Double.PositiveInfinity))
+      (p, Eager.rangeNN(sGraph, p, k, Double.PositiveInfinity))
     )
     // If q didn't contain an object before, remove the previously inserted object
-    if (q.getObjectId == graph.getAllVertices.size)
+    if (q.getObjectId == sGraph.getAllVertices.size)
       q.setObjectId(SVertex.NO_OBJECT)
 
     val rKnns = allkNNs collect {

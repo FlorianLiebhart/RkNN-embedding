@@ -45,7 +45,7 @@ public class GuiUtil {
 			v.setNodeLocation(xPos, yPos);
 			created++;
 			currentRow++;
-//			System.out.println("Setting Nodes Position... (" + (created + 1) + " / " + numberOfNodes + ")");
+//			util.Log.appendln("Setting Nodes Position... (" + (created + 1) + " / " + numberOfNodes + ")");
 		}
 	}
 

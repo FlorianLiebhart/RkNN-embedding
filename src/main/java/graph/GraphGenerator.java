@@ -31,27 +31,27 @@ public class GraphGenerator {
 	public void generateProbabilisticGraph(int numberOfVertices, int numberOfEdges, int numberOfUncertainEdges, int numberOfObjects) {
         ProbabilisticGraph.getInstance().clear();
 
-        System.out.print("Creating nodes...");
+        util.Log.append("Creating nodes...");
         createNodes(ProbabilisticGraph.getInstance(), numberOfVertices);
-        System.out.print(" done.");
+        util.Log.append(" done.");
 
-        System.out.print(" Creating objects...");
+        util.Log.append(" Creating objects...");
         addRandomObjects(ProbabilisticGraph.getInstance(), numberOfObjects);
-        System.out.print(" done.");
+        util.Log.append(" done.");
 
-        System.out.print(" Setting nodes position...");
+        util.Log.append(" Setting nodes position...");
         GuiUtil.setNodesPosition(ProbabilisticGraph.getInstance());
-        System.out.print(" done.");
+        util.Log.append(" done.");
 
-        System.out.print(" Creating edges...");
+        util.Log.append(" Creating edges...");
         createEdgesAccordingNodesPosition(ProbabilisticGraph.getInstance(), numberOfEdges);
-        System.out.print(" done.");
+        util.Log.append(" done.");
 
         addRandomProbabilities(ProbabilisticGraph.getInstance(), numberOfUncertainEdges);
 
-        System.out.print(" Creating edge weights...");
+        util.Log.append(" Creating edge weights...");
         addWeights(ProbabilisticGraph.getInstance());
-        System.out.print(" done.");
+        util.Log.append(" done.");
 	}
 
     public void generateProbabilisticGraph(int numberOfVertices, int numberOfEdges, int numberOfUncertainEdges, int numberOfObjects, boolean weightOne) {
@@ -77,7 +77,7 @@ public class GraphGenerator {
 			nodes.remove(v);
 			id++;
 			created++;
-//			System.out.println("Creating Objects... (" + nr++ + " / " + numberOfObjects + ")");
+//			util.Log.appendln("Creating Objects... (" + nr++ + " / " + numberOfObjects + ")");
 		}
 	}
 
@@ -113,7 +113,7 @@ public class GraphGenerator {
 				target.setProbability(candidates.get(index), Double.valueOf(randomPString.replaceAll(",", ".")));
 				modifiedEdges.add(candidates.get(index));
 				candidates.remove(index);
-//				System.out.println("Adding probabilities...(" + modified++ + " / " + numberOfUncertainEdges + ")");
+//				util.Log.appendln("Adding probabilities...(" + modified++ + " / " + numberOfUncertainEdges + ")");
 			}
 //			target.setUncertainEdges(modifiedEdges);
 			
@@ -139,7 +139,7 @@ public class GraphGenerator {
 		int nr = 1;
 		for(int i = 0; i < numberOfNodes; i++) {
 			graph.addVertex(new Vertex(i));
-//			System.out.println("Creating Nodes... (" + nr++ + " / " + numberOfNodes + ")");
+//			util.Log.appendln("Creating Nodes... (" + nr++ + " / " + numberOfNodes + ")");
 		}
 	}
 
@@ -201,7 +201,7 @@ public class GraphGenerator {
 						} else {
 							g.addEdge(e);
 							nodesInRadius.remove(target); // don't check the same node
-//							System.out.println("Creating edges... (" + created++ + " / " + numberOfEdges + ")");
+//							util.Log.appendln("Creating edges... (" + created++ + " / " + numberOfEdges + ")");
 							createdEdges++;
 						}
 					}

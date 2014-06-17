@@ -13,17 +13,17 @@ public class GUIStarter {
 		/*
 		Graph g = GraphGenerator.generateProbabilisticGraph(4, 5, 1);
 		
-		System.out.print("Nodes: ");
+		util.Log.append("Nodes: ");
 		for(int i = 0; i < g.getNumberOfVertices(); i++) {
-			System.out.print(g.getVerticesSet().get(i).toString() + " ");
+			util.Log.append(g.getVerticesSet().get(i).toString() + " ");
 		}
-		System.out.println();
-		System.out.println("Edges: ");
+		util.Log.appendln();
+		util.Log.appendln("Edges: ");
 		for(int i = 0; i < g.getNumberOfEdges(); i++) {
 			Edge e = g.getEdgesSet().get(i);
-			System.out.println((i+1) + ". " + e + " > Prob: " + g.getProbability(e));
+			util.Log.appendln((i+1) + ". " + e + " > Prob: " + g.getProbability(e));
 		} 
-		System.out.println("\nHas Connection between 1-3: " + g.containsEdge(1, 3));
+		util.Log.appendln("\nHas Connection between 1-3: " + g.containsEdge(1, 3));
 		*/
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override

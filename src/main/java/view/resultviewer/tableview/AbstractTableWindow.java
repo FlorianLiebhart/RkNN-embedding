@@ -171,7 +171,7 @@ public abstract class AbstractTableWindow extends JFrame implements ActionListen
 						tableModel.fireTableDataChanged();
 						
 						if(counter % GuiConstants.GREENMARKER_STEPCOUNT == 0) {
-							System.out.println("*** START GREEN CELL CALCULATION! ***");
+							util.Log.appendln("*** START GREEN CELL CALCULATION! ***");
 
 //							greenRows.clear();
 							int row = 0;
@@ -201,7 +201,7 @@ public abstract class AbstractTableWindow extends JFrame implements ActionListen
 										greenRows.add(row);
 									}
 								}
-								System.out.println("Column= " + key + "\tResult= " + ergebnis + 
+								util.Log.appendln("Column= " + key + "\tResult= " + ergebnis + 
 										           "\t[Max. Dev @ " + ChartConstants.CONFIDENCE_STD_VAL + " ; Sig. Level @ " + 
 										           ChartConstants.SIGNIFICANCE_STD_VAL + "]");
 								row++;
@@ -284,7 +284,7 @@ public abstract class AbstractTableWindow extends JFrame implements ActionListen
 	 	TableColumn column = null;
 	 	for (int i = 0; i < columnNames.size(); i++) {
 	 	    column = table.getColumnModel().getColumn(i);
-	 	   System.out.println(column.getWidth());
+	 	   util.Log.appendln(column.getWidth());
 	 	    if (i == 0) {
 	 	        column.setPreferredWidth(30);
 	 	    } 

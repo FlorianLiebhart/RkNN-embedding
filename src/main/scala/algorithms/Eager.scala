@@ -5,6 +5,7 @@ import graph.{SEdge, SGraph, SVertex}
 import scala.collection.mutable.PriorityQueue
 import util.Utils.VD
 import util.Utils.t2ToOrdered
+import util.Log
 
 object Eager {
 
@@ -23,7 +24,7 @@ object Eager {
 //      val h2   = h; val visitedNodes2 = visitedNodes; val verifiedPoints2 = verifiedPoints; val RkNN_q2 = RkNN_q
       /* When a node n is deheaped, eager applies Lemma 1 in order to
        * determine whether the expansion should proceed.*/
-      val n   = h.dequeue
+      val n = h.dequeue
       if (!visitedNodes.contains(n._1)) {
         visitedNodes = visitedNodes :+ n._1
         /* In particular, it first retrieves the NN of n
@@ -47,7 +48,7 @@ object Eager {
             val p_updatedDist = new VD(p._1, List(p._2 + n._2, h.find(x => x._1 equals p._1).map(_._2).getOrElse(Double.PositiveInfinity), if(p._1 equals n._1) n._2 else Double.PositiveInfinity).min)
 
             if (verify(graph, p_updatedDist, k, q))
-                RkNN_q :+= p_updatedDist
+              RkNN_q :+= p_updatedDist
             /* Furthermore, p is marked as verified in order not to be expanded,
              * if it is found again in the future through another node.
              */
@@ -61,6 +62,7 @@ object Eager {
             h.enqueue((n_i, n._2 + graph.getEdge(n._1, n_i).getWeight))
       }
     }
+    Log.nodesToVerify = verifiedPoints.size
     RkNN_q.sortWith((x,y) => (x._2 < y._2) || (x._2 == y._2) && (x._1.id < y._1.id))
   }
 
@@ -81,15 +83,15 @@ object Eager {
    */
   // TODO: NaiveAlgorithm should not use rangeNN cuz double.infinity wont work any more
   def rangeNN(graph: SGraph, q: SVertex, k: Int, e: Double, originalQ: SVertex = null): IndexedSeq[VD] = {
-    val h = PriorityQueue.empty[VD]
-    var knns = IndexedSeq.empty[VD] // evtl. als PriorityQueue
+    val h                                 = PriorityQueue.empty[VD]
+    var knns                              = IndexedSeq.empty[VD] // evtl. als PriorityQueue
     var visitedNodes: IndexedSeq[SVertex] = IndexedSeq(q)
     if(k <= 0)
       return knns
 
 //    h.enqueue((n, 0))
     val neighbours: Seq[SVertex] = graph.getNeighborsFrom(q)   // evtl priorityQueue
-    val vertexDistanceTuples = neighbours.map(n_i => (n_i, graph.getEdge(q, n_i).getWeight))
+    val vertexDistanceTuples     = neighbours.map(n_i => (n_i, graph.getEdge(q, n_i).getWeight))
     vertexDistanceTuples.map(x => h.enqueue(x))
 
     processQueue
@@ -123,11 +125,17 @@ object Eager {
       }
     }
 
-    val qWithDist = knns.find(_._1 equals originalQ)
-    if(qWithDist.isDefined)
-      knns.filter(_._2 < qWithDist.get._2)
-    else
-      knns
+    Log.nodesVisited += visitedNodes.size
+
+    if(originalQ != null) {
+      // if knns contains q, only knns with distances < distance_to_q will be returned
+      val qWithDist = knns.find(_._1 equals originalQ)
+      if (qWithDist.isDefined)
+        knns.filter(_._2 < qWithDist.get._2)
+      else
+        knns
+    }
+    else knns
   }
   /**
    * Given two points p and q, a verification query verify(p,k,q)

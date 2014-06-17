@@ -188,7 +188,7 @@ public class GraphVisualizer extends JPanel implements ActionListener {
 				}
 				nodesView.put(v.getId(), cell);
 				nodesViewReverse.put(cell, v);
-//				System.out.println("Drawing Nodes...(" + drawed++ + " / " + size + ")");
+//				util.Log.appendln("Drawing Nodes...(" + drawed++ + " / " + size + ")");
 			}
 			
 			// draw the edges
@@ -224,7 +224,7 @@ public class GraphVisualizer extends JPanel implements ActionListener {
 				}
 				
 				edgesView.put(cell, e);
-//				System.out.println("Drawing Edges...(" + drawed++ + " / " + size + ")");
+//				util.Log.appendln("Drawing Edges...(" + drawed++ + " / " + size + ")");
 			}
 		} finally {
 			graphView.getModel().endUpdate();
@@ -557,7 +557,7 @@ public class GraphVisualizer extends JPanel implements ActionListener {
 				if(editModeNodeSelector.isSelected(selected.getId())) {
 					graphView.setCellStyles(mxConstants.STYLE_FILLCOLOR, "yellow", new Object[]{cell});
 				}
-//				System.out.println("Node " + selected.toString() + " edited.");
+//				util.Log.appendln("Node " + selected.toString() + " edited.");
 				refresh();
 			} catch(NumberFormatException ex) {
 				JOptionPane.showMessageDialog(null,	
@@ -573,7 +573,7 @@ public class GraphVisualizer extends JPanel implements ActionListener {
 			if(editModeNodeSelector.isSelected(selected.getId())) {
 				graphView.setCellStyles(mxConstants.STYLE_FILLCOLOR, "yellow", new Object[]{cell});
 			}
-//			System.out.println("Node " + selected.toString() + " edited.");
+//			util.Log.appendln("Node " + selected.toString() + " edited.");
 			refresh();
 		}
 	}
@@ -650,7 +650,7 @@ public class GraphVisualizer extends JPanel implements ActionListener {
 						cell.setValue(p);
 					}
 				}
-//				System.out.println("Edge " + selected.toString() + " edited.");
+//				util.Log.appendln("Edge " + selected.toString() + " edited.");
 				refresh();
 			} catch(NumberFormatException ex) {
 				JOptionPane.showMessageDialog(null,	ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -661,7 +661,7 @@ public class GraphVisualizer extends JPanel implements ActionListener {
 			if(!isShowingWeight) {
 				cell.setValue(null);
 			}
-//			System.out.println("Edge " + selected.toString() + " edited.");
+//			util.Log.appendln("Edge " + selected.toString() + " edited.");
 			refresh();
 		}
 	}
@@ -727,7 +727,7 @@ public class GraphVisualizer extends JPanel implements ActionListener {
 			// is it selected in edit mode?
 			editModeNodeSelector.removeSelection(toDelete.getId());
 			
-//			System.out.println("Node " + toDelete.getId() + " deleted");
+//			util.Log.appendln("Node " + toDelete.getId() + " deleted");
 			
 			
 		} else if(e.getSource() == editEdgeMenu) {
@@ -742,7 +742,7 @@ public class GraphVisualizer extends JPanel implements ActionListener {
 			// remove from gui
 			graphView.removeCells(new Object[]{editSelected});
 			
-//			System.out.println("Edge " + toDelete.toString() + " deleted");
+//			util.Log.appendln("Edge " + toDelete.toString() + " deleted");
 			
 		} else if (e.getSource() == createEdgeMenu) {
 			int start  = editModeNodeSelector.getSelection().get(0);
@@ -760,7 +760,7 @@ public class GraphVisualizer extends JPanel implements ActionListener {
 			}
 			cell.setStyle(NORMAL_EDGE_STYLE);
 			edgesView.put(cell, edge);
-//			System.out.println("Edge " + edge.toString() + " created.");
+//			util.Log.appendln("Edge " + edge.toString() + " created.");
 			refresh();
 		} else if(e.getSource() == addNodeMenu) {
 			Vertex v = graph.addVertex();
@@ -779,7 +779,7 @@ public class GraphVisualizer extends JPanel implements ActionListener {
 			}
 			nodesView.put(v.getId(), cell);
 			nodesViewReverse.put(cell, v);
-//			System.out.println("Node " + v.toString() + " created.");
+//			util.Log.appendln("Node " + v.toString() + " created.");
 			refresh();
 		}
 	}

@@ -16,7 +16,7 @@ public class DistanceCalc {
 	     for(int i=0;i<point1.length;i++) {
 	         sumOfSquares += (point1[i]-point2[i])*(point1[i]-point2[i]);
 	     }
-//	      System.out.print("\n Dist: "+sumOfSquares);
+//	      util.Log.append("\n Dist: "+sumOfSquares);
 	     distanceCalculations++;
 	     return (Math.sqrt(sumOfSquares));
 	 }
@@ -26,7 +26,7 @@ public class DistanceCalc {
 	         if (point[i] < mbr.getMin(i)) sumOfSquares += (mbr.getMin(i)-point[i])*(mbr.getMin(i)-point[i]);
 	         if (point[i] > mbr.getMax(i)) sumOfSquares += (point[i]-mbr.getMax(i))*(point[i]-mbr.getMax(i));
 	     }
-	       // if (debug)   System.out.println("BLAH");
+	       // if (debug)   util.Log.appendln("BLAH");
 	     distanceCalculations++;
 	     return (Math.sqrt(sumOfSquares));
 	 }

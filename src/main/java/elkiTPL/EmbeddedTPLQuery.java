@@ -61,6 +61,7 @@ public class EmbeddedTPLQuery {
 
     timeFilterStep.end();
     Log.appendln(" done in " + timeFilterStep);
+    Log.setEmbeddingFilteredCandidates(candidateSet.size());
     Log.appendln("    - After filtering: " + candidateSet.size() + " cnds, " + refinementSetPoints.size() + " refPoints, " + refinementSetNodes.size() + " refNodes.");
 
 
@@ -68,7 +69,7 @@ public class EmbeddedTPLQuery {
     // A candidate p is an early result, if for k other candidates p': MaxDist(q, p) <= MinDist(p', q)
     TimeDiff timeEarlyResult = new TimeDiff();
 
-    SpatialPointLeafEntry kthCandidate = candidateSet.get(k-1);
+    SpatialPointLeafEntry kthCandidate = candidateSet.get( (k > candidateSet.size()) ? candidateSet.size() - 1 : k-1 );
     double minDistKthCndQ              = PruningHeuristic.vvMinDistanceMaximumNorm(q, kthCandidate);
 
     ArrayList<SpatialPointLeafEntry> cndSetEarlyResultsRemoved = (ArrayList<SpatialPointLeafEntry>) candidateSet.clone();
@@ -93,7 +94,7 @@ public class EmbeddedTPLQuery {
     Log.printFlush();
     TimeDiff timeRefinementStep = new TimeDiff();
 
-    ArrayList<DBID> refined = refine(q, k, candidateSet, refinementSetPoints, refinementSetNodes);
+    ArrayList<DBID> refined = refine(q, k, cndSetEarlyResultsRemoved, refinementSetPoints, refinementSetNodes);
 
     timeRefinementStep.end();
     Log.appendln("    Refinement step done in " + timeRefinementStep);
@@ -353,8 +354,7 @@ public class EmbeddedTPLQuery {
       for(TPLEntry entry : refinementSetNodes) {
         SpatialEntry N = entry.getEntry();
         // if maxdist(p,entry)<dist(p,q) and min_card(entry)>=counter(p)
-        // TODO: min_card seems to be wrong? -> No false misses, but less pruning of true misses possible (min_card is
-        // smaller than necessary), if k > min_card
+        // TODO: min_card seems to be wrong? -> No false misses, but less pruning of true misses possible (min_card is smaller than necessary), if k > min_card
         if (vmMaxDistMinimumNorm(p, N) < PruningHeuristic.vvMinDistanceMaximumNorm(p, q) && min_card >= counter){
           // candidateSet = candidateSet - {p}
           candidateSet.remove(i);

@@ -73,7 +73,7 @@ public class Graph {
 			this.mapping.get(e.getSource()).put(e.getTarget(), e);
 			this.mapping.get(e.getTarget()).put(e.getSource(), e);
 		} catch(NullPointerException ex) {
-			System.out.println("Error adding edge " + e.toString() + ": " + ex.getLocalizedMessage());
+			util.Log.appendln("Error adding edge " + e.toString() + ": " + ex.getLocalizedMessage());
 		}
 	}
 	

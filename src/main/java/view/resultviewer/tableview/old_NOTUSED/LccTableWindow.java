@@ -155,7 +155,7 @@ public class LccTableWindow extends JFrame implements ActionListener, ResultVisu
 						tableModel.fireTableDataChanged();
 						
 						if(counter % GuiConstants.GREENMARKER_STEPCOUNT == 0) {
-							System.out.println("*** START GREEN CELL CALCULATION! ***");
+							util.Log.appendln("*** START GREEN CELL CALCULATION! ***");
 
 //							greenRows.clear();
 							int row = 0;
@@ -185,7 +185,7 @@ public class LccTableWindow extends JFrame implements ActionListener, ResultVisu
 										greenRows.add(row);
 									}
 								}
-								System.out.println("Row= " + g.toString() + "\tResult= " + ergebnis + 
+								util.Log.appendln("Row= " + g.toString() + "\tResult= " + ergebnis + 
 										           "\t[Max. Dev @ " + ChartConstants.CONFIDENCE_STD_VAL + " ; Sig. Level @ " + 
 										           ChartConstants.SIGNIFICANCE_STD_VAL + "]");
 								row++;

@@ -66,7 +66,7 @@ public class Utils {
     // Print out nodes and distances. This is also to check if the DBIDs correspond to the line numbers in the CSV file TODO: Write test instead of this!
     /*DBIDIter iter = relation.getDBIDs().iter();
     while (iter.valid()){
-      System.out.println(iter.internalGetIndex() + " : " + relation.get(iter));
+      util.Log.appendln(iter.internalGetIndex() + " : " + relation.get(iter));
       iter.advance();
     }*/
 

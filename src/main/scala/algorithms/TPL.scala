@@ -22,6 +22,7 @@ import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.strategies.bulk.Sort
 
 import elkiTPL.{Utils, TPLQuery}
 import graph.{SVertex, SGraph}
+import util.Log
 
 /**
  * @author fliebhart
@@ -40,7 +41,7 @@ object TPL {
    */
   def tplRkNNs(sGraph: SGraph, sQ: SVertex, k: Int, refPoints: Seq[SVertex], rStarTreePageSize: Int, withClipping: Boolean): IndexedSeq[(DBID, Double)] = {
     val rTreePath  = "tplSimulation/rTree.csv"
-    println(s"Reference Points: ${refPoints.mkString(",")}")
+    Log.appendln(s"Reference Points: ${refPoints.mkString(",")}")
 
     // create random RTree CSV File
     // Utils.generateRandomCSVFile(refPoints.size, 100, rTreePath) // dimensions = numRefPoints, number of random vectors to be created = 100
@@ -64,21 +65,21 @@ object TPL {
       coordinates(i) = Math.random()
     }
     val queryObject: DoubleVector = new DoubleVector(coordinates)
-    println("Generated query object: " + queryObject)
+    Log.appendln("Generated query object: " + queryObject)
 
     // random query object from the database
     val queryObject: DoubleVector = relation.get(Utils.getRandomDBObject(relation))
-    println(s"Random query object from database: $queryObject\n")
+    Log.appendln(s"Random query object from database: $queryObject\n")
 */
     val queryObject: DoubleVector = relation.get(getDBIDRefFromVertex(relation, sQ))
 
 
     // Performing TPL rknn query
-    println(s"Performing R${k}NN-query...")
+    Log.appendln(s"Performing R${k}NN-query...")
     val t0 = System.currentTimeMillis()
     val distanceDBIDList: DistanceDBIDList[DoubleDistance] = tpl.getRKNNForObject(queryObject, k)
     val t1 = System.currentTimeMillis()
-    println(s"R${k}NN query performed in ${t1-t0} ms.\n")
+    Log.appendln(s"R${k}NN query performed in ${t1-t0} ms.\n")
 
 
     var rkNNs: IndexedSeq[(DBID, Double)] = IndexedSeq.empty

@@ -42,7 +42,7 @@ public class XmlUtil {
 
 	public static void saveGraphToXml(Graph graph, String saveLocation) {
 		try {
-			System.out.print("Saving graph... (Location: " + saveLocation + ")");
+			util.Log.append("Saving graph... (Location: " + saveLocation + ")");
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 			
@@ -103,7 +103,7 @@ public class XmlUtil {
 			// output for testing
 			transfomer.transform(source, result);
 			
-			System.out.println(" .. done.");
+			util.Log.appendln(" .. done.");
 		} catch(ParserConfigurationException e) {
 			e.printStackTrace();
 		} catch(TransformerConfigurationException e) {
@@ -115,7 +115,7 @@ public class XmlUtil {
 	
 	public static Graph importGraphFromXml(String fileName) {
 		ProbabilisticGraph.getInstance().clear();
-//		System.out.println("Reading graph from XML...");
+//		util.Log.appendln("Reading graph from XML...");
 		try {
 			File file = new File(fileName);
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -168,7 +168,7 @@ public class XmlUtil {
 			e.printStackTrace();
 		}
 		
-//		System.out.println("Reading graph from XML... DONE!");
+//		util.Log.appendln("Reading graph from XML... DONE!");
     return ProbabilisticGraph.getInstance();
 	}
 	

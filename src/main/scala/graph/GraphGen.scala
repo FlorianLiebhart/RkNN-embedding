@@ -4,6 +4,7 @@ import scala.util.Random
 
 import util.Utils.{TimeDiff, makesure}
 import util.GuiConstants
+import util.Log
 
 /**
  * Created: 04.02.14, 16:42
@@ -14,21 +15,21 @@ object GraphGen {
   def generateJavaGraph(numberOfVertices: Integer, numberOfEdges: Integer, numberOfObjects: Integer, weightOne: Boolean): graph.core.Graph = {
     checkPreconditions(numberOfVertices,numberOfEdges,numberOfObjects)
 
-    println("Generating graph with " + numberOfVertices + " nodes, " + numberOfEdges + " edges, " + numberOfObjects + " objects..." )
+    Log.appendln("Generating graph with " + numberOfVertices + " nodes, " + numberOfEdges + " edges, " + numberOfObjects + " objects..." )
     val timeGenerateGraph = TimeDiff()
 
     GraphGenerator.getInstance().generateProbabilisticGraph(numberOfVertices, numberOfEdges, 0, numberOfObjects, weightOne)
 
     timeGenerateGraph.end
-    println(s"Graph generation finished. Runtime: $timeGenerateGraph")
+    Log.appendln(s"Graph generation finished. Runtime: $timeGenerateGraph")
 
     ProbabilisticGraph.getInstance()
   }
 
-  def generateScalaGraph(numberOfVertices: Integer, numberOfEdges: Integer, numberOfObjects: Integer, edgeMaxWeight: Int): SGraph = {
+  def generateScalaGraph(numberOfVertices: Integer, numberOfEdges: Integer, numberOfObjects: Integer, edgeMaxWeight: Int = 10): SGraph = {
     checkPreconditions(numberOfVertices, numberOfEdges, numberOfObjects)
 
-    println("Generating graph with " + numberOfVertices + " nodes, " + numberOfEdges + " edges, " + numberOfObjects + " objects..." )
+    Log.appendln("Generating graph with " + numberOfVertices + " nodes, " + numberOfEdges + " edges, " + numberOfObjects + " objects..." )
     val timeGenerateGraph = TimeDiff()
 
 
@@ -37,17 +38,17 @@ object GraphGen {
     /*
      * create vertices
      */
-    print(s"  - Creating $numberOfVertices vertices...")
+    Log.append(s"  - Creating $numberOfVertices vertices...")
     val timeCreateVertices = TimeDiff()
 
     (0 to numberOfVertices - 1) map { id => sGraph.addVertex(new SVertex(id)) }
 
     timeCreateVertices.end
-    println(s" done in $timeCreateVertices")
+    Log.appendln(s" done in $timeCreateVertices")
     /*
      * create random objects
      */
-    print(s"  - Creating $numberOfObjects random objects...")
+    Log.append(s"  - Creating $numberOfObjects random objects...")
     val timeCreateObjects = TimeDiff()
 
     val shuffledVertices = new Random(System.currentTimeMillis).shuffle(sGraph.getAllVertices)
@@ -55,23 +56,23 @@ object GraphGen {
     (shuffledVertices zip objectIds) map { case (v, id) => v.setObjectId(id) }
 
     timeCreateObjects.end
-    println(s" done in $timeCreateObjects")
+    Log.appendln(s" done in $timeCreateObjects")
 
     /*
      * create node positions
      */
-    print(s"  - Creating $numberOfVertices node positions...")
+    Log.append(s"  - Creating $numberOfVertices node positions...")
     val timeCreateNodePositions = TimeDiff()
 
     val nrOfRows = setNodesPosition(sGraph)
 
     timeCreateNodePositions.end
-    println(s" done in $timeCreateNodePositions")
+    Log.appendln(s" done in $timeCreateNodePositions")
 
     /*
      * create random edges
      */
-    print(s"  - Creating $numberOfEdges random edges...")
+    Log.append(s"  - Creating $numberOfEdges random edges...")
     val timeCreateEdges = TimeDiff()
 
     // create edges
@@ -81,10 +82,10 @@ object GraphGen {
     createRandomEdgeWeights(sGraph.getAllEdges, edgeMaxWeight)
 
     timeCreateEdges.end
-    println(s" done in $timeCreateEdges")
+    Log.appendln(s" done in $timeCreateEdges")
 
     timeGenerateGraph.end
-    println(s"Graph generation finished. Runtime: $timeGenerateGraph")
+    Log.appendln(s"Graph generation finished. Runtime: $timeGenerateGraph")
 
     sGraph
   }
@@ -181,7 +182,7 @@ object GraphGen {
 
   def checkPreconditions(numberOfVertices: Integer, numberOfEdges: Integer, numberOfObjects: Integer) {
     makesure(numberOfVertices > 0,                                        s"Number of vertices ($numberOfVertices) must be > 0")
-    makesure(numberOfObjects >= 0 && numberOfObjects <= numberOfVertices, s"Number of objects ($numberOfObjects) must be >= 0 and <= number of vertices ($numberOfVertices)")
+    makesure(numberOfObjects > 0 && numberOfObjects <= numberOfVertices,  s"Number of objects ($numberOfObjects) must be >= 0 and <= number of vertices ($numberOfVertices)")
     makesure(numberOfEdges >= numberOfVertices - 1,                       s"number of edges ($numberOfEdges) must be >= number of vertices (${numberOfVertices-1}) - 1.")
     val max: Integer = ((numberOfVertices.toDouble * (numberOfVertices.toDouble - 1)) / 2).toInt
     makesure(numberOfEdges <= max,                                        s"Number of edges ($numberOfEdges) must be <= $max for ${numberOfVertices} vertices")

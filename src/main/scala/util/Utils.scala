@@ -3,6 +3,10 @@ package util
 import graph.{SGraph, SVertex, SEdge}
 import graph.core.{Graph, Vertex, Edge}
 import scala.collection.JavaConversions._
+import java.nio.file.{Files, Paths}
+import java.io.{BufferedWriter, FileWriter}
+import java.util.Date
+import java.text.SimpleDateFormat
 
 
 /**
@@ -11,23 +15,94 @@ import scala.collection.JavaConversions._
  */
 
 object Log {
-    val log = new StringBuilder()
 
-    def append(s: String) = {
-      log.append(s)
-      this
-    }
+  val printEnabled  = true  // allow printing on console
+  val immedatePrint = false // print immedately after appending to log
 
-    def appendln(s: String) = {
-      log.append(s + "\n")
-      this
-    }
+  def print(s: Any):Unit = if(printEnabled) System.out.print(s)
+  def println(s: Any):Unit = if(printEnabled) System.out.println(s)
 
-    def printFlush = {
-      print(log.toString)
-      log.clear()
+
+  var nodesToVerify                         = 0
+  var nodesVisited                          = 0
+
+  var embeddingFilteredCandidates           = 0
+  def setEmbeddingFilteredCandidates(x: Int) = embeddingFilteredCandidates = x
+
+  var runTimeRknnQuery                      = 0.0
+  var runTimeEmbeddingPreparation           = 0.0
+
+
+
+  val printLog      = new StringBuilder()
+  val writeLog      = new StringBuilder()
+
+  val experimentLog = new StringBuilder()
+
+  def experimentLogAppend(s: Any)   = experimentLog.append(s.toString)
+  def experimentLogAppendln(s: Any) = experimentLog.append(s.toString + "\n")
+
+  def append(s: Any) = {
+    if (immedatePrint)
+      System.out.print(s)
+    else {
+      printLog.append(s)
     }
+    writeLog.append(s)
+    this
   }
+
+  def appendln(s: Any) = {
+    if (immedatePrint)
+      System.out.println(s)
+    else {
+      printLog.append(s + "\n")
+    }
+    writeLog.append(s + "\n")
+    this
+  }
+
+  def printFlush = {
+    println(printLog.toString)
+    printLog.clear
+  }
+
+  def writeFlushWriteLog(appendToFile: Boolean){
+    write(s"log/writeLog.txt", appendToFile, writeLog)
+    writeLog.clear
+  }
+
+  def writeFlushExperimentLog(appendToFile: Boolean, name: String) = {
+    write(s"log/experimentLog-$name.txt", appendToFile, experimentLog)
+    experimentLog.clear
+  }
+
+  private def write(destPath: String, appendToFile: Boolean, log: StringBuilder) = {
+    // create directories and file if non-existent
+    val pathToFile = Paths.get(destPath)
+    Files.createDirectories(pathToFile.getParent)
+    if (!Files.exists(pathToFile))
+        Files.createFile(pathToFile)
+    val fw  = new FileWriter(destPath, appendToFile)
+    val out = new BufferedWriter(fw)
+
+    out.write(
+      log.toString
+    )
+    out.close()
+  }
+
+  def resetStats() {
+    nodesToVerify               = 0
+    nodesVisited                = 0
+
+    embeddingFilteredCandidates = 0
+
+    runTimeRknnQuery            = 0
+    runTimeEmbeddingPreparation = 0
+  }
+
+}
 
 object Utils {
 
@@ -36,6 +111,8 @@ object Utils {
     private var tEnd: java.lang.Long = null
 
     def end   = tEnd   = System.currentTimeMillis
+
+    def diff = tEnd - tStart
 
     override def toString: String = {
       if(tStart == null)
@@ -61,7 +138,7 @@ object Utils {
   }
 
   def convertScalaToJavaGraph(sGraph: SGraph): graph.core.Graph = {
-    print("\nConverting SGraph to Java graph with " + sGraph.getAllVertices.size + " nodes, " + sGraph.getAllEdges.size + " edges..")
+    Log.append("\nConverting SGraph to Java graph with " + sGraph.getAllVertices.size + " nodes, " + sGraph.getAllEdges.size + " edges..")
 
     val timeConvertScalaToJavaGraph = TimeDiff()
 
@@ -70,13 +147,13 @@ object Utils {
     sGraph.getAllEdges   .map(e => jGraph.addEdge  (convertScalaToJavaEdge(jGraph, e)))
 
     timeConvertScalaToJavaGraph.end
-    println(s" done in $timeConvertScalaToJavaGraph\n")
+    Log.appendln(s" done in $timeConvertScalaToJavaGraph\n")
 
     jGraph
   }
 
   def convertJavaToScalaGraph(jGraph: graph.core.Graph): SGraph = {
-    print("Converting Java graph to SGraph with " + jGraph.getAllVertices.size + " nodes, " + jGraph.getAllEdges.size + " edges..")
+    Log.append("Converting Java graph to SGraph with " + jGraph.getAllVertices.size + " nodes, " + jGraph.getAllEdges.size + " edges..")
     val timeConvertJavaToScalaGraph = TimeDiff()
 
     val sGraph = new SGraph()
@@ -84,7 +161,7 @@ object Utils {
     jGraph.getAllEdges.map(e => sGraph.addEdge(convertJavaToScalaEdge(sGraph, e)))
 
     timeConvertJavaToScalaGraph.end
-    println(s" done in $timeConvertJavaToScalaGraph")
+    Log.appendln(s" done in $timeConvertJavaToScalaGraph")
 
     sGraph
   }

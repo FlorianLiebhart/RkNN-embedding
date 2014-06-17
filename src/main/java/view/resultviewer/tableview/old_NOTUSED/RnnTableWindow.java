@@ -161,7 +161,7 @@ public class RnnTableWindow extends JFrame implements ActionListener, ResultVisu
 						tableModel.fireTableDataChanged();
 						
 						if(counter % GuiConstants.GREENMARKER_STEPCOUNT == 0) {
-							System.out.println("*** START GREEN CELL CALCULATION! ***");
+							util.Log.appendln("*** START GREEN CELL CALCULATION! ***");
 
 //							greenRows.clear();
 							int row = 0;
@@ -191,7 +191,7 @@ public class RnnTableWindow extends JFrame implements ActionListener, ResultVisu
 										greenRows.add(row);
 									}
 								}
-								System.out.println("Node-ID= " + key + "\tResult= " + ergebnis + 
+								util.Log.appendln("Node-ID= " + key + "\tResult= " + ergebnis + 
 										           "\t[Max. Dev @ " + ChartConstants.CONFIDENCE_STD_VAL + " ; Sig. Level @ " + 
 										           ChartConstants.SIGNIFICANCE_STD_VAL + "]");
 								row++;
@@ -297,7 +297,7 @@ public class RnnTableWindow extends JFrame implements ActionListener, ResultVisu
 	 	TableColumn column = null;
 	 	for (int i = 0; i < columnNames.size(); i++) {
 	 	    column = table.getColumnModel().getColumn(i);
-	 	   System.out.println(column.getWidth());
+	 	   util.Log.appendln(column.getWidth());
 	 	    if (i == 0) {
 	 	        column.setPreferredWidth(30);
 	 	    } 

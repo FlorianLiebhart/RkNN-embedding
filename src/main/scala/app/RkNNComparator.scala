@@ -53,18 +53,32 @@ object RkNNComparator {
 //        val sGraph            = convertJavaToScalaGraph(XmlUtil.importGraphFromXml("exampleGraphXMLs/exampleGraphTPL.xml"))
         val sGraph            = convertJavaToScalaGraph(XmlUtil.importGraphFromXml("exampleGraphXMLs/exampleGraphTPLAllObjects.xml"))
         val qID               = 15
-        val refPoints         = Seq(sGraph.getVertex(4), sGraph.getVertex(11))
-//                                .++(Seq(sGraph.getVertex(13),sGraph.getVertex(5),sGraph.getVertex(16)))
+        val refPoints         = Seq(sGraph.getVertex(4))//, sGraph.getVertex(11))
+//                                .++(Seq(sGraph.getVertex(13) ,sGraph.getVertex(5)))//, sGraph.getVertex(16)))
 
-        // 130 bytes: (minimum for 2 dimensions); Max. entries in node = 3; Max. entries in leaf = 4
-        // 178 bytes: (minimum for 3 dimensions); Max. entries in node = 3; Max. entries in leaf = 5
-        val rStarTreePageSize = refPoints.size match {
-          case 1 => 100
-          case 2 => 150
-          case 3 => 200
-          case 4 => 250
-          case 5 => 300
-        }
+        val rStarTreePageSize = (refPoints.size * 16 * 3 ) + 34 // minimum!
+
+//          case 1 => 82 // 82 bytes: (min 1 dim); Max entr. node = 3; Max entr. leaf = 4
+//          case 2 => 130 // 130 bytes: (min 2 dim); Max entr. node = 3; Max entr. leaf = 4
+//          case 3 => 178 // 178 bytes: (min 3 dim); Max entr. node = 3; Max entr. leaf = 5
+//          case 4 => 226 // 226 bytes: (min 4 dim); Max entr. node = 3; Max entr. leaf = 5
+//          case 5 => 274 // 274 bytes: (min 5 dim); Max entr. node = 3; Max entr. leaf = 5
+
+//          case 5 => 304 // 304 bytes: (min 5 dim); Max entr. node = 3; Max entr. leaf = 6
+//          case 5 => 354 // 354 bytes: (min 5 dim); Max entr. node = 3; Max entr. leaf = 7
+
+//          case 5 => 364 // 364 bytes: (min 5 dim); Max entr. node = 4; Max entr. leaf = 7
+//          case 5 => 404 // 404 bytes: (min 5 dim); Max entr. node = 4; Max entr. leaf = 8
+
+//          case 5 => 454 // 454 bytes: (min 5 dim); Max entr. node = 5; Max entr. leaf = 9
+//          case 5 => 504 // 504 bytes: (min 5 dim); Max entr. node = 5; Max entr. leaf = 10
+
+//          case 5 => 544 // 544 bytes: (min 5 dim); Max entr. node = 6; ...
+//          case 5 => 634 // 634 bytes: (min 5 dim); Max entr. node = 7; ...
+//          case 5 => 724 // 724 bytes: (min 5 dim); Max entr. node = 8; ...
+//          case 5 => 814 // 814 bytes: (min 5 dim); Max entr. node = 9; ...
+//          case 5 => 904 // 904 bytes: (min 5 dim); Max entr. node = 10; ...
+
         val k                 = 3
 
         (sGraph, qID, refPoints, k, rStarTreePageSize)
@@ -82,10 +96,10 @@ object RkNNComparator {
 
       case "random" =>  // randomly generated graph
         // vertices may be a little less than what defined here, since the floored sqrt will be squared
-        val vertices          = 1000 // Max. 1 Million! (so that there won't be an integer overflow for max-edges)
+        val vertices          = 100 // Max. 1 Million! (so that there won't be an integer overflow for max-edges)
         val actualVertices    = Math.pow(Math.sqrt(vertices).floor, 2).toInt
 
-        val objects           = 0.05 * actualVertices
+        val objects           = 0 //0.005 * actualVertices
 
         val nrOfRowsAndCols   = Math.sqrt(actualVertices)
         val rowEdges          = nrOfRowsAndCols * (nrOfRowsAndCols - 1)
@@ -93,17 +107,18 @@ object RkNNComparator {
         val maxEdges          = (nrOfRowsAndCols - 1) * (Math.pow(nrOfRowsAndCols, 2))    // Maximum Edges: all edges between all rows: cols * (rows - 1)
                                                                                           //             +  all edges between each col:  (cols - 1) * (rows * rows)
 
-        val edges             = 1 * (maxEdges - minEdges) + minEdges   // generally for a graph: from N-1 to N(N-1)/2 // Int Overflow at: max 2.147.483.647 => Vertex max: 65.536
+        val edges             = 0.1 * (maxEdges - minEdges) + minEdges   // generally for a graph: from N-1 to N(N-1)/2 // Int Overflow at: max 2.147.483.647 => Vertex max: 65.536
 
         val qID               = new Random(System.currentTimeMillis).nextInt(actualVertices+1)
-        val numRefPoints      = 3
+        val numRefPoints      = 30
         val rStarTreePageSize = 25 * 8 * numRefPoints  // bytes: e.g. 1024 bytes; Erich recommendation: 25*8*dimensions (=> corresponds to around 25 entries/page)
         val k                 = 3
 
         val sGraph            = GraphGen.generateScalaGraph(actualVertices, edges.toInt, objects.toInt, edgeMaxWeight = 10)
-        val jGraph            = convertScalaToJavaGraph(sGraph)
-        XmlUtil.saveGraphToXml(jGraph, "exampleGraphXMLs/generatedGraph.xml")
-        val refPoints = Embedding.createRefPoints(sGraph.getAllVertices, numRefPoints, qID)
+        val q                 = sGraph.getVertex(qID)
+//        val jGraph            = convertScalaToJavaGraph(sGraph)
+//        XmlUtil.saveGraphToXml(jGraph, "exampleGraphXMLs/generatedGraph.xml")
+        val refPoints = Embedding.createRefPoints(sGraph.getAllVertices, numRefPoints, q)
 
         (sGraph, qID, refPoints, k, rStarTreePageSize)
     }
@@ -117,7 +132,7 @@ object RkNNComparator {
     Log.appendln("")
 
     // Naive algorithm
-    naiveRkNN(sGraph, qID, k)
+//    naiveRkNN(sGraph, qID, k)
 
     Log.printFlush
 
@@ -136,7 +151,7 @@ object RkNNComparator {
   def naiveRkNN(sGraph: SGraph          , qID: Integer, k: Integer) : Unit = {
     val sQ     = sGraph.getVertex(qID)
 
-    Log.appendln(s"-----------Naive R${k}NN for query point $qID:-----------\n")
+    Log.appendln(s"-----------Naive R${k}NN for query point $qID:-----------\n").printFlush
 
     val timeNaiveRkNN  = TimeDiff()
 
@@ -172,7 +187,7 @@ object RkNNComparator {
 
   def embeddedRkNN(jGraph: graph.core.Graph, qID: Integer, k: Integer, numRefPoints: Int) : Unit = {
     val sGraph    = convertJavaToScalaGraph(jGraph)
-    val refPoints = Embedding.createRefPoints(sGraph.getAllVertices, numRefPoints, qID)
+    val refPoints = Embedding.createRefPoints(sGraph.getAllVertices, numRefPoints, sGraph.getVertex(qID))
     embeddedRkNN(sGraph, qID, k, refPoints, rStarTreePageSize = 1024)
   }
   def embeddedRkNN(sGraph: SGraph, qID: Integer, k: Integer, refPoints: Seq[SVertex], rStarTreePageSize: Int) : Unit = {
@@ -183,7 +198,7 @@ object RkNNComparator {
 
     val timeEmbeddedRkNN = TimeDiff()
 
-    val rkNNsEmbedded: Seq[(SVertex, Double)] = Embedding.embeddedRkNNs(sGraph, sQ, k, refPoints, rStarTreePageSize)
+    val rkNNsEmbedded: Seq[(SVertex, Double)] = Embedding.embeddedRkNNs(sGraph, sQ, k, -1, rStarTreePageSize, refPoints)
 
     timeEmbeddedRkNN.end
 
