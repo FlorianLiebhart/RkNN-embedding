@@ -19,19 +19,17 @@ object Log {
   val printEnabled  = true  // allow printing on console
   val immedatePrint = false // print immedately after appending to log
 
-  def print(s: Any):Unit = if(printEnabled) System.out.print(s)
-  def println(s: Any):Unit = if(printEnabled) System.out.println(s)
+  def print(s: Any):   Unit = if(printEnabled) System.out.print(s)
+  def println(s: Any): Unit = if(printEnabled) System.out.println(s)
 
 
-  var nodesToVerify                         = 0
-  var nodesVisited                          = 0
+  var nodesToVerify                          = 0
+  var nodesVisited                           = 0
+  var runTimeRknnQuery                       = 0.0
 
-  var embeddingFilteredCandidates           = 0
+  var embeddingFilteredCandidates            = 0
   def setEmbeddingFilteredCandidates(x: Int) = embeddingFilteredCandidates = x
-
-  var runTimeRknnQuery                      = 0.0
-  var runTimeEmbeddingPreparation           = 0.0
-
+  var embeddingRunTimePreparation            = 0.0
 
 
   val printLog      = new StringBuilder()
@@ -68,16 +66,11 @@ object Log {
   }
 
   def writeFlushWriteLog(appendToFile: Boolean){
-    write(s"log/writeLog.txt", appendToFile, writeLog)
+    write(s"log/writeLog.txt", appendToFile, writeLog.toString)
     writeLog.clear
   }
 
-  def writeFlushExperimentLog(appendToFile: Boolean, name: String) = {
-    write(s"log/experimentLog-$name.txt", appendToFile, experimentLog)
-    experimentLog.clear
-  }
-
-  private def write(destPath: String, appendToFile: Boolean, log: StringBuilder) = {
+  def write(destPath: String, appendToFile: Boolean, s: String) = {
     // create directories and file if non-existent
     val pathToFile = Paths.get(destPath)
     Files.createDirectories(pathToFile.getParent)
@@ -87,7 +80,7 @@ object Log {
     val out = new BufferedWriter(fw)
 
     out.write(
-      log.toString
+      s
     )
     out.close()
   }
@@ -99,7 +92,7 @@ object Log {
     embeddingFilteredCandidates = 0
 
     runTimeRknnQuery            = 0
-    runTimeEmbeddingPreparation = 0
+    embeddingRunTimePreparation = 0
   }
 
 }

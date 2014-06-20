@@ -99,7 +99,7 @@ object RkNNComparator {
         val vertices          = 100 // Max. 1 Million! (so that there won't be an integer overflow for max-edges)
         val actualVertices    = Math.pow(Math.sqrt(vertices).floor, 2).toInt
 
-        val objects           = 0 //0.005 * actualVertices
+        val objects           = 1 //0.005 * actualVertices
 
         val nrOfRowsAndCols   = Math.sqrt(actualVertices)
         val rowEdges          = nrOfRowsAndCols * (nrOfRowsAndCols - 1)

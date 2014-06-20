@@ -85,7 +85,7 @@ object GraphGen {
     Log.appendln(s" done in $timeCreateEdges")
 
     timeGenerateGraph.end
-    Log.appendln(s"Graph generation finished. Runtime: $timeGenerateGraph")
+    Log.appendln(s"Graph generation finished. Runtime: $timeGenerateGraph\n")
 
     sGraph
   }
@@ -182,7 +182,7 @@ object GraphGen {
 
   def checkPreconditions(numberOfVertices: Integer, numberOfEdges: Integer, numberOfObjects: Integer) {
     makesure(numberOfVertices > 0,                                        s"Number of vertices ($numberOfVertices) must be > 0")
-    makesure(numberOfObjects > 0 && numberOfObjects <= numberOfVertices,  s"Number of objects ($numberOfObjects) must be >= 0 and <= number of vertices ($numberOfVertices)")
+    makesure(numberOfObjects > 1 && numberOfObjects <= numberOfVertices,  s"Number of objects ($numberOfObjects) must be >= 0 and <= number of vertices ($numberOfVertices)")
     makesure(numberOfEdges >= numberOfVertices - 1,                       s"number of edges ($numberOfEdges) must be >= number of vertices (${numberOfVertices-1}) - 1.")
     val max: Integer = ((numberOfVertices.toDouble * (numberOfVertices.toDouble - 1)) / 2).toInt
     makesure(numberOfEdges <= max,                                        s"Number of edges ($numberOfEdges) must be <= $max for ${numberOfVertices} vertices")

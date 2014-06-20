@@ -1,6 +1,6 @@
 package app
 
-import graph.{SGraph, GraphGen, SVertex}
+import graph.{SGraph, SVertex}
 
 import util.Utils._
 import util.Log
@@ -12,9 +12,9 @@ import algorithms.{Embedding}
 import scala.util.Random
 import java.util.Date
 import java.text.SimpleDateFormat
+import java.lang.management.ManagementFactory
 
 object RkNNTestEnvironment {
-
 
   def main(args: Array[String]): Unit = {
 
@@ -23,13 +23,15 @@ object RkNNTestEnvironment {
     Log.writeFlushWriteLog(appendToFile = false)
 
     try {
-      runExperiments()
+      runExperiments(
+        shortExperiments = true,
+        runs             = 2
+      )
     }
     catch {
       case e: Exception => {
         Log.appendln(e.getStackTraceString)
         Log.writeFlushWriteLog(appendToFile = true)
-        Log.writeFlushExperimentLog(appendToFile = false, name = "ERROR")
         Log.printFlush
         e.printStackTrace
       }
@@ -38,278 +40,378 @@ object RkNNTestEnvironment {
     Log.writeFlushWriteLog(appendToFile = true)
   }
 
-  def runExperiments() {
-    val shortExperiments      = false
-    val experimentRepeatTimes = if (shortExperiments) 1 else 2
-
-    println("Code organization phase: Performing dry run (running all algorithms once)")
+  def runExperiments(runs: Int, shortExperiments: Boolean) {
     dryRun()
-    println("Dry run completed. Now starting experiments.\n\n")
-
 
     println("--------------- Starting experiments. -----------------\n")
 
+    expDefault      (runs)                      //0. Default run
+    expEntries      (runs, shortExperiments)    //1. Alter entries per node (r*tree page size)
+    expRefPoints    (runs, shortExperiments)    //2. Alter number of reference points
+    expVertices     (runs, shortExperiments)    //3. Alter Vertices
+    expObjectDensity(runs, shortExperiments)    //4. Alter Object Density
+    expConnectivity (runs, shortExperiments)    //5. Alter Connectivity (Edges)
+    expK            (runs, shortExperiments)    //6. Alter k
 
-    val settings = new TestSettings()
-
-    /*
-     * 0. Default run
-     */
-    settings.default()
-
-    Log.experimentLogAppendln("----------------------------------------------------------------------")
-    Log.experimentLogAppendln(s"0. Experiment: Default run.")
-    Log.experimentLogAppendln("----------------------------------------------------------------------\n")
-
-    Log.experimentLogAppend(s"$settings\n")
-
-    Log.writeFlushExperimentLog(name = "0 Default", appendToFile = false)
-    runExperiment(experimentRepeatTimes, settings, valueName = "Default values", value = "")
-    Log.writeFlushExperimentLog(name = "0 Default", appendToFile = true)
-    Log.writeFlushWriteLog(true)
-
-
-    /*
-     * 1. Alter entries per node (r*tree page size)
-     */
-    settings.default()
-
-    Log.experimentLogAppendln("----------------------------------------------------------------------")
-    Log.experimentLogAppendln(s"1. Experiment: Alter number of entries per node (r*tree page size).")
-    Log.experimentLogAppendln("----------------------------------------------------------------------\n")
-
-    Log.experimentLogAppend(s"$settings\n")
-    Log.appendln(s"$settings\n")
-    Log.writeFlushWriteLog(true)
-
-    var valuesEntry = Seq(5, 10, 15, 20, 25, 30, 35, 40, 45, 50)
-    if (shortExperiments) valuesEntry = valuesEntry.dropRight(6)
-
-    Log.writeFlushExperimentLog(name = "1 Entries", appendToFile = false)
-    for(entriesPerNode <- valuesEntry){
-      settings.entriesPerNode = entriesPerNode
-      runExperiment(experimentRepeatTimes, settings, valueName = "Entries per node", value = entriesPerNode, onlyEmbedding = true)
-      Log.writeFlushExperimentLog(name = "1 Entries", appendToFile = true)
-      Log.writeFlushWriteLog(true)
-    }
-
-    /*
-     * 2. Alter number of reference points
-     */
-    settings.default()
-
-    Log.experimentLogAppendln("----------------------------------------------------------------------")
-    Log.experimentLogAppendln(s"2. Experiment: Alter number of reference points.")
-    Log.experimentLogAppendln("----------------------------------------------------------------------\n")
-
-    Log.experimentLogAppend(s"$settings\n")
-    Log.appendln(s"$settings\n")
-    Log.writeFlushWriteLog(true)
-
-    var valuesRefPoints = Seq(5, 10, 15, 20, 25, 30, 35, 40, 45, 50)
-    if (shortExperiments) valuesRefPoints = valuesRefPoints.dropRight(6)
-
-    Log.writeFlushExperimentLog(name = "2 Refs", appendToFile = false)
-    for(refPoints <- valuesRefPoints){
-      settings.numRefPoints = refPoints
-      runExperiment(experimentRepeatTimes, settings, valueName = "Reference points", value = refPoints, onlyEmbedding = true)
-      Log.writeFlushExperimentLog(name = "2 Refs", appendToFile = true)
-      Log.writeFlushWriteLog(true)
-    }
-
-
-    /*
-     * 3. Alter Vertices
-     */
-    settings.default()
-
-    Log.experimentLogAppendln("----------------------------------------------------------------------")
-    Log.experimentLogAppendln(s"2. Experiment: Alter number of vertices.")
-    Log.experimentLogAppendln("----------------------------------------------------------------------\n")
-
-    Log.experimentLogAppend(s"$settings\n")
-    Log.appendln(s"$settings\n")
-    Log.writeFlushWriteLog(true)
-
-    var valuesVertices = Seq(10, 100, 1000, 10000, 50000, 100000, 200000, 500000)
-    if (shortExperiments) valuesVertices = valuesVertices.dropRight(3)
-
-    Log.writeFlushExperimentLog(name = "3 Vertices", appendToFile = false)
-    for(vertices <- valuesVertices){
-      settings.approximateVertices = vertices
-      runExperiment(experimentRepeatTimes, settings, valueName = "Vertices", value = vertices)
-      Log.writeFlushExperimentLog(name = "3 Vertices", appendToFile = true)
-      Log.writeFlushWriteLog(true)
-    }
-
-
-    /*
-     * 4. Alter Object Density
-     */
-    settings.default()
-
-    Log.experimentLogAppendln("----------------------------------------------------------------------")
-    Log.experimentLogAppendln(s"4. Experiment: Alter object density.")
-    Log.experimentLogAppendln("----------------------------------------------------------------------\n")
-
-    Log.experimentLogAppend(s"$settings\n")
-    Log.appendln(s"$settings\n")
-    Log.writeFlushWriteLog(true)
-
-    var valuesODensity = Seq(0.005, 0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.64, 1.0)
-    if (shortExperiments) valuesODensity = valuesODensity.drop(3).dropRight(3)
-
-    Log.writeFlushExperimentLog(name = "4 Objects", appendToFile = false)
-    for(oDensity <- valuesODensity){
-      settings.objectDensity = oDensity
-      runExperiment(experimentRepeatTimes, settings, valueName = "Object density", value = oDensity)
-      Log.writeFlushExperimentLog(name = "4 Objects", appendToFile = true)
-      Log.writeFlushWriteLog(true)
-    }
-
-
-    /*
-     * 5. Alter Connectivity (Edges)
-     */
-    settings.default()
-
-    Log.experimentLogAppendln("----------------------------------------------------------------------")
-    Log.experimentLogAppendln(s"5. Experiment: Alter connectivity (number of edges).")
-    Log.experimentLogAppendln("----------------------------------------------------------------------\n")
-
-    Log.experimentLogAppend(s"$settings\n")
-    Log.appendln(s"$settings\n")
-    Log.writeFlushWriteLog(true)
-
-    var valuesConnectivity = Seq(0.0, 0.005, 0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.64, 1.0)
-    if (shortExperiments) valuesConnectivity = valuesConnectivity.drop(2).dropRight(3)
-
-    Log.writeFlushExperimentLog(name = "5 Edges", appendToFile = false)
-    for(connectivity <- valuesConnectivity){
-      settings.connectivity = connectivity
-      runExperiment(experimentRepeatTimes, settings, valueName = "Connectivity", value = connectivity)
-      Log.writeFlushExperimentLog(name = "5 Edges", appendToFile = true)
-      Log.writeFlushWriteLog(true)
-    }
-
-
-    /*
-     * 6. Alter k
-     */
-    settings.default()
-
-    Log.experimentLogAppendln("----------------------------------------------------------------------")
-    Log.experimentLogAppendln(s"6. Experiment: Alter k.")
-    Log.experimentLogAppendln("----------------------------------------------------------------------\n")
-
-    Log.experimentLogAppend(s"$settings\n")
-    Log.appendln(s"$settings\n")
-    Log.writeFlushWriteLog(true)
-    
-    var valuesK = Seq(1, 2, 4, 8, 16)
-    if (shortExperiments) valuesK = valuesK.drop(1).dropRight(1)
-
-    Log.writeFlushExperimentLog(name = "6 k", appendToFile = false)
-    for(k <- valuesK){
-      settings.k = k
-      runExperiment(experimentRepeatTimes, settings, valueName = "k", value = k)
-      Log.writeFlushExperimentLog(name = "6 k", appendToFile = true)
-      Log.writeFlushWriteLog(true)
-    }
-
-    println("------------- All experiments finished. ---------------\n")
+    println("\n------------- All experiments finished. ---------------\n")
   }
 
   /**
-   * Create a graph and run all three algorithms. Do that "times" times, and calculate an average runtime.
-   * @param times
-   * @param settings
-   * @param valueName
-   * @param value
-   * @return
+   * 0. Default run
    */
-  def runExperiment(times: Int, settings: TestSettings, valueName: String, value: Any, onlyEmbedding: Boolean = false) = {
+  def expDefault(runs: Int) = {
+    val setup =
+      new ExperimentSetup(
+        experimentValueName = Experiment.default,
+        experimentValue     = -1.0,
+        runs                = runs
+    )
 
-    var naiveNodesToVerify       = 0
-    var naiveNodesVisited        = 0
-    var naiveRunTimeRknnQuery    = 0
+    val experimentResult: ExperimentResult = new ExperimentResult(
+      experimentTitle = "0. Experiment: Default run.",
+      experimentValueName = Experiment.default,
+      values = Seq(),
+      Seq[Seq[AlgorithmResult]](),
+      writeName = "0. Default run"
+    )
 
-    var eagerNodesToVerify       = 0
-    var eagerNodesVisited        = 0
-    var eagerRunTimeRknnQuery    = 0
+    experimentResult.write()
 
+    experimentResult.algorithmResultsForEachValue =
+      Seq(
+        Seq[AlgorithmResult](
+          runExperimentNaive(setup),
+          runExperimentEager(setup),
+          runExperimentEmbedded(setup)
+        )
+      )
 
-    var embeddedNodesToVerify       = 0
-    var embeddedNodesVisited        = 0
-    var embeddingFilteredCandidates = 0
-    var embeddedRunTimeRknnQuery    = 0
-    var embeddedRunTimePreparation  = 0
+    experimentResult.write()
+  }
 
-    Log.experimentLogAppendln(s"$valueName: $value")
-    Log.experimentLogAppendln("---------------------\n")
+  /**
+   * 1. Alter entries per node (R*Tree page size)
+   */
+  def expEntries(runs: Int, shortExperiments: Boolean) = {
+    var values = Seq(5, 10, 15, 20, 25, 30, 35, 40, 45, 50)
+    if (shortExperiments) values = values.dropRight(6)
 
-
-    for(i <- 1 to times) {
-      val sGraph = GraphGen.generateScalaGraph(settings.vertices, settings.edges, settings.objects)
-      settings.qID = new Random(System.currentTimeMillis).nextInt(settings.vertices)
-
-      if (!onlyEmbedding) {
-        Log.resetStats()
-
-        naiveRkNN(sGraph, settings)
-        naiveNodesToVerify    += (Log.nodesToVerify    / times).toInt
-        naiveNodesVisited     += (Log.nodesVisited     / times).toInt
-        naiveRunTimeRknnQuery += (Log.runTimeRknnQuery / times).toInt
-
-        Log.resetStats()
-
-        eagerRkNN(sGraph, settings)
-        eagerNodesToVerify    += (Log.nodesToVerify    / times).toInt
-        eagerNodesVisited     += (Log.nodesVisited     / times).toInt
-        eagerRunTimeRknnQuery += (Log.runTimeRknnQuery / times).toInt
-      }
-
-      Log.resetStats()
-
-      embeddedRkNN(sGraph, settings)
-      embeddedNodesToVerify       += (Log.nodesToVerify               / times).toInt
-      embeddedNodesVisited        += (Log.nodesVisited                / times).toInt
-      embeddedRunTimePreparation  += (Log.runTimeEmbeddingPreparation / times).toInt
-      embeddedRunTimeRknnQuery    += (Log.runTimeRknnQuery            / times).toInt
-
-      embeddingFilteredCandidates += (Log.embeddingFilteredCandidates / times).toInt
+    val experimentSetups = values map { value =>
+      ExperimentSetup(
+        experimentValueName = Experiment.entriesPerNode,
+        experimentValue = value,
+        numRefPoints = value,
+        runs = runs
+      )
     }
 
-    if (!onlyEmbedding) {
-      Log.experimentLogAppendln("Naive:\n")
+    val experimentResult: ExperimentResult = new ExperimentResult(
+      experimentTitle = "1. Experiment: Alter number of entries per node (R*Tree page size).",
+      experimentValueName = Experiment.entriesPerNode,
+      values,
+      Seq[Seq[AlgorithmResult]](),
+      writeName = "1. Entries per node"
+    )
 
-      Log.experimentLogAppendln(s"Candidates to refine on graph:     $naiveNodesToVerify")
-      Log.experimentLogAppendln(s"Nodes visited:                     $naiveNodesVisited")
-      Log.experimentLogAppendln(s"Total rknn query runtime:          $naiveRunTimeRknnQuery ms.\n")
+    experimentResult.write()
 
-      Log.experimentLogAppendln("Eager:\n")
+    for(setup <- experimentSetups) {
+      experimentResult.algorithmResultsForEachValue :+=
+        Seq[AlgorithmResult](
+          runExperimentEmbedded(setup)
+        )
+      experimentResult.write()
+    }
+  }
 
-      Log.experimentLogAppendln(s"Candidates to refine on graph:     $eagerNodesToVerify")
-      Log.experimentLogAppendln(s"Nodes visited:                     $eagerNodesVisited")
-      Log.experimentLogAppendln(s"Total rknn query runtime:          $eagerRunTimeRknnQuery ms.\n")
+  /**
+   * 2. Alter number of reference points
+   */
+  def expRefPoints(runs: Int, shortExperiments: Boolean) = {
+    var values = Seq(10, 100, 1000, 10000, 50000, 100000, 200000, 500000)
+    if (shortExperiments) values = values.dropRight(6)
+
+    val experimentSetups = values map { value =>
+      ExperimentSetup(
+        experimentValueName = Experiment.refPoints,
+        experimentValue = value,
+        numRefPoints = value,
+        runs = runs
+      )
     }
 
-    Log.experimentLogAppendln("Embedding:\n")
+    val experimentResult: ExperimentResult = new ExperimentResult(
+      experimentTitle = "2. Experiment: Alter number of reference points.",
+      experimentValueName = Experiment.refPoints,
+      values,
+      Seq[Seq[AlgorithmResult]](),
+      writeName = "2. Reference Points"
+    )
 
-    Log.experimentLogAppendln(s"Candidates left after filter:      $embeddingFilteredCandidates")
-    Log.experimentLogAppendln(s"Candidates to refine on graph:     $embeddedNodesToVerify")
-    Log.experimentLogAppendln(s"Nodes visited:                     $embeddedNodesVisited")
-    Log.experimentLogAppendln(s"Runtime for embedding preparation: $embeddedRunTimePreparation ms.")
-    Log.experimentLogAppendln(s"Total rknn query runtime:          $embeddedRunTimeRknnQuery ms.\n\n")
+    experimentResult.write()
+
+    for(setup <- experimentSetups) {
+      experimentResult.algorithmResultsForEachValue :+=
+        Seq[AlgorithmResult](
+          runExperimentEmbedded(setup)
+        )
+      experimentResult.write()
+    }
+  }
+
+  /**
+   * 3. Alter vertices
+   */
+  def expVertices(runs: Int, shortExperiments: Boolean) = {
+    var values = Seq(10, 100, 1000, 10000, 50000, 100000, 200000, 500000)
+    if (shortExperiments) values = values.dropRight(3)
+
+    val experimentSetups = values map { value =>
+      ExperimentSetup(
+        experimentValueName = Experiment.vertices,
+        experimentValue = value,
+        approximateVertices = value,
+        runs = runs
+      )
+    }
+
+    val experimentResult: ExperimentResult = new ExperimentResult(
+      experimentTitle = "3. Experiment: Alter number of vertices.",
+      experimentValueName = Experiment.vertices,
+      values,
+      Seq[Seq[AlgorithmResult]](),
+      writeName = "3. Vertices"
+    )
+
+    experimentResult.write()
+
+    for(setup <- experimentSetups) {
+      experimentResult.algorithmResultsForEachValue :+=
+        Seq[AlgorithmResult](
+          runExperimentNaive(setup),
+          runExperimentEager(setup),
+          runExperimentEmbedded(setup)
+        )
+      experimentResult.write()
+    }
+  }
+
+  /**
+   * 4. Alter object density
+   */
+  def expObjectDensity(runs: Int, shortExperiments: Boolean) = {
+    var values = Seq(0.005, 0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.64, 1.0)
+    if (shortExperiments) values = values.drop(2).dropRight(3)
+
+    val experimentSetups = values map { value =>
+      ExperimentSetup(
+        experimentValueName = Experiment.objectDensity,
+        experimentValue = value,
+        objectDensity = value,
+        runs = runs
+      )
+    }
+
+    val experimentResult: ExperimentResult = new ExperimentResult(
+      experimentTitle = "4. Experiment: Alter object density.",
+      experimentValueName = Experiment.objectDensity,
+      values,
+      Seq[Seq[AlgorithmResult]](),
+      writeName = "4. Objects"
+    )
+
+    experimentResult.write()
+
+    for(setup <- experimentSetups) {
+      experimentResult.algorithmResultsForEachValue :+=
+        Seq[AlgorithmResult](
+          runExperimentNaive(setup),
+          runExperimentEager(setup),
+          runExperimentEmbedded(setup)
+        )
+      experimentResult.write()
+    }
+  }
+
+  /**
+   * 5. Alter Connectivity (Edges)
+   */
+  def expConnectivity(runs: Int, shortExperiments: Boolean) = {
+    var values = Seq(0.0, 0.005, 0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.64, 1.0)
+    if (shortExperiments) values = values.drop(2).dropRight(3)
+
+    val experimentSetups = values map { value =>
+      ExperimentSetup(
+        experimentValueName = Experiment.connectivity,
+        experimentValue = value,
+        connectivity = value,
+        runs = runs
+      )
+    }
+
+    val experimentResult: ExperimentResult = new ExperimentResult(
+      experimentTitle = "5. Experiment: Alter connectivity (number of edges).",
+      experimentValueName = Experiment.connectivity,
+      values,
+      Seq[Seq[AlgorithmResult]](),
+      writeName = "5. Edges"
+    )
+
+    experimentResult.write()
+
+    for(setup <- experimentSetups) {
+      experimentResult.algorithmResultsForEachValue :+=
+        Seq[AlgorithmResult](
+          runExperimentNaive(setup),
+          runExperimentEager(setup),
+          runExperimentEmbedded(setup)
+        )
+      experimentResult.write()
+    }
+  }
+
+  /**
+   * 6. Alter k
+   */
+  def expK(runs: Int, shortExperiments: Boolean) = {
+    var values = Seq(1, 2, 4, 8, 16)
+    if (shortExperiments) values = values.drop(1).dropRight(1)
+
+    val experimentSetups = values map { value =>
+      ExperimentSetup(
+        experimentValueName = Experiment.k,
+        experimentValue = value,
+        k = value,
+        runs = runs
+      )
+    }
+
+    val experimentResult: ExperimentResult = new ExperimentResult(
+      experimentTitle = "6. Experiment: Alter k.",
+      experimentValueName = Experiment.k,
+      values,
+      Seq[Seq[AlgorithmResult]](),
+      writeName = "6. k"
+    )
+
+    experimentResult.write()
+
+    for(setup <- experimentSetups) {
+      experimentResult.algorithmResultsForEachValue :+=
+        Seq[AlgorithmResult](
+          runExperimentNaive(setup),
+          runExperimentEager(setup),
+          runExperimentEmbedded(setup)
+        )
+      experimentResult.write()
+    }
   }
 
 
-  def naiveRkNN(sGraph: SGraph, settings: TestSettings) : Unit = {
-    val k      = settings.k
-    val qID    = settings.qID
-    val q      = sGraph.getVertex(qID)
+  /**
+   * For each graph in the given setup, run the naive rknn algorithm.
+   * @param setup
+   * @return AlgorithmResult
+   */
+  def runExperimentNaive(setup: ExperimentSetup): AlgorithmResult = {
+    var nodesToRefine    = Seq[Int]()
+    var nodesVisited     = Seq[Int]()
+    var runTimeRknnQuery = Seq[Int]()
 
-    Log.appendln(s"\n-----------Naive R${k}NN for query point $q:-----------\n")
+    for{
+      (sGraph, q) <- setup.sGraphsQIds
+    }
+    yield {
+      Log.resetStats()
+
+      naiveRkNN(sGraph, q, k = setup.k)
+      nodesToRefine    :+= (Log.nodesToVerify)   .toInt
+      nodesVisited     :+= (Log.nodesVisited)    .toInt
+      runTimeRknnQuery :+= (Log.runTimeRknnQuery).toInt
+    }
+
+    val naiveSingleResults = Seq[SingleResult](
+      new SingleResult("Candidates to refine on graph", nodesToRefine),
+      new SingleResult("Nodes visited"                , nodesVisited),
+      new SingleResult("Runtime rknn query"           , runTimeRknnQuery)
+    )
+
+    new AlgorithmResult("Naive", setup.runs, setup.experimentValueName, setup.experimentValue, naiveSingleResults)
+  }
+
+  /**
+   * For each graph in the given setup, run the eager rknn algorithm.
+   * @param setup
+   * @return AlgorithmResult
+   */
+  def runExperimentEager(setup: ExperimentSetup): AlgorithmResult = {
+    var nodesToRefine    = Seq[Int]()
+    var nodesVisited     = Seq[Int]()
+    var runTimeRknnQuery = Seq[Int]()
+
+    for{
+      (sGraph, q) <- setup.sGraphsQIds
+    }
+    yield {
+      Log.resetStats()
+
+      eagerRkNN(sGraph, q, k = setup.k)
+      nodesToRefine    :+= (Log.nodesToVerify)   .toInt
+      nodesVisited     :+= (Log.nodesVisited)    .toInt
+      runTimeRknnQuery :+= (Log.runTimeRknnQuery).toInt
+    }
+
+    val eagerSingleResults = Seq[SingleResult](
+      new SingleResult("Candidates to refine on graph", nodesToRefine),
+      new SingleResult("Nodes visited"                , nodesVisited),
+      new SingleResult("Runtime rknn query"           , runTimeRknnQuery)
+    )
+
+    new AlgorithmResult("Eager", setup.runs, setup.experimentValueName, setup.experimentValue, eagerSingleResults)
+  }
+
+  /**
+   * For each graph in the given setup, run the embedded rknn algorithm.
+   * @param setup
+   * @return AlgorithmResult
+   */
+  def runExperimentEmbedded(setup:ExperimentSetup): AlgorithmResult = {
+    var nodesToRefine      = Seq[Int]()
+    var nodesVisited       = Seq[Int]()
+    var runTimeRknnQuery   = Seq[Int]()
+
+    var filteredCandidates = Seq[Int]()
+    var runTimePreparation = Seq[Int]()
+
+    for{
+      (sGraph, q) <- setup.sGraphsQIds
+    }
+    yield {
+      Log.resetStats()
+
+      embeddedRkNN(sGraph, q, k = setup.k, numRefPoints = setup.numRefPoints, rStarTreePageSize = setup.rStarTreePageSize)
+      nodesToRefine      :+= (Log.nodesToVerify)   .toInt
+      nodesVisited       :+= (Log.nodesVisited)    .toInt
+      runTimeRknnQuery   :+= (Log.runTimeRknnQuery).toInt
+
+      runTimePreparation :+= (Log.embeddingRunTimePreparation).toInt
+      filteredCandidates :+= (Log.embeddingFilteredCandidates).toInt
+    }
+
+    val embeddedSingleResults = Seq[SingleResult](
+      new SingleResult("Candidates to refine on graph" , nodesToRefine),
+      new SingleResult("Nodes visited"                 , nodesVisited),
+      new SingleResult("Runtime rknn query"            , runTimeRknnQuery),
+      new SingleResult("Candidates left after filter"  , filteredCandidates),
+      new SingleResult("Runtime embedding preparation ", runTimeRknnQuery)
+    )
+
+    new AlgorithmResult("Embedded", setup.runs, setup.experimentValueName, setup.experimentValue, embeddedSingleResults)
+  }
+
+  def naiveRkNN(sGraph: SGraph, q: SVertex, k: Int) : Unit = {
+
+    Log.appendln(s"\n-----------Naive R${k}NN for query point ${q.id}:-----------\n")
 
     val timeNaiveRkNN  = TimeDiff()
 
@@ -326,12 +428,9 @@ object RkNNTestEnvironment {
     Log.printFlush
   }
 
-  def eagerRkNN(sGraph: SGraph, settings: TestSettings) : Unit = {
-    val k      = settings.k
-    val qID    = settings.qID
-    val q      = sGraph.getVertex(qID)
+  def eagerRkNN(sGraph: SGraph, q: SVertex, k: Int) : Unit = {
 
-    Log.appendln(s"-----------Eager R${k}NN for query point $q:-----------\n")
+    Log.appendln(s"-----------Eager R${k}NN for query point ${q.id}:-----------\n")
 
     val timeEagerRkNN  = TimeDiff()
 
@@ -347,14 +446,9 @@ object RkNNTestEnvironment {
     Log.appendln(s"\nTotal Eager RkNN Runtime: $timeEagerRkNN \n")
   }
 
-  def embeddedRkNN(sGraph: SGraph, settings: TestSettings) : Unit = {
-    val k                 = settings.k
-    val rStarTreePageSize = settings.rStarTreePageSize
-    val qID               = settings.qID
-    val numRefPoints      = settings.numRefPoints
-    val q                 = sGraph.getVertex(qID)
+  def embeddedRkNN(sGraph: SGraph, q: SVertex, k: Int, numRefPoints: Int, rStarTreePageSize: Int) : Unit = {
 
-    Log.appendln(s"-----------Embedded R${k}NN for query point $qID:-----------\n")
+    Log.appendln(s"-----------Embedded R${k}NN for query point ${q.id}:-----------\n")
     Log.printFlush
 
     val timeEmbeddedRkNN = TimeDiff()
@@ -375,20 +469,26 @@ object RkNNTestEnvironment {
    *  Code-Organization: Perform all algorithms prior running the tests, so that the JVM can organize code.
    */
   def dryRun() = {
-    val settings = new TestSettings(
+    println("Code organization phase: Performing dry run (running all algorithms once)")
+
+    val setup = new ExperimentSetup(
+      experimentValueName = null,
+      experimentValue     = -1.0,
       approximateVertices = 1000,
       objectDensity       = 0.05,
       connectivity        = 0.1,
       k                   = 3,
       numRefPoints        = 3,
-      entriesPerNode      = 25
+      entriesPerNode      = 25,
+      runs                = 1
     )
 
-    val sGraph = GraphGen.generateScalaGraph(settings.vertices, settings.edges, settings.objects)
-    settings.qID = new Random(System.currentTimeMillis).nextInt(settings.vertices)
+    val (sGraph, q) = setup.sGraphsQIds.head
 
-    naiveRkNN(sGraph, settings)
-    eagerRkNN(sGraph, settings)
-    embeddedRkNN(sGraph, settings)
+    naiveRkNN(sGraph, q, k = setup.k)
+    eagerRkNN(sGraph, q, k = setup.k)
+    embeddedRkNN(sGraph, q, k = setup.k, numRefPoints = setup.numRefPoints, rStarTreePageSize = setup.rStarTreePageSize)
+
+    println("Dry run completed. Now starting experiments.\n\n")
   }
 }

@@ -111,7 +111,7 @@ object Embedding {
 
     timeAlgorithmPreparation.end
 
-    Log.runTimeEmbeddingPreparation = timeAlgorithmPreparation.diff
+    Log.embeddingRunTimePreparation = timeAlgorithmPreparation.diff
     Log.appendln(s"Algorithm preparation done in $timeAlgorithmPreparation \n").printFlush
 
     /*
