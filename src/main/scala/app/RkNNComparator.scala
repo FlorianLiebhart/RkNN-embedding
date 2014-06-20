@@ -153,7 +153,7 @@ object RkNNComparator {
 
     Log.appendln(s"-----------Naive R${k}NN for query point $qID:-----------\n").printFlush
 
-    val timeNaiveRkNN  = TimeDiff()
+    val timeNaiveRkNN  = ThreadCPUTimeDiff()
 
     val rkNNsNaive     = naiveRkNNs(sGraph, sQ, k)
 
@@ -172,7 +172,7 @@ object RkNNComparator {
 
     Log.appendln(s"-----------Eager R${k}NN for query point $qID:-----------\n")
 
-    val timeEagerRkNN  = TimeDiff()
+    val timeEagerRkNN  = ThreadCPUTimeDiff()
 
     val rkNNsEager     = eager(sGraph, sQ, k)
 
@@ -196,7 +196,7 @@ object RkNNComparator {
     Log.appendln(s"-----------Embedded R${k}NN for query point $qID:-----------\n")
     Log.printFlush
 
-    val timeEmbeddedRkNN = TimeDiff()
+    val timeEmbeddedRkNN = ThreadCPUTimeDiff()
 
     val rkNNsEmbedded: Seq[(SVertex, Double)] = Embedding.embeddedRkNNs(sGraph, sQ, k, -1, rStarTreePageSize, refPoints)
 
@@ -216,7 +216,7 @@ object RkNNComparator {
     Log.appendln("-----------TPL:-----------")
     Log.appendln(s"R${k}NNs for query point $qID")
 
-    val timeTPLRkNN                          = TimeDiff()
+    val timeTPLRkNN                          = ThreadCPUTimeDiff()
 
     val rkNNsTPL: Seq[(DBID, Double)] = TPL.tplRkNNs(sGraph, sQ, k, refPoints, rStarTreePageSize, withClipping)
 

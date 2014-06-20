@@ -2,7 +2,7 @@ package graph
 
 import scala.util.Random
 
-import util.Utils.{TimeDiff, makesure}
+import util.Utils.{ThreadCPUTimeDiff, makesure}
 import util.GuiConstants
 import util.Log
 
@@ -16,7 +16,7 @@ object GraphGen {
     checkPreconditions(numberOfVertices,numberOfEdges,numberOfObjects)
 
     Log.appendln("Generating graph with " + numberOfVertices + " nodes, " + numberOfEdges + " edges, " + numberOfObjects + " objects..." )
-    val timeGenerateGraph = TimeDiff()
+    val timeGenerateGraph = ThreadCPUTimeDiff()
 
     GraphGenerator.getInstance().generateProbabilisticGraph(numberOfVertices, numberOfEdges, 0, numberOfObjects, weightOne)
 
@@ -30,7 +30,7 @@ object GraphGen {
     checkPreconditions(numberOfVertices, numberOfEdges, numberOfObjects)
 
     Log.appendln("Generating graph with " + numberOfVertices + " nodes, " + numberOfEdges + " edges, " + numberOfObjects + " objects..." )
-    val timeGenerateGraph = TimeDiff()
+    val timeGenerateGraph = ThreadCPUTimeDiff()
 
 
     val sGraph = new SGraph
@@ -39,7 +39,7 @@ object GraphGen {
      * create vertices
      */
     Log.append(s"  - Creating $numberOfVertices vertices...")
-    val timeCreateVertices = TimeDiff()
+    val timeCreateVertices = ThreadCPUTimeDiff()
 
     (0 to numberOfVertices - 1) map { id => sGraph.addVertex(new SVertex(id)) }
 
@@ -49,7 +49,7 @@ object GraphGen {
      * create random objects
      */
     Log.append(s"  - Creating $numberOfObjects random objects...")
-    val timeCreateObjects = TimeDiff()
+    val timeCreateObjects = ThreadCPUTimeDiff()
 
     val shuffledVertices = new Random(System.currentTimeMillis).shuffle(sGraph.getAllVertices)
     val objectIds        = (0 to numberOfObjects - 1)
@@ -62,7 +62,7 @@ object GraphGen {
      * create node positions
      */
     Log.append(s"  - Creating $numberOfVertices node positions...")
-    val timeCreateNodePositions = TimeDiff()
+    val timeCreateNodePositions = ThreadCPUTimeDiff()
 
     val nrOfRows = setNodesPosition(sGraph)
 
@@ -73,7 +73,7 @@ object GraphGen {
      * create random edges
      */
     Log.append(s"  - Creating $numberOfEdges random edges...")
-    val timeCreateEdges = TimeDiff()
+    val timeCreateEdges = ThreadCPUTimeDiff()
 
     // create edges
     createRandomEdges(sGraph, numberOfEdges, nrOfRows)

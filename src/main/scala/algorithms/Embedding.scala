@@ -18,7 +18,7 @@ import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar._
 
 import elkiTPL.{EmbeddedTPLQuery, Utils}
 import graph.{SVertex, SGraph}
-import util.Utils.{VD, TimeDiff}
+import util.Utils.{VD, ThreadCPUTimeDiff}
 import util.Log
 
 /**
@@ -26,9 +26,7 @@ import util.Log
  */
 object Embedding {
 
-
   /**
-   *
    * @param sGraph
    * @param q
    * @param k
@@ -45,13 +43,13 @@ object Embedding {
      * 1. Preparation phase
      */
     Log.appendln(s"1. Start preparation phase (create: embedding, DB, R*Tree, query object)")
-    val timeAlgorithmPreparation = TimeDiff()
+    val timeAlgorithmPreparation = ThreadCPUTimeDiff()
 
     /*
      *    1.1 Create embedding
      */
     Log.append(s"  - Creating refpoints and embedding..")
-    val timeCreateEmbedding = TimeDiff()
+    val timeCreateEmbedding = ThreadCPUTimeDiff()
 
     val refPoints: Seq[SVertex] =
       if(numRefPoints == -1)
@@ -72,7 +70,7 @@ object Embedding {
      *    1.2 Write CSV + Create memory database
      */
     Log.append(s"  - Creating CSV file..")
-    val timeCreateCSV = TimeDiff()
+    val timeCreateCSV = ThreadCPUTimeDiff()
 
     val dbidVertexIDMapping: MutableHashMap[String, SVertex] = writeRTreeCSVFile(refPointDistancesContainingObjects, rTreePath)
 //    Utils.generateRandomCSVFile(refPoints.size, 100, rTreePath) // dimensions = numRefPoints, number of random vectors to be created = 100
@@ -81,7 +79,7 @@ object Embedding {
     Log.appendln(s" done in $timeCreateCSV")
 
     Log.append(s"  - Creating file based Database..")
-    val timeCreateDB = TimeDiff()
+    val timeCreateDB = ThreadCPUTimeDiff()
 
     val db: List[Database]               = Utils.createDatabase(rTreePath).toList
     val relation: Relation[DoubleVector] = db(0).getRelation(TypeUtil.NUMBER_VECTOR_FIELD)
@@ -95,7 +93,7 @@ object Embedding {
      *    1.3 Create RStar tree index
      */
     Log.append(s"  - Creating R*Tree index (entries: " + relation.size() + ", page size: " + rStarTreePageSize + " bytes)..")
-    val timeCreateRStarTree = TimeDiff()
+    val timeCreateRStarTree = ThreadCPUTimeDiff()
 
     val rStarTree: RStarTreeIndex[DoubleVector] = Utils.createRStarTree(relation, rStarTreePageSize)
 
@@ -111,19 +109,19 @@ object Embedding {
 
     timeAlgorithmPreparation.end
 
-    Log.embeddingRunTimePreparation = timeAlgorithmPreparation.diff
+    Log.embeddingRunTimePreparation = timeAlgorithmPreparation.diffMillis
     Log.appendln(s"Algorithm preparation done in $timeAlgorithmPreparation \n").printFlush
 
     /*
      * 2. Performing embedded TPL rknn query
      */
     Log.appendln(s"2. Performing R${k}NN-query...")
-    val timeTotalRknn = TimeDiff()
+    val timeTotalRknn = ThreadCPUTimeDiff()
     /*
      *    2.1 Filter-refinement in embedded space
      */
     Log.appendln(s"  2.1 Performing filter refinement in embedded space..")
-    val timeFilterRefEmbedding = TimeDiff()
+    val timeFilterRefEmbedding = ThreadCPUTimeDiff()
 
     val embeddingTPLResultDBIDs: Seq[DBID] = tplEmbedded.filterRefinement(queryObject, k)
 
@@ -134,12 +132,12 @@ object Embedding {
      *    2.2 Refining the TPL rknn results on graph
      */
     Log.appendln(s"  2.2 Refining candidates on graph..")
-    val timeRefinementOnGraph = TimeDiff()
+    val timeRefinementOnGraph = ThreadCPUTimeDiff()
     /*
      *        2.2.1 Mapping embedded candidates from DB to Graph
      */
     Log.append(s"    - Mapping candidates from DB to graph..")
-    val timeMappingFromDBtoGraph = TimeDiff()
+    val timeMappingFromDBtoGraph = ThreadCPUTimeDiff()
 
     val filterRefinementResultsEmbedding = embeddingTPLResultDBIDs map { dbid =>
       dbidVertexIDMapping.get(DBIDUtil.deref(dbid).toString).get
@@ -155,7 +153,7 @@ object Embedding {
     val candidatesToRefineOnGraph = filterRefinementResultsEmbedding.size
     Log.nodesToVerify             = candidatesToRefineOnGraph
     Log.append(s"    - Performing refinement of ${candidatesToRefineOnGraph} candidates on graph..")
-    val timePerformRefinementOnGraph = TimeDiff()
+    val timePerformRefinementOnGraph = ThreadCPUTimeDiff()
     // If q doesn't contain an object, give it an object so that it will be found by the knn algorithm
     if (!q.containsObject)
       q.setObjectId(numberOfVertices)
@@ -178,7 +176,7 @@ object Embedding {
     Log.appendln(s"  Refinement of candidates on graph done in $timeRefinementOnGraph")
 
     timeTotalRknn.end
-    Log.runTimeRknnQuery = timeTotalRknn.diff
+    Log.runTimeRknnQuery = timeTotalRknn.diffMillis
     Log.appendln(s"R${k}NN query performed in $timeTotalRknn \n")
 
     rKnns.sortWith((x,y) => (x._2 < y._2) || (x._2 == y._2) && (x._1.id < y._1.id))

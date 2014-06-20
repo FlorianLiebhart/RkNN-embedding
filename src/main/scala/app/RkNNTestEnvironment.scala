@@ -4,15 +4,12 @@ import graph.{SGraph, SVertex}
 
 import util.Utils._
 import util.Log
-import util.XmlUtil
 
 import algorithms.NaiveRkNN.naiveRkNNs
 import algorithms.Eager.eager
 import algorithms.{Embedding}
-import scala.util.Random
 import java.util.Date
 import java.text.SimpleDateFormat
-import java.lang.management.ManagementFactory
 
 object RkNNTestEnvironment {
 
@@ -41,17 +38,17 @@ object RkNNTestEnvironment {
   }
 
   def runExperiments(runs: Int, shortExperiments: Boolean) {
-    dryRun()
+//    dryRun()
 
     println("--------------- Starting experiments. -----------------\n")
 
     expDefault      (runs)                      //0. Default run
-    expEntries      (runs, shortExperiments)    //1. Alter entries per node (r*tree page size)
-    expRefPoints    (runs, shortExperiments)    //2. Alter number of reference points
-    expVertices     (runs, shortExperiments)    //3. Alter Vertices
-    expObjectDensity(runs, shortExperiments)    //4. Alter Object Density
-    expConnectivity (runs, shortExperiments)    //5. Alter Connectivity (Edges)
-    expK            (runs, shortExperiments)    //6. Alter k
+//    expEntries      (runs, shortExperiments)    //1. Alter entries per node (r*tree page size)
+//    expRefPoints    (runs, shortExperiments)    //2. Alter number of reference points
+//    expVertices     (runs, shortExperiments)    //3. Alter Vertices
+//    expObjectDensity(runs, shortExperiments)    //4. Alter Object Density
+//    expConnectivity (runs, shortExperiments)    //5. Alter Connectivity (Edges)
+//    expK            (runs, shortExperiments)    //6. Alter k
 
     println("\n------------- All experiments finished. ---------------\n")
   }
@@ -331,9 +328,9 @@ object RkNNTestEnvironment {
     }
 
     val naiveSingleResults = Seq[SingleResult](
-      new SingleResult("Candidates to refine on graph", nodesToRefine),
-      new SingleResult("Nodes visited"                , nodesVisited),
-      new SingleResult("Runtime rknn query"           , runTimeRknnQuery)
+      new SingleResult("Candidates to refine on graph"      , nodesToRefine),
+      new SingleResult("Nodes visited"                      , nodesVisited),
+      new SingleResult("Runtime thread CPU rknn query (ms.)", runTimeRknnQuery)
     )
 
     new AlgorithmResult("Naive", setup.runs, setup.experimentValueName, setup.experimentValue, naiveSingleResults)
@@ -362,9 +359,9 @@ object RkNNTestEnvironment {
     }
 
     val eagerSingleResults = Seq[SingleResult](
-      new SingleResult("Candidates to refine on graph", nodesToRefine),
-      new SingleResult("Nodes visited"                , nodesVisited),
-      new SingleResult("Runtime rknn query"           , runTimeRknnQuery)
+      new SingleResult("Candidates to refine on graph"      , nodesToRefine),
+      new SingleResult("Nodes visited"                      , nodesVisited),
+      new SingleResult("Runtime thread CPU rknn query (ms.)", runTimeRknnQuery)
     )
 
     new AlgorithmResult("Eager", setup.runs, setup.experimentValueName, setup.experimentValue, eagerSingleResults)
@@ -399,11 +396,11 @@ object RkNNTestEnvironment {
     }
 
     val embeddedSingleResults = Seq[SingleResult](
-      new SingleResult("Candidates to refine on graph" , nodesToRefine),
-      new SingleResult("Nodes visited"                 , nodesVisited),
-      new SingleResult("Runtime rknn query"            , runTimeRknnQuery),
-      new SingleResult("Candidates left after filter"  , filteredCandidates),
-      new SingleResult("Runtime embedding preparation ", runTimeRknnQuery)
+      new SingleResult("Candidates to refine on graph"      , nodesToRefine),
+      new SingleResult("Nodes visited"                      , nodesVisited),
+      new SingleResult("Runtime thread CPU rknn query (ms.)", runTimeRknnQuery),
+      new SingleResult("Candidates left after filter"       , filteredCandidates),
+      new SingleResult("Runtime embedding preparation (ms.)", runTimeRknnQuery)
     )
 
     new AlgorithmResult("Embedded", setup.runs, setup.experimentValueName, setup.experimentValue, embeddedSingleResults)
@@ -413,12 +410,12 @@ object RkNNTestEnvironment {
 
     Log.appendln(s"\n-----------Naive R${k}NN for query point ${q.id}:-----------\n")
 
-    val timeNaiveRkNN  = TimeDiff()
+    val timeNaiveRkNN  = ThreadCPUTimeDiff()
 
     val rkNNsNaive     = naiveRkNNs(sGraph, q, k)
 
     timeNaiveRkNN.end
-    Log.runTimeRknnQuery = timeNaiveRkNN.diff
+    Log.runTimeRknnQuery = timeNaiveRkNN.diffMillis
 
     Log.appendln(s"Result r${k}NNs: ${if (rkNNsNaive.size == 0) "--" else ""}")
     for( v <- rkNNsNaive )
@@ -432,12 +429,12 @@ object RkNNTestEnvironment {
 
     Log.appendln(s"-----------Eager R${k}NN for query point ${q.id}:-----------\n")
 
-    val timeEagerRkNN  = TimeDiff()
+    val timeEagerRkNN  = ThreadCPUTimeDiff()
 
     val rkNNsEager     = eager(sGraph, q, k)
 
     timeEagerRkNN.end
-    Log.runTimeRknnQuery = timeEagerRkNN.diff
+    Log.runTimeRknnQuery = timeEagerRkNN.diffMillis
 
     Log.appendln(s"Result r${k}NNs: ${if (rkNNsEager.size == 0) "--" else ""}")
     for( v <- rkNNsEager )
@@ -451,7 +448,7 @@ object RkNNTestEnvironment {
     Log.appendln(s"-----------Embedded R${k}NN for query point ${q.id}:-----------\n")
     Log.printFlush
 
-    val timeEmbeddedRkNN = TimeDiff()
+    val timeEmbeddedRkNN = ThreadCPUTimeDiff()
 
     val rkNNsEmbedded: Seq[(SVertex, Double)] = Embedding.embeddedRkNNs(sGraph, q, k, numRefPoints, rStarTreePageSize)
 

@@ -2,10 +2,7 @@ package elkiTPL;
 
 import de.lmu.ifi.dbs.elki.data.DoubleVector;
 import de.lmu.ifi.dbs.elki.data.NumberVector;
-import de.lmu.ifi.dbs.elki.data.spatial.SpatialComparable;
 import de.lmu.ifi.dbs.elki.database.ids.*;
-import de.lmu.ifi.dbs.elki.database.ids.distance.DistanceDBIDList;
-import de.lmu.ifi.dbs.elki.database.ids.generic.GenericDistanceDBIDList;
 import de.lmu.ifi.dbs.elki.database.query.distance.DistanceQuery;
 import de.lmu.ifi.dbs.elki.database.relation.Relation;
 import de.lmu.ifi.dbs.elki.distance.distancefunction.minkowski.MaximumDistanceFunction;
@@ -13,15 +10,13 @@ import de.lmu.ifi.dbs.elki.distance.distancevalue.DoubleDistance;
 import de.lmu.ifi.dbs.elki.index.tree.AbstractNode;
 import de.lmu.ifi.dbs.elki.index.tree.spatial.*;
 import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar.RStarTreeNode;
-import util.*;
-import util.Utils.TimeDiff;
+import util.Utils.ThreadCPUTimeDiff;
 import util.Log;
 
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.*;
 
-import static elkiTPL.PruningHeuristic.partialPruned;
 import static elkiTPL.PruningHeuristic.vmMaxDistMinimumNorm;
 import static elkiTPL.PruningHeuristic.vmMinDistanceMaximumNorm;
 
@@ -51,7 +46,7 @@ public class EmbeddedTPLQuery {
   public ArrayList<DBID> filterRefinement(DoubleVector q, int k) {
     Log.append("    - Performing filter step..");
     Log.printFlush();
-    TimeDiff timeFilterStep = new TimeDiff();
+    ThreadCPUTimeDiff timeFilterStep = new ThreadCPUTimeDiff();
 
     ArrayList<ArrayList<?>> filtered = filter(q, k);
 
@@ -67,7 +62,7 @@ public class EmbeddedTPLQuery {
 
 
     // A candidate p is an early result, if for k other candidates p': MaxDist(q, p) <= MinDist(p', q)
-    TimeDiff timeEarlyResult = new TimeDiff();
+    ThreadCPUTimeDiff timeEarlyResult = new ThreadCPUTimeDiff();
 
     SpatialPointLeafEntry kthCandidate = candidateSet.get( (k > candidateSet.size()) ? candidateSet.size() - 1 : k-1 );
     double minDistKthCndQ              = PruningHeuristic.vvMinDistanceMaximumNorm(q, kthCandidate);
@@ -92,7 +87,7 @@ public class EmbeddedTPLQuery {
 
     Log.appendln("    - Performing refinement step..");
     Log.printFlush();
-    TimeDiff timeRefinementStep = new TimeDiff();
+    ThreadCPUTimeDiff timeRefinementStep = new ThreadCPUTimeDiff();
 
     ArrayList<DBID> refined = refine(q, k, cndSetEarlyResultsRemoved, refinementSetPoints, refinementSetNodes);
 
@@ -218,7 +213,7 @@ public class EmbeddedTPLQuery {
     /*
      * SELF PRUNING of candidates
      */
-    TimeDiff timeSelfPruning = new TimeDiff();
+    ThreadCPUTimeDiff timeSelfPruning = new ThreadCPUTimeDiff();
 
     // todo (maybe small optimization): Remove init of toVisit(p) from here, do it on demand in refinement,
     // for each point p in candidateSet

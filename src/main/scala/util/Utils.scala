@@ -7,6 +7,7 @@ import java.nio.file.{Files, Paths}
 import java.io.{BufferedWriter, FileWriter}
 import java.util.Date
 import java.text.SimpleDateFormat
+import java.lang.management.ManagementFactory
 
 
 /**
@@ -99,13 +100,15 @@ object Log {
 
 object Utils {
 
-  case class TimeDiff(){
-    val tStart: java.lang.Long = System.currentTimeMillis
+  case class ThreadCPUTimeDiff(){
+    val tStart: java.lang.Long = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime()
     private var tEnd: java.lang.Long = null
 
-    def end   = tEnd   = System.currentTimeMillis
+    def end   = tEnd = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime()
 
-    def diff = tEnd - tStart
+    def diffMillis = (tEnd - tStart) / 1000000.0
+
+    def diffNanos  = tEnd - tStart
 
     override def toString: String = {
       if(tStart == null)
@@ -133,7 +136,7 @@ object Utils {
   def convertScalaToJavaGraph(sGraph: SGraph): graph.core.Graph = {
     Log.append("\nConverting SGraph to Java graph with " + sGraph.getAllVertices.size + " nodes, " + sGraph.getAllEdges.size + " edges..")
 
-    val timeConvertScalaToJavaGraph = TimeDiff()
+    val timeConvertScalaToJavaGraph = ThreadCPUTimeDiff()
 
     val jGraph = new graph.core.Graph()
     sGraph.getAllVertices.map(v => jGraph.addVertex(convertScalaToJavaVertex(v)))
@@ -147,7 +150,7 @@ object Utils {
 
   def convertJavaToScalaGraph(jGraph: graph.core.Graph): SGraph = {
     Log.append("Converting Java graph to SGraph with " + jGraph.getAllVertices.size + " nodes, " + jGraph.getAllEdges.size + " edges..")
-    val timeConvertJavaToScalaGraph = TimeDiff()
+    val timeConvertJavaToScalaGraph = ThreadCPUTimeDiff()
 
     val sGraph = new SGraph()
     jGraph.getAllVertices.map(v => sGraph.addVertex(convertJavaToScalaVertex(v)))
