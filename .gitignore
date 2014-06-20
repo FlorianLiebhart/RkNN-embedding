@@ -46,3 +46,4 @@ lib/*
 !lib/MiniGUI-saved-settings.txt
 exampleGraphXMLs/generatedGraph.xml
 log/writeLog.txt
+log/*
