@@ -45,4 +45,4 @@ tplSimulation/rTree.csv
 lib/*
 !lib/MiniGUI-saved-settings.txt
 exampleGraphXMLs/generatedGraph.xml
-log/
+log/writeLog.txt
