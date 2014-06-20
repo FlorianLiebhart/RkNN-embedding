@@ -6,9 +6,9 @@ import util.Utils._
 import util.Log
 import util.XmlUtil
 
-import algorithms.NaiveRkNN.naiveRkNNs
-import algorithms.Eager.eager
-import algorithms.{TPL, Embedding}
+import algorithms.Naive.rknns
+import algorithms.Eager.rknns
+import algorithms.{Eager, Naive, TPL, Embedding}
 import de.lmu.ifi.dbs.elki.database.ids.DBID
 import scala.util.Random
 
@@ -35,24 +35,28 @@ object RkNNComparator {
      */
 
     val exampleGraph = "random" // "eager"  for using the example graph from TKDE - GraphRNN paper page 3,
-                             // "tpl"    for using the example graph from the TPL page 748,
-                             // "random" for generating a random graph
+                                // "tpl"    for using the example graph from the TPL page 748,
+                                // "random" for generating a random graph
 
-    val (sGraph, qID, refPoints, k, rStarTreePageSize)  = exampleGraph match {
+    val (sGraph, q, refPoints, k, rStarTreePageSize)  = exampleGraph match {
       case "eager" =>
         val sGraph            = createExampleGraphEager
-        val qID               = 4
+        val q                 = sGraph.getVertex(4)
         val refPoints         = Seq(sGraph.getVertex(1), sGraph.getVertex(2))
         val rStarTreePageSize = 130  // 130 bytes: (minimum for 2 dimensions); Max. entries in node = 3; Max. entries in leaf = 4
                                      // 178 bytes: (minimum for 3 dimensions); Max. entries in node = 3; Max. entries in leaf = 5
+
         val k                 = 2
 
-        (sGraph, qID, refPoints, k, rStarTreePageSize)
+        if(!q.containsObject)
+          q.setObjectId(sGraph.getAllVertices.size)
+
+        (sGraph, q, refPoints, k, rStarTreePageSize)
 
       case "tpl"  =>
 //        val sGraph            = convertJavaToScalaGraph(XmlUtil.importGraphFromXml("exampleGraphXMLs/exampleGraphTPL.xml"))
         val sGraph            = convertJavaToScalaGraph(XmlUtil.importGraphFromXml("exampleGraphXMLs/exampleGraphTPLAllObjects.xml"))
-        val qID               = 15
+        val q                 = sGraph.getVertex(15)
         val refPoints         = Seq(sGraph.getVertex(4))//, sGraph.getVertex(11))
 //                                .++(Seq(sGraph.getVertex(13) ,sGraph.getVertex(5)))//, sGraph.getVertex(16)))
 
@@ -81,18 +85,24 @@ object RkNNComparator {
 
         val k                 = 3
 
-        (sGraph, qID, refPoints, k, rStarTreePageSize)
+        if(!q.containsObject)
+          q.setObjectId(sGraph.getAllVertices.size)
+
+        (sGraph, q, refPoints, k, rStarTreePageSize)
 
       case "file" =>
         val sGraph            = convertJavaToScalaGraph(XmlUtil.importGraphFromXml("exampleGraphXMLs/1000Nodes4000EdgesAllObjects.xml"))
-        val qID               = 200
-//        val numRefPoints      = 3
+        val q                 = sGraph.getVertex(200)
         val rStarTreePageSize = 1024
         val k                 = 3
+//        val numRefPoints      = 3
 //        val refPoints         = Embedding.createRefPoints(sGraph.getAllVertices, numRefPoints)
         val refPoints         = Seq(sGraph.getVertex(446), sGraph.getVertex(649), sGraph.getVertex(496))
 
-        (sGraph, qID, refPoints, k, rStarTreePageSize)
+        if(!q.containsObject)
+          q.setObjectId(sGraph.getAllVertices.size)
+
+        (sGraph, q, refPoints, k, rStarTreePageSize)
 
       case "random" =>  // randomly generated graph
         // vertices may be a little less than what defined here, since the floored sqrt will be squared
@@ -116,11 +126,15 @@ object RkNNComparator {
 
         val sGraph            = GraphGen.generateScalaGraph(actualVertices, edges.toInt, objects.toInt, edgeMaxWeight = 10)
         val q                 = sGraph.getVertex(qID)
+
 //        val jGraph            = convertScalaToJavaGraph(sGraph)
 //        XmlUtil.saveGraphToXml(jGraph, "exampleGraphXMLs/generatedGraph.xml")
-        val refPoints = Embedding.createRefPoints(sGraph.getAllVertices, numRefPoints, q)
+        val refPoints = Embedding.createRefPoints(sGraph.getAllVertices, numRefPoints)
 
-        (sGraph, qID, refPoints, k, rStarTreePageSize)
+        if(!q.containsObject)
+          q.setObjectId(sGraph.getAllVertices.size)
+
+        (sGraph, q, refPoints, k, rStarTreePageSize)
     }
 
 
@@ -137,88 +151,77 @@ object RkNNComparator {
     Log.printFlush
 
     // Eager algorithm
-    eagerRkNN(sGraph, qID, k)
+    eagerRkNN(sGraph, q, k)
 
     // Embedded algorithm
-    embeddedRkNN(sGraph, qID, k, refPoints, rStarTreePageSize)
+    embeddedRkNN(sGraph, q, k, refPoints, rStarTreePageSize)
 //    tplRkNN(sGraph, qID, k, refPoints, rStarTreePageSize, withClipping = true)
     Log.printFlush
   }
 
 
+  def naiveRkNN(sGraph: SGraph, q: SVertex, k: Integer) : Unit = {
 
-  def naiveRkNN(jGraph: graph.core.Graph, qID: Integer, k: Integer) : Unit = naiveRkNN(convertJavaToScalaGraph(jGraph), qID, k)
-  def naiveRkNN(sGraph: SGraph          , qID: Integer, k: Integer) : Unit = {
-    val sQ     = sGraph.getVertex(qID)
-
-    Log.appendln(s"-----------Naive R${k}NN for query point $qID:-----------\n").printFlush
+    Log.appendln(s"-----------Naive R${k}NN for query point ${q.id}:-----------\n").printFlush
 
     val timeNaiveRkNN  = ThreadCPUTimeDiff()
 
-    val rkNNsNaive     = naiveRkNNs(sGraph, sQ, k)
+    val rknns          = Naive.rknns(sGraph, q, k)
 
     timeNaiveRkNN.end
 
-    Log.appendln(s"Result r${k}NNs: ${if (rkNNsNaive.size == 0) "--" else ""}")
-    for( v <- rkNNsNaive )
+    Log.appendln(s"Result r${k}NNs: ${if (rknns.size == 0) "--" else ""}")
+    for( v <- rknns )
       Log.appendln(s"Node: ${v._1.id}  Dist: ${v._2}")
 
     Log.appendln(s"\nTotal Simple RkNN Runtime: $timeNaiveRkNN \n")
   }
 
-  def eagerRkNN(jGraph: graph.core.Graph, qID: Integer, k: Integer) : Unit = eagerRkNN(convertJavaToScalaGraph(jGraph), qID, k)
-  def eagerRkNN(sGraph: SGraph          , qID: Integer, k: Integer) : Unit = {
-    val sQ     = sGraph.getVertex(qID)
+  def eagerRkNN(sGraph: SGraph, q: SVertex, k: Integer) : Unit = {
 
-    Log.appendln(s"-----------Eager R${k}NN for query point $qID:-----------\n")
+    Log.appendln(s"-----------Eager R${k}NN for query point ${q.id}:-----------\n")
 
     val timeEagerRkNN  = ThreadCPUTimeDiff()
 
-    val rkNNsEager     = eager(sGraph, sQ, k)
+    val rknns          = Eager.rknns(sGraph, q, k)
 
     timeEagerRkNN.end
 
-    Log.appendln(s"Result r${k}NNs: ${if (rkNNsEager.size == 0) "--" else ""}")
-    for( v <- rkNNsEager )
+    Log.appendln(s"Result r${k}NNs: ${if (rknns.size == 0) "--" else ""}")
+    for( v <- rknns )
       Log.appendln(s"Node: ${v._1.id}  Dist: ${v._2}")
 
     Log.appendln(s"\nTotal Eager RkNN Runtime: $timeEagerRkNN \n")
   }
 
-  def embeddedRkNN(jGraph: graph.core.Graph, qID: Integer, k: Integer, numRefPoints: Int) : Unit = {
-    val sGraph    = convertJavaToScalaGraph(jGraph)
-    val refPoints = Embedding.createRefPoints(sGraph.getAllVertices, numRefPoints, sGraph.getVertex(qID))
-    embeddedRkNN(sGraph, qID, k, refPoints, rStarTreePageSize = 1024)
-  }
-  def embeddedRkNN(sGraph: SGraph, qID: Integer, k: Integer, refPoints: Seq[SVertex], rStarTreePageSize: Int) : Unit = {
-    val sQ     = sGraph.getVertex(qID)
+  def embeddedRkNN(sGraph: SGraph, q: SVertex, k: Integer, refPoints: Seq[SVertex], rStarTreePageSize: Int) : Unit = {
 
-    Log.appendln(s"-----------Embedded R${k}NN for query point $qID:-----------\n")
+    Log.appendln(s"-----------Embedded R${k}NN for query point ${q.id}:-----------\n")
     Log.printFlush
 
     val timeEmbeddedRkNN = ThreadCPUTimeDiff()
 
-    val rkNNsEmbedded: Seq[(SVertex, Double)] = Embedding.embeddedRkNNs(sGraph, sQ, k, -1, rStarTreePageSize, refPoints)
+    val (relation, rStarTree, dbidVertexIDMapping) = Embedding.createDatabaseWithIndex(sGraph, -1, rStarTreePageSize, refPoints)
+    val queryObject                                = Embedding.getQueryObject(relation, q, dbidVertexIDMapping)
+    val rknns: Seq[(SVertex, Double)] = Embedding.rknns(sGraph, q, k, relation, queryObject , rStarTree, dbidVertexIDMapping)
 
     timeEmbeddedRkNN.end
 
-    Log.appendln(s"Result r${k}NNs: ${if (rkNNsEmbedded.size == 0) "--" else ""}")
-    for( v <- rkNNsEmbedded )
+    Log.appendln(s"Result r${k}NNs: ${if (rknns.size == 0) "--" else ""}")
+    for( v <- rknns )
       Log.appendln(s"Node: ${v._1.id}  Dist: ${v._2}")
 
     Log.appendln(s"\nTotal Embedding RkNN Runtime: $timeEmbeddedRkNN \n")
   }
 
 
-  def tplRkNN(sGraph: SGraph, qID: Integer, k: Integer, refPoints: Seq[SVertex], rStarTreePageSize: Int, withClipping: Boolean) : Unit = {
-    val sQ     = sGraph.getVertex(qID)
-
+  def tplRkNN(sGraph: SGraph, q: SVertex, k: Integer, refPoints: Seq[SVertex], rStarTreePageSize: Int, withClipping: Boolean) : Unit = {
     Log.appendln("-----------TPL:-----------")
-    Log.appendln(s"R${k}NNs for query point $qID")
+    Log.appendln(s"R${k}NNs for query point ${q.id}")
 
     val timeTPLRkNN                          = ThreadCPUTimeDiff()
 
-    val rkNNsTPL: Seq[(DBID, Double)] = TPL.tplRkNNs(sGraph, sQ, k, refPoints, rStarTreePageSize, withClipping)
+    val rkNNsTPL: Seq[(DBID, Double)] = TPL.tplRkNNs(sGraph, q, k, refPoints, rStarTreePageSize, withClipping)
 
     timeTPLRkNN.end
 

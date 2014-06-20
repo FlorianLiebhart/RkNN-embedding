@@ -1,10 +1,10 @@
 package app
 
-case class ExperimentResult(experimentTitle                 : String,
-                            experimentValueName             : Experiment.Value,
+import Experiment.Experiment
+
+case class ExperimentResult(experiment                      : Experiment,
                             values                          : Seq[Any],
-                            var algorithmResultsForEachValue: Seq[Seq[AlgorithmResult]],
-                            writeName                       : String){
+                            var algorithmResultsForEachValue: Seq[Seq[AlgorithmResult]]){
 
 
   def toCSVString: String = {
@@ -13,10 +13,10 @@ case class ExperimentResult(experimentTitle                 : String,
     sb.append(
       s"""
        |---------------------------------------------------------------------------
-       |${experimentTitle} (${values mkString ", "})
+       |${experiment.title} (${values mkString ", "})
        |---------------------------------------------------------------------------
        |
-       |${ExperimentSetup(experimentValueName = experimentValueName)}
+       |${ExperimentSetup(experiment)}
        |
        |""".stripMargin)
 
@@ -30,7 +30,7 @@ case class ExperimentResult(experimentTitle                 : String,
          |${algorithmResults.head.algorithmName} (${algorithmResults.head.runs} runs)
          |-----------------
          |
-         |${experimentValueName}:
+         |${experiment.valueName}:
          |${
           for (v <- values)
             cellLengths :+= v.toString.size
@@ -66,7 +66,7 @@ case class ExperimentResult(experimentTitle                 : String,
   }
 
   def write() = {
-    util.Log.write(s"log/$writeName.txt", false, toCSVString)
+    util.Log.write(s"log/${experiment.writeName}.txt", false, toCSVString)
   }
 
 }

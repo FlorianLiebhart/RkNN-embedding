@@ -19,29 +19,30 @@ import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar._
 import elkiTPL.{EmbeddedTPLQuery, Utils}
 import graph.{SVertex, SGraph}
 import util.Utils.{VD, ThreadCPUTimeDiff}
+import util.Utils.makesure
 import util.Log
 
-/**
- * @author fliebhart
- */
-object Embedding {
+case object Embedding extends GraphRknn{
+
+  override val name = "Embedding"
+
 
   /**
    * @param sGraph
-   * @param q
-   * @param k
    * @param numRefPoints
-   * @param rStarTreePageSize Determines how many points fit into one page. Felix: Mostly between 1024 und 8192 byte; Erich recommendation: 25*8*dimensions (=> corresponds to around 25 entries/page)
-   * @refPoints In case you want to use predefined reference points. numRefPoints won't make a difference then.
-   * @return
+   * @param rStarTreePageSize
+   * @param predefinedRefPoints In case you want to use predefined reference points. numRefPoints won't make a difference then.
+   *
+   * IMPORTANT NOTE: Make sure that if you already know your query point, it MUST contain an object,
+   *                 since the embedding will only be created from nodes with objects
+   *
+   *
+   * 1. Preparation phase
    */
-  def embeddedRkNNs(sGraph: SGraph, q: SVertex, k: Int, numRefPoints: Integer, rStarTreePageSize: Int, predefinedRefPoints: Seq[SVertex] = null): Seq[(SVertex, Double)] = {
-    val rTreePath        = "tplSimulation/rTree.csv"
-    val numberOfVertices = sGraph.getAllVertices.size
+  def createDatabaseWithIndex(sGraph: SGraph, numRefPoints: Int, rStarTreePageSize: Int, predefinedRefPoints: Seq[SVertex] = null): (Relation[DoubleVector], RStarTreeIndex[DoubleVector], MutableHashMap[String, SVertex]) = {
 
-    /*
-     * 1. Preparation phase
-     */
+    val rTreePath        = "tplSimulation/rTree.csv"
+
     Log.appendln(s"1. Start preparation phase (create: embedding, DB, R*Tree, query object)")
     val timeAlgorithmPreparation = ThreadCPUTimeDiff()
 
@@ -55,12 +56,12 @@ object Embedding {
       if(numRefPoints == -1)
         predefinedRefPoints
       else {
-        Embedding.createRefPoints(sGraph.getAllVertices, numRefPoints, q)
+        createRefPoints(sGraph.getAllVertices, numRefPoints)
       }
     //    Log.appendln(s"\nReference Points: ${refPoints.mkString(",")} \n")
 
-    val refPointDistances: HashMap[SVertex, IndexedSeq[Double]] = createEmbedding(sGraph, refPoints) // key: Knoten, value: Liste mit Distanzen zu Referenzpunkte (? evtl: Flag ob Objekt auf Knoten)
-    val refPointDistancesContainingObjects                      = refPointDistances.filter(x => x._1.containsObject || x._1 == q)
+    val refPointDistances: HashMap[SVertex, IndexedSeq[Double]] = createEmbedding(sGraph, refPoints)
+    val refPointDistancesContainingObjects                      = refPointDistances.filter(x => x._1.containsObject)
 
     timeCreateEmbedding.end
     Log.appendln(s" done in $timeCreateEmbedding")
@@ -73,7 +74,6 @@ object Embedding {
     val timeCreateCSV = ThreadCPUTimeDiff()
 
     val dbidVertexIDMapping: MutableHashMap[String, SVertex] = writeRTreeCSVFile(refPointDistancesContainingObjects, rTreePath)
-//    Utils.generateRandomCSVFile(refPoints.size, 100, rTreePath) // dimensions = numRefPoints, number of random vectors to be created = 100
 
     timeCreateCSV.end
     Log.appendln(s" done in $timeCreateCSV")
@@ -81,7 +81,7 @@ object Embedding {
     Log.append(s"  - Creating file based Database..")
     val timeCreateDB = ThreadCPUTimeDiff()
 
-    val db: List[Database]               = Utils.createDatabase(rTreePath).toList
+    val db      : List[Database]         = Utils.createDatabase(rTreePath).toList
     val relation: Relation[DoubleVector] = db(0).getRelation(TypeUtil.NUMBER_VECTOR_FIELD)
 
     timeCreateDB.end
@@ -100,30 +100,55 @@ object Embedding {
     timeCreateRStarTree.end
     Log.appendln(s" done in $timeCreateRStarTree")
 
-    /*
-     *    1.4 Create TPL rknn query and query object
-     */
-    val tplEmbedded                             = new EmbeddedTPLQuery(rStarTree, relation)
-    val queryObject: DoubleVector               = relation.get(getDBIDRefFromVertex(relation, q, dbidVertexIDMapping))
-
-
     timeAlgorithmPreparation.end
-
     Log.embeddingRunTimePreparation = timeAlgorithmPreparation.diffMillis
     Log.appendln(s"Algorithm preparation done in $timeAlgorithmPreparation \n").printFlush
 
-    /*
-     * 2. Performing embedded TPL rknn query
-     */
+    (relation, rStarTree, dbidVertexIDMapping)
+  }
+
+
+  /**
+   * From the given relation, receives the query object from q's ID and the given dbid-vertex-mapping.
+   * @param relation
+   * @param q
+   * @param dbidVertexIDMapping
+   * @throws IllegalArgumentException if q cannot be found in the relation
+   * @return
+   */
+  def getQueryObject(relation: Relation[DoubleVector], q: SVertex, dbidVertexIDMapping: MutableHashMap[String, SVertex]): DoubleVector = {
+    relation.get(getDBIDRefFromVertex(relation, q, dbidVertexIDMapping))
+  }
+
+  /**
+   * @param sGraph
+   * @param q
+   * @param k
+   * @param relation
+   * @param rStarTree
+   * @param queryObject
+   * @param dbidVertexIDMapping
+   *
+   * @return List of query results
+   *
+   * IMPORTANT NOTE: This algorithm relies that q contains a object, and contained a query object at the time the embedding was created!
+   *                 Otherwise no results will be found.
+   *
+   * 2. Performing embedded TPL rknn query
+   */
+  def rknns(sGraph: SGraph, q: SVertex, k: Int, relation: Relation[DoubleVector], queryObject: DoubleVector, rStarTree: RStarTreeIndex[DoubleVector], dbidVertexIDMapping: MutableHashMap[String, SVertex]): Seq[VD] = {
+    makesure(q.containsObject, "q must contain an object!")
+
     Log.appendln(s"2. Performing R${k}NN-query...")
     val timeTotalRknn = ThreadCPUTimeDiff()
+
     /*
      *    2.1 Filter-refinement in embedded space
      */
     Log.appendln(s"  2.1 Performing filter refinement in embedded space..")
     val timeFilterRefEmbedding = ThreadCPUTimeDiff()
 
-    val embeddingTPLResultDBIDs: Seq[DBID] = tplEmbedded.filterRefinement(queryObject, k)
+    val embeddingTPLResultDBIDs: Seq[DBID] = new EmbeddedTPLQuery(rStarTree, relation).filterRefinement(queryObject, k)
 
     timeFilterRefEmbedding.end
     Log.appendln(s"  Filter Refinement in embedded space done in $timeFilterRefEmbedding \n").printFlush
@@ -154,16 +179,10 @@ object Embedding {
     Log.nodesToVerify             = candidatesToRefineOnGraph
     Log.append(s"    - Performing refinement of ${candidatesToRefineOnGraph} candidates on graph..")
     val timePerformRefinementOnGraph = ThreadCPUTimeDiff()
-    // If q doesn't contain an object, give it an object so that it will be found by the knn algorithm
-    if (!q.containsObject)
-      q.setObjectId(numberOfVertices)
 
     val allkNNs = filterRefinementResultsEmbedding map ( refResult =>
       (refResult, Eager.rangeNN(sGraph, refResult, k, Double.PositiveInfinity))
     )
-    // If q didn't contain an object before, remove the previously inserted object
-    if (q.getObjectId == numberOfVertices)
-      q.setObjectId(SVertex.NO_OBJECT)
 
     val rKnns = allkNNs collect {
       case (v, knns) if (knns map( _._1 ) contains q) => new VD(v, knns.find(y => (y._1 equals q)).get._2)
@@ -182,14 +201,12 @@ object Embedding {
     rKnns.sortWith((x,y) => (x._2 < y._2) || (x._2 == y._2) && (x._1.id < y._1.id))
   }
 
-
   /**
    * Takes a list of vertices and creates numRefPoints random reference points.
    * @return A list of random vertices
    */
-  def createRefPoints(vertices: Seq[SVertex], numRefPoints: Integer, q: SVertex): Seq[SVertex] = {
-    new Random(System.currentTimeMillis).shuffle(vertices.filterNot(_ == q)) take numRefPoints
-  }
+  def createRefPoints(vertices: Seq[SVertex], numRefPoints: Integer): Seq[SVertex] =
+    new Random(System.currentTimeMillis).shuffle(vertices) take numRefPoints
 
 
   /**
@@ -266,5 +283,4 @@ object Embedding {
       case None    => throw new IllegalArgumentException("DBID id not found. This is a severe error: dbid.internalGetIndex does not correspond to the graph's ID!")
     }
   }
-
 }

@@ -1003,36 +1003,14 @@ public class MainWindow extends JFrame implements ActionListener, Observer {
 			String algo = outlookBar.getSelectedAlgorithm();
 			
 			if(!algo.equals("")) {
-				// run
-                if(algo.equals(AlgorithmStrings.RKNN_NAIVE)){
-                    Graph jGraph = ProbabilisticGraph.getInstance();
-                    int qID = graphPanel.getSelectedNodes().get(0);
-                    int k = Integer.parseInt(rknnSimpleField.getText().trim());
-                    RkNNComparator.naiveRkNN(jGraph, qID, k);
-                }
-                else if(algo.equals(AlgorithmStrings.RKNN_EAGER)){
-                    Graph jGraph = ProbabilisticGraph.getInstance();
-                    int qID = graphPanel.getSelectedNodes().get(0);
-                    int k = Integer.parseInt(rknnEagerField.getText().trim());
-                    RkNNComparator.eagerRkNN(jGraph, qID, k);
-                }
-                else if(algo.equals(AlgorithmStrings.RKNN_EMBEDDED)){
-                    Graph jGraph = ProbabilisticGraph.getInstance();
-                    int qID = graphPanel.getSelectedNodes().get(0);
-                    int k = Integer.parseInt(rknnEmbeddedField.getText().trim());
-                    int numRefPoints = Integer.parseInt(rknnEmbeddedFieldNumRefPoints.getText().trim());
-                    RkNNComparator.embeddedRkNN(jGraph, qID, k, numRefPoints);
-                }
-                else{
-                    Vector<Integer> nodes = graphPanel.getSelectedNodes();
-                    AlgorithmQuery.getInstance().setAlgorithm(algo);
-                    AlgorithmQuery.getInstance().setUseRelative(useRelative.isSelected());
-                    AlgorithmQuery.getInstance().setKNumber(kNNField.getText().trim());
-                    AlgorithmQuery.getInstance().startSampling(nodes);
-                }
-            } else {
-             // no action selected
-            updateStatusBar("<font color=\"red\">" + GuiStrings.NO_ACTION_MSG + "!</font>");
+        Vector<Integer> nodes = graphPanel.getSelectedNodes();
+        AlgorithmQuery.getInstance().setAlgorithm(algo);
+        AlgorithmQuery.getInstance().setUseRelative(useRelative.isSelected());
+        AlgorithmQuery.getInstance().setKNumber(kNNField.getText().trim());
+        AlgorithmQuery.getInstance().startSampling(nodes);
+      } else {
+       // no action selected
+      updateStatusBar("<font color=\"red\">" + GuiStrings.NO_ACTION_MSG + "!</font>");
 			}
 		}
 	}

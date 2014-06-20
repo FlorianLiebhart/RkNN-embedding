@@ -1,8 +1,9 @@
 package app
 
+import app.Experiment.Experiment
+
 case class AlgorithmResult(algorithmName: String,
                            runs         : Int,
-                           valueName    : Experiment.Value,
-                           value        : Any,
+                           experiment   : Experiment,
                            singleResults: Seq[SingleResult]) {
 }
