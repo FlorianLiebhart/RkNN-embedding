@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat
 
 import app.Experiment.Experiment
 import algorithms.{Eager, Naive, GraphRknn, Embedding}
-import util.Log
+import util.{Log, Stats}
 
 object RkNNTestEnvironment {
 
@@ -99,7 +99,7 @@ object RkNNTestEnvironment {
     var embeddingRunTimePreparation = Seq[Int]()
 
     for((sGraph, q) <- setup.sGraphsQIds) {
-      Log.resetStats()
+      Stats.reset()
 
       algorithm match {
         case Naive     => Naive.rknns(sGraph, q, setup.k)
@@ -108,14 +108,12 @@ object RkNNTestEnvironment {
                           val queryObject                                = Embedding.getQueryObject(relation, q, dbidVertexIDMapping)
                           Embedding.rknns(sGraph, q, setup.k, relation, queryObject, rStarTree, dbidVertexIDMapping)
       }
-  Integer.MAX_VALUE
-      Int.MaxValue
-      nodesToRefine    :+= Log.nodesToVerify
-      nodesVisited     :+= Log.nodesVisited
-      runTimeRknnQuery :+= Log.runTimeRknnQuery
+      nodesToRefine    :+= Stats.nodesToVerify
+      nodesVisited     :+= Stats.nodesVisited
+      runTimeRknnQuery :+= Stats.runTimeRknnQuery
 
-      embeddingFilteredCandidates :+= Log.embeddingFilteredCandidates
-      embeddingRunTimePreparation :+= Log.embeddingRunTimePreparation
+      embeddingFilteredCandidates :+= Stats.embeddingFilteredCandidates
+      embeddingRunTimePreparation :+= Stats.embeddingRunTimePreparation
     }
 
     val singleResults = Seq[SingleResult](

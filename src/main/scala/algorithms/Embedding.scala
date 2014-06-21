@@ -21,7 +21,7 @@ import graph.{SVertex, SGraph}
 import util.Utils.VD
 import util.ThreadCPUTimeDiff
 import util.Utils.makesure
-import util.Log
+import util.{Log, Stats}
 
 case object Embedding extends GraphRknn{
 
@@ -102,7 +102,7 @@ case object Embedding extends GraphRknn{
     Log.appendln(s" done in $timeCreateRStarTree")
 
     timeAlgorithmPreparation.end
-    Log.embeddingRunTimePreparation = timeAlgorithmPreparation.diffMillis
+    Stats.embeddingRunTimePreparation = timeAlgorithmPreparation.diffMillis
     Log.appendln(s"Algorithm preparation done in $timeAlgorithmPreparation \n").printFlush
 
     (relation, rStarTree, dbidVertexIDMapping)
@@ -177,7 +177,7 @@ case object Embedding extends GraphRknn{
      *        2.2.2 Refinement on graph
      */
     val candidatesToRefineOnGraph = filterRefinementResultsEmbedding.size
-    Log.nodesToVerify             = candidatesToRefineOnGraph
+    Stats.nodesToVerify             = candidatesToRefineOnGraph
     Log.append(s"    - Performing refinement of ${candidatesToRefineOnGraph} candidates on graph..")
     val timePerformRefinementOnGraph = ThreadCPUTimeDiff()
 
@@ -196,7 +196,7 @@ case object Embedding extends GraphRknn{
     Log.appendln(s"  Refinement of candidates on graph done in $timeRefinementOnGraph")
 
     timeTotalRknn.end
-    Log.runTimeRknnQuery = timeTotalRknn.diffMillis
+    Stats.runTimeRknnQuery = timeTotalRknn.diffMillis
     Log.appendln(s"R${k}NN query performed in $timeTotalRknn \n")
 
     rKnns.sortWith((x,y) => (x._2 < y._2) || (x._2 == y._2) && (x._1.id < y._1.id))

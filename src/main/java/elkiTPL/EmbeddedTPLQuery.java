@@ -1,5 +1,8 @@
 package elkiTPL;
 
+import java.util.AbstractMap.SimpleEntry;
+import java.util.*;
+
 import de.lmu.ifi.dbs.elki.data.DoubleVector;
 import de.lmu.ifi.dbs.elki.data.NumberVector;
 import de.lmu.ifi.dbs.elki.database.ids.*;
@@ -10,15 +13,14 @@ import de.lmu.ifi.dbs.elki.distance.distancevalue.DoubleDistance;
 import de.lmu.ifi.dbs.elki.index.tree.AbstractNode;
 import de.lmu.ifi.dbs.elki.index.tree.spatial.*;
 import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar.RStarTreeNode;
-import util.ThreadCPUTimeDiff;
-import util.Log;
-
-
-import java.util.AbstractMap.SimpleEntry;
-import java.util.*;
 
 import static elkiTPL.PruningHeuristic.vmMaxDistMinimumNorm;
 import static elkiTPL.PruningHeuristic.vmMinDistanceMaximumNorm;
+
+import util.Stats;
+import util.ThreadCPUTimeDiff;
+import util.Log;
+
 
 public class EmbeddedTPLQuery {
 
@@ -56,7 +58,7 @@ public class EmbeddedTPLQuery {
 
     timeFilterStep.end();
     Log.appendln(" done in " + timeFilterStep);
-    Log.setEmbeddingFilteredCandidates(candidateSet.size());
+    Stats.setEmbeddingFilteredCandidates(candidateSet.size());
     Log.appendln("    - After filtering: " + candidateSet.size() + " cnds, " + refinementSetPoints.size() + " refPoints, " + refinementSetNodes.size() + " refNodes.");
 
 

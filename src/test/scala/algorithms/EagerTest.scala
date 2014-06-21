@@ -5,10 +5,6 @@ import org.scalatest.matchers.ShouldMatchers
 import util.Utils.VD
 import graph.GraphGen.createExampleGraphEager
 
-/**
- * Created: 31.12.13, 10:45
- * @author fliebhart
- */
 class EagerTest extends FunSuite with ShouldMatchers {
 
   // TODO: Test durchführen durch vergleich der Ergebnisse mit primitiver Implementierung

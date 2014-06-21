@@ -1,11 +1,11 @@
 package algorithms
 
-import graph.{SEdge, SGraph, SVertex}
-
 import scala.collection.mutable.PriorityQueue
+
+import graph.{SGraph, SVertex}
 import util.Utils.{VD, t2ToOrdered}
 import util.ThreadCPUTimeDiff
-import util.Log
+import util.Stats
 
 case object Eager extends GraphRknn{
 
@@ -64,8 +64,8 @@ case object Eager extends GraphRknn{
       }
     }
     timeTotalRknn.end
-    Log.runTimeRknnQuery = timeTotalRknn.diffMillis
-    Log.nodesToVerify = verifiedPoints.size
+    Stats.runTimeRknnQuery = timeTotalRknn.diffMillis
+    Stats.nodesToVerify = verifiedPoints.size
     RkNN_q.sortWith((x,y) => (x._2 < y._2) || (x._2 == y._2) && (x._1.id < y._1.id))
   }
 
@@ -124,7 +124,7 @@ case object Eager extends GraphRknn{
       }
     }
 
-    Log.nodesVisited += visitedNodes.size
+    Stats.nodesVisited += visitedNodes.size
 
     if(originalQ != null) {
       // if knns contains q, only knns with distances < distance_to_q will be returned

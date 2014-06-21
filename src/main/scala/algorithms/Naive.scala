@@ -3,7 +3,7 @@ package algorithms
 import graph.{SGraph, SVertex}
 import util.Utils.VD
 import util.ThreadCPUTimeDiff
-import util.Log
+import util.Stats
 
 case object Naive extends GraphRknn{
 
@@ -20,7 +20,7 @@ case object Naive extends GraphRknn{
 
     val allGraphNodes            = sGraph.getAllVertices.toIndexedSeq
     val allGraphNodesWithObjects = allGraphNodes filter (_.containsObject) filterNot (_ equals q)
-    Log.nodesToVerify = allGraphNodesWithObjects.size
+    Stats.nodesToVerify = allGraphNodesWithObjects.size
 
     // If q doesn't contain an object, give it an object so that it will be found by the knn algorithm
     val qContainsObject = q.containsObject
@@ -41,7 +41,7 @@ case object Naive extends GraphRknn{
 //    val rKnnsFilteredDists = rKnns map (x => new VD (x._1, x._2.find(_._1 equals q).get._2))
 
     timeTotalRknn.end
-    Log.runTimeRknnQuery = timeTotalRknn.diffMillis
+    Stats.runTimeRknnQuery = timeTotalRknn.diffMillis
 
     rKnns.sortWith((x,y) => (x._2 < y._2) || (x._2 == y._2) && (x._1.id < y._1.id))
   }
