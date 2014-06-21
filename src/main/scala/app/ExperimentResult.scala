@@ -1,6 +1,7 @@
 package app
 
 import Experiment.Experiment
+import util.Utils.writeToFile
 
 case class ExperimentResult(experiment                      : Experiment,
                             values                          : Seq[Any],
@@ -66,7 +67,7 @@ case class ExperimentResult(experiment                      : Experiment,
   }
 
   def write() = {
-    util.Log.write(s"log/${experiment.writeName}.txt", false, toCSVString)
+    writeToFile(s"log/${experiment.writeName}.txt", false, toCSVString)
   }
 
 }

@@ -1,14 +1,15 @@
 package util
 
-import java.nio.file.{Files, Paths}
-import java.io.{BufferedWriter, FileWriter}
+import Utils.writeToFile
 
 object Log {
   val printEnabled  = true  // allow printing on console
-  val immedatePrint = false // print immedately after appending to log
 
   def print(s: Any):   Unit = if(printEnabled) System.out.print(s)
   def println(s: Any): Unit = if(printEnabled) System.out.println(s)
+
+
+  val immedatePrint = false // print immedately after appending to log
 
   val printLog      = new StringBuilder()
   val writeLog      = new StringBuilder()
@@ -44,22 +45,7 @@ object Log {
   }
 
   def writeFlushWriteLog(appendToFile: Boolean){
-    write(s"log/writeLog.txt", appendToFile, writeLog.toString)
+    writeToFile(s"log/writeLog.txt", appendToFile, writeLog.toString)
     writeLog.clear
-  }
-
-  def write(destPath: String, appendToFile: Boolean, s: String) = {
-    // create directories and file if non-existent
-    val pathToFile = Paths.get(destPath)
-    Files.createDirectories(pathToFile.getParent)
-    if (!Files.exists(pathToFile))
-        Files.createFile(pathToFile)
-    val fw  = new FileWriter(destPath, appendToFile)
-    val out = new BufferedWriter(fw)
-
-    out.write(
-      s
-    )
-    out.close()
   }
 }
