@@ -8,15 +8,44 @@ import app.Experiment.Experiment
 
 
 object ExperimentSetup {
-  val defaultVertices       = 7500
-  val defaultObjectDensity  = 0.05 // every 20th
-  val defaultConnectivity   = 0.3
-  val defaultK              = 3
-  val defaultNumRefPoints   = 15
-  val defaultEntriesPerNode = 25
-  val defaultRuns           = 5
 
   implicit def double2Int(d: Double) = d.toInt
+
+  def default: ExperimentSetup = default()
+  def default(experiment         : Experiment = Experiment.Default,
+              experimentValue    : Any        = null,
+              entriesPerNode     : Int        = 25,
+              runs               : Int        = 5,
+              numRefPoints       : Int        = 15,
+              approximateVertices: Int        = 50000,
+              objectDensity      : Double     = 0.05,
+              connectivity       : Double     = 0.3,
+              k                  : Int        = 3): ExperimentSetup = {
+      ExperimentSetup(
+        experiment,
+        experimentValue,
+        entriesPerNode,
+        runs,
+        numRefPoints,
+        approximateVertices,
+        objectDensity,
+        connectivity,
+        k
+      )
+  }
+
+  def forExperiment(experiment: Experiment, runs: Int, experimentValue: Any) = {
+    experiment match {
+      case Experiment.Default        => ExperimentSetup.default(experiment = experiment, runs = runs)
+      case Experiment.EntriesPerNode => ExperimentSetup.default(experiment = experiment, runs = runs, entriesPerNode      = experimentValue.asInstanceOf[Int]   , experimentValue = experimentValue)
+      case Experiment.RefPoints      => ExperimentSetup.default(experiment = experiment, runs = runs, numRefPoints        = experimentValue.asInstanceOf[Int]   , experimentValue = experimentValue)
+      case Experiment.Vertices       => ExperimentSetup.default(experiment = experiment, runs = runs, approximateVertices = experimentValue.asInstanceOf[Int]   , experimentValue = experimentValue)
+      case Experiment.ObjectDensity  => ExperimentSetup.default(experiment = experiment, runs = runs, objectDensity       = experimentValue.asInstanceOf[Double], experimentValue = experimentValue)
+      case Experiment.Connectivity   => ExperimentSetup.default(experiment = experiment, runs = runs, connectivity        = experimentValue.asInstanceOf[Double], experimentValue = experimentValue)
+      case Experiment.K              => ExperimentSetup.default(experiment = experiment, runs = runs, k                   = experimentValue.asInstanceOf[Int]   , experimentValue = experimentValue)
+    }
+  }
+
 }
 
 /**
@@ -28,27 +57,15 @@ object ExperimentSetup {
  * @param numRefPoints    // e.g. 6
  * @param entriesPerNode  // recom.: 25
  */
-case class ExperimentSetup(experiment         : Experiment       = Experiment.Default,
-                           experimentValue    : Any              = null,
-                           entriesPerNode     : Int              = defaultEntriesPerNode,
-                           runs               : Int              = defaultRuns,
-                           numRefPoints       : Int              = defaultNumRefPoints,
-                           approximateVertices: Int              = defaultVertices,
-                           objectDensity      : Double           = defaultObjectDensity,
-                           connectivity       : Double           = defaultConnectivity,
-                           k                  : Int              = defaultK){
-
-  def apply(experiment: Experiment, experimentValue: Any) {
-    experiment match {
-      case Experiment.Default        => ExperimentSetup(experiment = experiment)
-      case Experiment.EntriesPerNode => ExperimentSetup(experiment = experiment, entriesPerNode      = experimentValue.asInstanceOf[Int], experimentValue = experimentValue)
-      case Experiment.RefPoints      => ExperimentSetup(experiment = experiment, numRefPoints        = experimentValue.asInstanceOf[Int], experimentValue = experimentValue)
-      case Experiment.Vertices       => ExperimentSetup(experiment = experiment, approximateVertices = experimentValue.asInstanceOf[Int], experimentValue = experimentValue)
-      case Experiment.ObjectDensity  => ExperimentSetup(experiment = experiment, objectDensity       = experimentValue.asInstanceOf[Double], experimentValue = experimentValue)
-      case Experiment.Connectivity   => ExperimentSetup(experiment = experiment, connectivity        = experimentValue.asInstanceOf[Double], experimentValue = experimentValue)
-      case Experiment.K              => ExperimentSetup(experiment = experiment, k                   = experimentValue.asInstanceOf[Int], experimentValue = experimentValue)
-    }
-  }
+case class ExperimentSetup(experiment         : Experiment,
+                           experimentValue    : Any,
+                           entriesPerNode     : Int,
+                           runs               : Int,
+                           numRefPoints       : Int,
+                           approximateVertices: Int,
+                           objectDensity      : Double,
+                           connectivity       : Double,
+                           k                  : Int){
 
   val vertices              = Math.pow(Math.sqrt(approximateVertices).floor, 2).toInt
   val objects               = if (objectDensity * vertices <= 1) 2 else (objectDensity * vertices).ceil.toInt

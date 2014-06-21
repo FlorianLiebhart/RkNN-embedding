@@ -17,7 +17,7 @@ case class ExperimentResult(experiment                      : Experiment,
        |${experiment.title} (${values mkString ", "})
        |---------------------------------------------------------------------------
        |
-       |${ExperimentSetup(experiment)}
+       |${ExperimentSetup.forExperiment(experiment, -1, null)}
        |
        |""".stripMargin)
 

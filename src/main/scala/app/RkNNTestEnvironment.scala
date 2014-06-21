@@ -61,21 +61,21 @@ object RkNNTestEnvironment {
   def runExperiment(experiment: Experiment, algorithms: Seq[GraphRknn], runs: Int, short: Boolean, expValues: Seq[Any], shortExpValues: Seq[Any]) = {
     val values = if(short) shortExpValues else expValues
 
-    experimentLogAppendln(s"Running experiment: $experiment  ($runs runs, ${if(short) "short"} ${if(experiment != Experiment.Default) s", ${experiment.valueName}: ${values mkString ", "}" else ""})")
+    experimentLogAppendln(s"${experiment.title} ($runs runs${if(short) ", short" else ""}${if(experiment != Experiment.Default) {s", ${experiment.valueName}: ${values mkString ", "}"} else ""})")
     experimentLogAppend(s"Generating ${if(values.isEmpty) 1 else values.size} x $runs graphs..")
 
     val realRunTimeExperiment = RealTimeDiff()
     val realRunTimeGraphGen   = RealTimeDiff()
 
-    val setups =
-      if(values.isEmpty)
-        Seq(ExperimentSetup())
+    val setups: Seq[ExperimentSetup] =
+      if(experiment == Experiment.Default)
+        Seq(ExperimentSetup.default)
       else values map { value =>
-      ExperimentSetup(
-        experiment = experiment,
-        runs = runs,
-        experimentValue = value
-      )
+        ExperimentSetup.forExperiment(
+          experiment = experiment,
+          runs = runs,
+          experimentValue = value
+        )
     }
 
     realRunTimeGraphGen.end
@@ -100,7 +100,7 @@ object RkNNTestEnvironment {
     }
 
     realRunTimeExperiment.end
-    experimentLogAppendln(s"Finished experiment: $experiment in $realRunTimeExperiment.\n\n")
+    experimentLogAppendln(s"Finished experiment in $realRunTimeExperiment.\n\n")
   }
 
 
@@ -171,6 +171,7 @@ object RkNNTestEnvironment {
 
     val setup = new ExperimentSetup(
       experiment          = null,
+      experimentValue     = null,
       approximateVertices = 1000,
       objectDensity       = 0.05,
       connectivity        = 0.1,
