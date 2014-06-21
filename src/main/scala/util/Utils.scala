@@ -4,8 +4,13 @@ import java.nio.file.{Files, Paths}
 import java.io.{BufferedWriter, FileWriter}
 
 import graph.SVertex
+import java.text.{DecimalFormat, NumberFormat}
+import java.util.Locale
 
 object Utils {
+
+
+  def formatThousands(l: Long) = NumberFormat.getInstance(Locale.US).asInstanceOf[DecimalFormat].format(l)
 
   /**
    * Throws IllegalArgumentException if b is false

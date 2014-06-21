@@ -1,7 +1,7 @@
 package app
 
 import Experiment.Experiment
-import util.Utils.writeToFile
+import util.Utils.{writeToFile, formatThousands}
 
 case class ExperimentResult(experiment                      : Experiment,
                             values                          : Seq[Any],
@@ -23,8 +23,8 @@ case class ExperimentResult(experiment                      : Experiment,
 
 
     var cellLengths = IndexedSeq[Int]()
-    // vor  transpose: n listen x 3
-    // nach transpose: 3 listen x n
+    // before  transpose: n x 3 (algorithms) lists
+    // after   transpose: 3 (algorithms) x n lists
     for (algorithmResults <- algorithmResultsForEachValue.transpose) {
       sb.append(
         s"""
@@ -44,14 +44,14 @@ case class ExperimentResult(experiment                      : Experiment,
             indexedSingleResult._1.name + "\n" +
 
             (algorithmResults.map(algorithmResult => {
-              val runResults = algorithmResult.singleResults(indexedSingleResult._2).runResults mkString ", "
+              val runResults = algorithmResult.singleResults(indexedSingleResult._2).runResults.map(formatThousands(_)) mkString ", "
               cellLengths :+= runResults.size
               runResults + "####"
             }) mkString " ; ") + "\n" +
 
             (algorithmResults.map(algorithmResult => {
-              val totalResult = algorithmResult.singleResults(indexedSingleResult._2).totalResult
-              cellLengths :+= totalResult.toString.size
+              val totalResult = formatThousands(algorithmResult.singleResults(indexedSingleResult._2).totalResult)
+              cellLengths :+= totalResult.size
               totalResult + "####"
             }) mkString " ; ")
 

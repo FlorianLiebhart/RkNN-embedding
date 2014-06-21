@@ -25,6 +25,8 @@ object Log {
       else ""
 
     experimentLog.append(s"$timeStamp$s")
+    writeLog.append(experimentLog)
+    System.out.print(experimentLog.toString)
     writeToFile("log/experimentsLog.txt", true, experimentLog.toString)
     experimentLog.clear
   }
@@ -36,6 +38,8 @@ object Log {
       else ""
 
     experimentLog.append(s"$timeStamp$s\n")
+    writeLog.append(experimentLog)
+    System.out.print(experimentLog.toString)
     writeToFile("log/experimentsLog.txt", true, experimentLog.toString)
     experimentLog.clear
   }

@@ -2,6 +2,8 @@ package util
 
 import java.lang.management.ManagementFactory
 
+import util.Utils.formatThousands
+
 case class CPUTimeDiff(){
     val tStart: java.lang.Long = ManagementFactory.getThreadMXBean.getCurrentThreadCpuTime / 1000000
 
@@ -16,7 +18,7 @@ case class CPUTimeDiff(){
         throw new RuntimeException("End time not specified!")
 
       else {
-         s"{{{ $diffMillis ms.(cpu time)}}}"
+         s"{{{ ${formatThousands(diffMillis)} ms.(cpu time)}}}"
        }
     }
   }

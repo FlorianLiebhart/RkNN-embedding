@@ -1,0 +1,1645 @@
+###### Start: 2014-06-21 23.15.35 ######
+
+Generating graph with 961 nodes, 1050 edges, 49 objects...
+  - Creating 961 vertices... done in {{{ 69 ms.(cpu time)}}}
+  - Creating 49 random objects... done in {{{ 40 ms.(cpu time)}}}
+  - Creating 961 node positions... done in {{{ 6 ms.(cpu time)}}}
+  - Creating 1050 random edges... done in {{{ 101 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 240 ms.(cpu time)}}}
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 181 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 6 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 169 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 50, page size: 1234 bytes).. done in {{{ 33 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 389 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 7 ms.(cpu time)}}}
+    - After filtering: 41 cnds, 8 refPoints, 0 refNodes.
+    - Early results: 0 of 41 candidates. Remaining candidates: 41.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 41 candidates.. done in {{{ 4 ms.(cpu time)}}}
+    Refinement step done in {{{ 6 ms.(cpu time)}}}
+    - After refining: 37 cnds
+  Filter Refinement in embedded space done in {{{ 37 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 3 ms.(cpu time)}}}
+    - Performing refinement of 37 candidates on graph.. done in {{{ 90 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 93 ms.(cpu time)}}}
+R3NN query performed in {{{ 130 ms.(cpu time)}}} 
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 112 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 55 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 34 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 249 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 451 ms.(cpu time)}}}
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 6443 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 119 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 247 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 6034 bytes).. done in {{{ 49 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 6859 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 66 ms.(cpu time)}}}
+    - After filtering: 505 cnds, 429 refPoints, 40 refNodes.
+    - Early results: 0 of 505 candidates. Remaining candidates: 505.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 505 candidates.. done in {{{ 50 ms.(cpu time)}}}
+    Refinement step done in {{{ 151 ms.(cpu time)}}}
+    - After refining: 405 cnds
+  Filter Refinement in embedded space done in {{{ 218 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement of 405 candidates on graph.. done in {{{ 240 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 241 ms.(cpu time)}}}
+R3NN query performed in {{{ 459 ms.(cpu time)}}} 
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 58 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 16 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 21 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 115 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 210 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 59 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 14 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 20 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 118 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 211 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 62 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 14 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 21 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 114 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 211 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 60 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 13 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 21 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 126 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 220 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 62 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 20 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 112 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 204 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 57 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 20 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 110 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 197 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 59 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 20 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 112 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 202 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 59 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 11 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 20 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 112 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 202 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 58 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 21 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 109 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 199 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 58 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 21 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 112 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 202 ms.(cpu time)}}}
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5714 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 26 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 71 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 1234 bytes).. done in {{{ 72 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5883 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 23 ms.(cpu time)}}}
+    - After filtering: 433 cnds, 72 refPoints, 42 refNodes.
+    - Early results: 0 of 433 candidates. Remaining candidates: 433.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 1 of 433 candidates.. done in {{{ 47 ms.(cpu time)}}}
+    Refinement step done in {{{ 127 ms.(cpu time)}}}
+    - After refining: 373 cnds
+  Filter Refinement in embedded space done in {{{ 150 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement of 373 candidates on graph.. done in {{{ 194 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 195 ms.(cpu time)}}}
+R3NN query performed in {{{ 345 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5595 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 24 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 43 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 2434 bytes).. done in {{{ 19 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5681 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 28 ms.(cpu time)}}}
+    - After filtering: 636 cnds, 122 refPoints, 59 refNodes.
+    - Early results: 0 of 636 candidates. Remaining candidates: 636.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 1 of 636 candidates.. done in {{{ 40 ms.(cpu time)}}}
+    Refinement step done in {{{ 112 ms.(cpu time)}}}
+    - After refining: 459 cnds
+  Filter Refinement in embedded space done in {{{ 140 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement of 459 candidates on graph.. done in {{{ 261 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 262 ms.(cpu time)}}}
+R3NN query performed in {{{ 402 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5703 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 23 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 38 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 3634 bytes).. done in {{{ 12 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5777 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 11 ms.(cpu time)}}}
+    - After filtering: 415 cnds, 130 refPoints, 30 refNodes.
+    - Early results: 0 of 415 candidates. Remaining candidates: 415.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 415 candidates.. done in {{{ 16 ms.(cpu time)}}}
+    Refinement step done in {{{ 24 ms.(cpu time)}}}
+    - After refining: 299 cnds
+  Filter Refinement in embedded space done in {{{ 36 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement of 299 candidates on graph.. done in {{{ 167 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 168 ms.(cpu time)}}}
+R3NN query performed in {{{ 204 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5669 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 17 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 28 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 4834 bytes).. done in {{{ 7 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5722 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 30 ms.(cpu time)}}}
+    - After filtering: 736 cnds, 98 refPoints, 55 refNodes.
+    - Early results: 0 of 736 candidates. Remaining candidates: 736.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 736 candidates.. done in {{{ 51 ms.(cpu time)}}}
+    Refinement step done in {{{ 95 ms.(cpu time)}}}
+    - After refining: 575 cnds
+  Filter Refinement in embedded space done in {{{ 125 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement of 575 candidates on graph.. done in {{{ 350 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 351 ms.(cpu time)}}}
+R3NN query performed in {{{ 476 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5670 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 12 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 25 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 6034 bytes).. done in {{{ 6 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5714 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 21 ms.(cpu time)}}}
+    - After filtering: 624 cnds, 153 refPoints, 14 refNodes.
+    - Early results: 0 of 624 candidates. Remaining candidates: 624.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 624 candidates.. done in {{{ 39 ms.(cpu time)}}}
+    Refinement step done in {{{ 53 ms.(cpu time)}}}
+    - After refining: 558 cnds
+  Filter Refinement in embedded space done in {{{ 74 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 558 candidates on graph.. done in {{{ 266 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 266 ms.(cpu time)}}}
+R3NN query performed in {{{ 340 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5877 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 14 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 24 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 7234 bytes).. done in {{{ 5 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5920 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 22 ms.(cpu time)}}}
+    - After filtering: 494 cnds, 399 refPoints, 41 refNodes.
+    - Early results: 0 of 494 candidates. Remaining candidates: 494.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 494 candidates.. done in {{{ 26 ms.(cpu time)}}}
+    Refinement step done in {{{ 60 ms.(cpu time)}}}
+    - After refining: 418 cnds
+  Filter Refinement in embedded space done in {{{ 82 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 418 candidates on graph.. done in {{{ 255 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 255 ms.(cpu time)}}}
+R3NN query performed in {{{ 337 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5743 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 14 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 25 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 8434 bytes).. done in {{{ 4 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5787 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 30 ms.(cpu time)}}}
+    - After filtering: 746 cnds, 147 refPoints, 41 refNodes.
+    - Early results: 0 of 746 candidates. Remaining candidates: 746.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 746 candidates.. done in {{{ 52 ms.(cpu time)}}}
+    Refinement step done in {{{ 90 ms.(cpu time)}}}
+    - After refining: 553 cnds
+  Filter Refinement in embedded space done in {{{ 120 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 553 candidates on graph.. done in {{{ 277 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 277 ms.(cpu time)}}}
+R3NN query performed in {{{ 397 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 6005 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 15 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 26 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 9634 bytes).. done in {{{ 4 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 6050 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 10 ms.(cpu time)}}}
+    - After filtering: 440 cnds, 142 refPoints, 49 refNodes.
+    - Early results: 0 of 440 candidates. Remaining candidates: 440.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 440 candidates.. done in {{{ 18 ms.(cpu time)}}}
+    Refinement step done in {{{ 34 ms.(cpu time)}}}
+    - After refining: 363 cnds
+  Filter Refinement in embedded space done in {{{ 44 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement of 363 candidates on graph.. done in {{{ 206 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 207 ms.(cpu time)}}}
+R3NN query performed in {{{ 251 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5902 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 13 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 24 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 10834 bytes).. done in {{{ 4 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5943 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 21 ms.(cpu time)}}}
+    - After filtering: 575 cnds, 513 refPoints, 18 refNodes.
+    - Early results: 0 of 575 candidates. Remaining candidates: 575.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 575 candidates.. done in {{{ 36 ms.(cpu time)}}}
+    Refinement step done in {{{ 67 ms.(cpu time)}}}
+    - After refining: 430 cnds
+  Filter Refinement in embedded space done in {{{ 88 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement of 430 candidates on graph.. done in {{{ 250 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 251 ms.(cpu time)}}}
+R3NN query performed in {{{ 339 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5756 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 14 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 24 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 12034 bytes).. done in {{{ 3 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5797 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 27 ms.(cpu time)}}}
+    - After filtering: 726 cnds, 361 refPoints, 18 refNodes.
+    - Early results: 0 of 726 candidates. Remaining candidates: 726.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 1 of 726 candidates.. done in {{{ 45 ms.(cpu time)}}}
+    Refinement step done in {{{ 80 ms.(cpu time)}}}
+    - After refining: 586 cnds
+  Filter Refinement in embedded space done in {{{ 107 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 586 candidates on graph.. done in {{{ 374 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 374 ms.(cpu time)}}}
+R3NN query performed in {{{ 481 ms.(cpu time)}}} 
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 60 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 20 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 111 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 201 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 65 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 11 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 21 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 116 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 213 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 69 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 23 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 113 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 216 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 60 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 21 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 111 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 202 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 59 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 20 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 113 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 202 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 60 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 20 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 111 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 201 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 59 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 21 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 111 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 201 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 59 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 21 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 125 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 215 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 72 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 11 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 21 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 111 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 215 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 58 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 9 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 19 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 126 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 212 ms.(cpu time)}}}
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 2057 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 6 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 11 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 2034 bytes).. done in {{{ 3 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 2078 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 13 ms.(cpu time)}}}
+    - After filtering: 549 cnds, 386 refPoints, 45 refNodes.
+    - Early results: 0 of 549 candidates. Remaining candidates: 549.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 549 candidates.. done in {{{ 19 ms.(cpu time)}}}
+    Refinement step done in {{{ 37 ms.(cpu time)}}}
+    - After refining: 456 cnds
+  Filter Refinement in embedded space done in {{{ 50 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 456 candidates on graph.. done in {{{ 210 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 210 ms.(cpu time)}}}
+R3NN query performed in {{{ 261 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 3903 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 10 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 18 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 4034 bytes).. done in {{{ 3 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 3936 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 20 ms.(cpu time)}}}
+    - After filtering: 585 cnds, 387 refPoints, 39 refNodes.
+    - Early results: 0 of 585 candidates. Remaining candidates: 585.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 585 candidates.. done in {{{ 24 ms.(cpu time)}}}
+    Refinement step done in {{{ 54 ms.(cpu time)}}}
+    - After refining: 507 cnds
+  Filter Refinement in embedded space done in {{{ 74 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement of 507 candidates on graph.. done in {{{ 248 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 249 ms.(cpu time)}}}
+R3NN query performed in {{{ 323 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5674 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 13 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 24 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 6034 bytes).. done in {{{ 4 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5715 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 23 ms.(cpu time)}}}
+    - After filtering: 559 cnds, 529 refPoints, 36 refNodes.
+    - Early results: 0 of 559 candidates. Remaining candidates: 559.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 1 of 559 candidates.. done in {{{ 30 ms.(cpu time)}}}
+    Refinement step done in {{{ 62 ms.(cpu time)}}}
+    - After refining: 411 cnds
+  Filter Refinement in embedded space done in {{{ 85 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement of 411 candidates on graph.. done in {{{ 240 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 241 ms.(cpu time)}}}
+R3NN query performed in {{{ 326 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 7691 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 17 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 37 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 8034 bytes).. done in {{{ 3 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 7749 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 17 ms.(cpu time)}}}
+    - After filtering: 524 cnds, 252 refPoints, 44 refNodes.
+    - Early results: 0 of 524 candidates. Remaining candidates: 524.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 524 candidates.. done in {{{ 35 ms.(cpu time)}}}
+    Refinement step done in {{{ 75 ms.(cpu time)}}}
+    - After refining: 456 cnds
+  Filter Refinement in embedded space done in {{{ 93 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 456 candidates on graph.. done in {{{ 275 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 275 ms.(cpu time)}}}
+R3NN query performed in {{{ 368 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 9691 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 20 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 39 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 10034 bytes).. done in {{{ 3 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 9753 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 27 ms.(cpu time)}}}
+    - After filtering: 585 cnds, 153 refPoints, 45 refNodes.
+    - Early results: 0 of 585 candidates. Remaining candidates: 585.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 1 of 585 candidates.. done in {{{ 49 ms.(cpu time)}}}
+    Refinement step done in {{{ 80 ms.(cpu time)}}}
+    - After refining: 438 cnds
+  Filter Refinement in embedded space done in {{{ 107 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 438 candidates on graph.. done in {{{ 273 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 273 ms.(cpu time)}}}
+R3NN query performed in {{{ 380 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 11690 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 24 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 45 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 12034 bytes).. done in {{{ 4 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 11763 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 29 ms.(cpu time)}}}
+    - After filtering: 483 cnds, 293 refPoints, 44 refNodes.
+    - Early results: 0 of 483 candidates. Remaining candidates: 483.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 2 of 483 candidates.. done in {{{ 39 ms.(cpu time)}}}
+    Refinement step done in {{{ 73 ms.(cpu time)}}}
+    - After refining: 311 cnds
+  Filter Refinement in embedded space done in {{{ 103 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 311 candidates on graph.. done in {{{ 213 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 213 ms.(cpu time)}}}
+R3NN query performed in {{{ 316 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 14099 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 30 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 54 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 14034 bytes).. done in {{{ 4 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 14188 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 25 ms.(cpu time)}}}
+    - After filtering: 402 cnds, 373 refPoints, 44 refNodes.
+    - Early results: 0 of 402 candidates. Remaining candidates: 402.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 402 candidates.. done in {{{ 29 ms.(cpu time)}}}
+    Refinement step done in {{{ 61 ms.(cpu time)}}}
+    - After refining: 298 cnds
+  Filter Refinement in embedded space done in {{{ 86 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement of 298 candidates on graph.. done in {{{ 159 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 160 ms.(cpu time)}}}
+R3NN query performed in {{{ 246 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 15801 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 32 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 60 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 16034 bytes).. done in {{{ 5 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 15898 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 24 ms.(cpu time)}}}
+    - After filtering: 372 cnds, 288 refPoints, 47 refNodes.
+    - Early results: 0 of 372 candidates. Remaining candidates: 372.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 372 candidates.. done in {{{ 32 ms.(cpu time)}}}
+    Refinement step done in {{{ 63 ms.(cpu time)}}}
+    - After refining: 285 cnds
+  Filter Refinement in embedded space done in {{{ 87 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 285 candidates on graph.. done in {{{ 154 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 154 ms.(cpu time)}}}
+R3NN query performed in {{{ 241 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 17859 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 39 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 65 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 18034 bytes).. done in {{{ 5 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 17969 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 5 ms.(cpu time)}}}
+    - After filtering: 144 cnds, 205 refPoints, 10 refNodes.
+    - Early results: 0 of 144 candidates. Remaining candidates: 144.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 2 of 144 candidates.. done in {{{ 4 ms.(cpu time)}}}
+    Refinement step done in {{{ 9 ms.(cpu time)}}}
+    - After refining: 79 cnds
+  Filter Refinement in embedded space done in {{{ 14 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 79 candidates on graph.. done in {{{ 56 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 56 ms.(cpu time)}}}
+R3NN query performed in {{{ 70 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 20331 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 44 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 72 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 20034 bytes).. done in {{{ 5 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 20452 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 45 ms.(cpu time)}}}
+    - After filtering: 588 cnds, 267 refPoints, 27 refNodes.
+    - Early results: 0 of 588 candidates. Remaining candidates: 588.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 2 of 588 candidates.. done in {{{ 79 ms.(cpu time)}}}
+    Refinement step done in {{{ 125 ms.(cpu time)}}}
+    - After refining: 453 cnds
+  Filter Refinement in embedded space done in {{{ 170 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement of 453 candidates on graph.. done in {{{ 240 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 241 ms.(cpu time)}}}
+R3NN query performed in {{{ 411 ms.(cpu time)}}} 
+
+Generating graph with 9 nodes, 9 edges, 2 objects...
+  - Creating 9 vertices... done in {{{ 0 ms.(cpu time)}}}
+  - Creating 2 random objects... done in {{{ 0 ms.(cpu time)}}}
+  - Creating 9 node positions... done in {{{ 0 ms.(cpu time)}}}
+  - Creating 9 random edges... done in {{{ 0 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 0 ms.(cpu time)}}}
+
+Generating graph with 100 nodes, 123 edges, 5 objects...
+  - Creating 100 vertices... done in {{{ 0 ms.(cpu time)}}}
+  - Creating 5 random objects... done in {{{ 0 ms.(cpu time)}}}
+  - Creating 100 node positions... done in {{{ 0 ms.(cpu time)}}}
+  - Creating 123 random edges... done in {{{ 0 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 1 ms.(cpu time)}}}
+
+Generating graph with 961 nodes, 1230 edges, 49 objects...
+  - Creating 961 vertices... done in {{{ 1 ms.(cpu time)}}}
+  - Creating 49 random objects... done in {{{ 0 ms.(cpu time)}}}
+  - Creating 961 node positions... done in {{{ 0 ms.(cpu time)}}}
+  - Creating 1230 random edges... done in {{{ 2 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 3 ms.(cpu time)}}}
+
+Generating graph with 10000 nodes, 12939 edges, 500 objects...
+  - Creating 10000 vertices... done in {{{ 7 ms.(cpu time)}}}
+  - Creating 500 random objects... done in {{{ 2 ms.(cpu time)}}}
+  - Creating 10000 node positions... done in {{{ 3 ms.(cpu time)}}}
+  - Creating 12939 random edges... done in {{{ 20 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 32 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 58 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 20 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 103 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 192 ms.(cpu time)}}}
+
+Generating graph with 99856 nodes, 129622 edges, 4993 objects...
+  - Creating 99856 vertices... done in {{{ 136 ms.(cpu time)}}}
+  - Creating 4993 random objects... done in {{{ 21 ms.(cpu time)}}}
+  - Creating 99856 node positions... done in {{{ 43 ms.(cpu time)}}}
+  - Creating 129622 random edges... done in {{{ 234 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 434 ms.(cpu time)}}}
+
+Generating graph with 199809 nodes, 259482 edges, 9991 objects...
+  - Creating 199809 vertices... done in {{{ 304 ms.(cpu time)}}}
+  - Creating 9991 random objects... done in {{{ 41 ms.(cpu time)}}}
+  - Creating 199809 node positions... done in {{{ 84 ms.(cpu time)}}}
+  - Creating 259482 random edges... done in {{{ 471 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 901 ms.(cpu time)}}}
+
+Generating graph with 499849 nodes, 649378 edges, 24993 objects...
+  - Creating 499849 vertices... done in {{{ 718 ms.(cpu time)}}}
+  - Creating 24993 random objects... done in {{{ 113 ms.(cpu time)}}}
+  - Creating 499849 node positions... done in {{{ 231 ms.(cpu time)}}}
+  - Creating 649378 random edges... done in {{{ 1199 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 2262 ms.(cpu time)}}}
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 1 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 0 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 1 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2, page size: 6034 bytes).. done in {{{ 0 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 2 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 0 ms.(cpu time)}}}
+    - After filtering: 1 cnds, 0 refPoints, 0 refNodes.
+    - Early results: 0 of 1 candidates. Remaining candidates: 1.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 1 candidates.. done in {{{ 0 ms.(cpu time)}}}
+    Refinement step done in {{{ 0 ms.(cpu time)}}}
+    - After refining: 1 cnds
+  Filter Refinement in embedded space done in {{{ 0 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 1 candidates on graph.. done in {{{ 0 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 0 ms.(cpu time)}}}
+R3NN query performed in {{{ 1 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 1 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 1 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 6, page size: 6034 bytes).. done in {{{ 0 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 7 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 0 ms.(cpu time)}}}
+    - After filtering: 5 cnds, 0 refPoints, 0 refNodes.
+    - Early results: 0 of 5 candidates. Remaining candidates: 5.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 5 candidates.. done in {{{ 0 ms.(cpu time)}}}
+    Refinement step done in {{{ 1 ms.(cpu time)}}}
+    - After refining: 5 cnds
+  Filter Refinement in embedded space done in {{{ 1 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 5 candidates on graph.. done in {{{ 1 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 1 ms.(cpu time)}}}
+R3NN query performed in {{{ 2 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 59 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 1 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 1 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 49, page size: 6034 bytes).. done in {{{ 0 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 61 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 0 ms.(cpu time)}}}
+    - After filtering: 16 cnds, 32 refPoints, 0 refNodes.
+    - Early results: 0 of 16 candidates. Remaining candidates: 16.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 3 of 16 candidates.. done in {{{ 0 ms.(cpu time)}}}
+    Refinement step done in {{{ 0 ms.(cpu time)}}}
+    - After refining: 3 cnds
+  Filter Refinement in embedded space done in {{{ 0 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 3 candidates on graph.. done in {{{ 1 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 1 ms.(cpu time)}}}
+R3NN query performed in {{{ 1 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 879 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 3 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 6 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 501, page size: 6034 bytes).. done in {{{ 1 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 889 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 2 ms.(cpu time)}}}
+    - After filtering: 179 cnds, 135 refPoints, 6 refNodes.
+    - Early results: 0 of 179 candidates. Remaining candidates: 179.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 179 candidates.. done in {{{ 4 ms.(cpu time)}}}
+    Refinement step done in {{{ 7 ms.(cpu time)}}}
+    - After refining: 157 cnds
+  Filter Refinement in embedded space done in {{{ 9 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 157 candidates on graph.. done in {{{ 79 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 79 ms.(cpu time)}}}
+R3NN query performed in {{{ 88 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5856 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 13 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 24 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 6034 bytes).. done in {{{ 4 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5898 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 21 ms.(cpu time)}}}
+    - After filtering: 488 cnds, 406 refPoints, 41 refNodes.
+    - Early results: 0 of 488 candidates. Remaining candidates: 488.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 488 candidates.. done in {{{ 25 ms.(cpu time)}}}
+    Refinement step done in {{{ 51 ms.(cpu time)}}}
+    - After refining: 349 cnds
+  Filter Refinement in embedded space done in {{{ 72 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 349 candidates on graph.. done in {{{ 193 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 193 ms.(cpu time)}}}
+R3NN query performed in {{{ 265 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 12355 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 27 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 48 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 4994, page size: 6034 bytes).. done in {{{ 7 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 12437 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 54 ms.(cpu time)}}}
+    - After filtering: 1053 cnds, 273 refPoints, 49 refNodes.
+    - Early results: 0 of 1053 candidates. Remaining candidates: 1053.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 1 of 1053 candidates.. done in {{{ 118 ms.(cpu time)}}}
+    Refinement step done in {{{ 194 ms.(cpu time)}}}
+    - After refining: 901 cnds
+  Filter Refinement in embedded space done in {{{ 248 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement of 901 candidates on graph.. done in {{{ 437 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 438 ms.(cpu time)}}}
+R3NN query performed in {{{ 686 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 26960 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 70 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 98 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 9992, page size: 6034 bytes).. done in {{{ 14 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 27143 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 140 ms.(cpu time)}}}
+    - After filtering: 1536 cnds, 845 refPoints, 75 refNodes.
+    - Early results: 0 of 1536 candidates. Remaining candidates: 1536.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 1536 candidates.. done in {{{ 331 ms.(cpu time)}}}
+    Refinement step done in {{{ 597 ms.(cpu time)}}}
+    - After refining: 1197 cnds
+  Filter Refinement in embedded space done in {{{ 738 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement of 1197 candidates on graph.. done in {{{ 727 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 728 ms.(cpu time)}}}
+R3NN query performed in {{{ 1466 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 70092 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 192 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 249 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 24994, page size: 6034 bytes).. done in {{{ 48 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 70581 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 484 ms.(cpu time)}}}
+    - After filtering: 2768 cnds, 1114 refPoints, 205 refNodes.
+    - Early results: 0 of 2768 candidates. Remaining candidates: 2768.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 2768 candidates.. done in {{{ 796 ms.(cpu time)}}}
+    Refinement step done in {{{ 3375 ms.(cpu time)}}}
+    - After refining: 2322 cnds
+  Filter Refinement in embedded space done in {{{ 3859 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 2 ms.(cpu time)}}}
+    - Performing refinement of 2322 candidates on graph.. done in {{{ 1275 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 1277 ms.(cpu time)}}}
+R3NN query performed in {{{ 5136 ms.(cpu time)}}} 
+
+Generating graph with 49729 nodes, 64513 edges, 249 objects...
+  - Creating 49729 vertices... done in {{{ 66 ms.(cpu time)}}}
+  - Creating 249 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 21 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 114 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 211 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 498 objects...
+  - Creating 49729 vertices... done in {{{ 62 ms.(cpu time)}}}
+  - Creating 498 random objects... done in {{{ 11 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 20 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 110 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 203 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 995 objects...
+  - Creating 49729 vertices... done in {{{ 59 ms.(cpu time)}}}
+  - Creating 995 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 20 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 110 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 200 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 1990 objects...
+  - Creating 49729 vertices... done in {{{ 61 ms.(cpu time)}}}
+  - Creating 1990 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 21 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 111 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 203 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 3979 objects...
+  - Creating 49729 vertices... done in {{{ 57 ms.(cpu time)}}}
+  - Creating 3979 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 20 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 112 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 201 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 7957 objects...
+  - Creating 49729 vertices... done in {{{ 60 ms.(cpu time)}}}
+  - Creating 7957 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 20 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 110 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 201 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 15914 objects...
+  - Creating 49729 vertices... done in {{{ 58 ms.(cpu time)}}}
+  - Creating 15914 random objects... done in {{{ 12 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 21 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 110 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 201 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 31827 objects...
+  - Creating 49729 vertices... done in {{{ 59 ms.(cpu time)}}}
+  - Creating 31827 random objects... done in {{{ 15 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 20 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 112 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 207 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 49729 objects...
+  - Creating 49729 vertices... done in {{{ 59 ms.(cpu time)}}}
+  - Creating 49729 random objects... done in {{{ 18 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 20 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 110 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 208 ms.(cpu time)}}}
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5832 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 3 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 3 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 250, page size: 6034 bytes).. done in {{{ 1 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5839 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 1 ms.(cpu time)}}}
+    - After filtering: 77 cnds, 47 refPoints, 4 refNodes.
+    - Early results: 0 of 77 candidates. Remaining candidates: 77.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 77 candidates.. done in {{{ 1 ms.(cpu time)}}}
+    Refinement step done in {{{ 1 ms.(cpu time)}}}
+    - After refining: 72 cnds
+  Filter Refinement in embedded space done in {{{ 3 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 72 candidates on graph.. done in {{{ 3178 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 3178 ms.(cpu time)}}}
+R3NN query performed in {{{ 3181 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5727 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 3 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 7 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 499, page size: 6034 bytes).. done in {{{ 1 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5738 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 1 ms.(cpu time)}}}
+    - After filtering: 141 cnds, 46 refPoints, 10 refNodes.
+    - Early results: 0 of 141 candidates. Remaining candidates: 141.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 141 candidates.. done in {{{ 3 ms.(cpu time)}}}
+    Refinement step done in {{{ 4 ms.(cpu time)}}}
+    - After refining: 121 cnds
+  Filter Refinement in embedded space done in {{{ 5 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement of 121 candidates on graph.. done in {{{ 1201 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 1202 ms.(cpu time)}}}
+R3NN query performed in {{{ 1207 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5729 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 6 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 10 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 996, page size: 6034 bytes).. done in {{{ 2 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5747 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 5 ms.(cpu time)}}}
+    - After filtering: 285 cnds, 119 refPoints, 19 refNodes.
+    - Early results: 0 of 285 candidates. Remaining candidates: 285.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 285 candidates.. done in {{{ 8 ms.(cpu time)}}}
+    Refinement step done in {{{ 14 ms.(cpu time)}}}
+    - After refining: 239 cnds
+  Filter Refinement in embedded space done in {{{ 19 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 239 candidates on graph.. done in {{{ 810 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 810 ms.(cpu time)}}}
+R3NN query performed in {{{ 829 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 6143 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 11 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 20 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 1991, page size: 6034 bytes).. done in {{{ 3 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 6178 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 12 ms.(cpu time)}}}
+    - After filtering: 419 cnds, 266 refPoints, 27 refNodes.
+    - Early results: 0 of 419 candidates. Remaining candidates: 419.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 419 candidates.. done in {{{ 17 ms.(cpu time)}}}
+    Refinement step done in {{{ 44 ms.(cpu time)}}}
+    - After refining: 350 cnds
+  Filter Refinement in embedded space done in {{{ 57 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 350 candidates on graph.. done in {{{ 292 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 292 ms.(cpu time)}}}
+R3NN query performed in {{{ 349 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 6137 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 20 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 39 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 3980, page size: 6034 bytes).. done in {{{ 7 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 6203 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 51 ms.(cpu time)}}}
+    - After filtering: 789 cnds, 798 refPoints, 32 refNodes.
+    - Early results: 0 of 789 candidates. Remaining candidates: 789.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 789 candidates.. done in {{{ 63 ms.(cpu time)}}}
+    Refinement step done in {{{ 130 ms.(cpu time)}}}
+    - After refining: 523 cnds
+  Filter Refinement in embedded space done in {{{ 181 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 523 candidates on graph.. done in {{{ 120 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 120 ms.(cpu time)}}}
+R3NN query performed in {{{ 301 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5892 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 40 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 75 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 7958, page size: 6034 bytes).. done in {{{ 11 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 6020 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 211 ms.(cpu time)}}}
+    - After filtering: 1965 cnds, 771 refPoints, 78 refNodes.
+    - Early results: 0 of 1965 candidates. Remaining candidates: 1965.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 1965 candidates.. done in {{{ 402 ms.(cpu time)}}}
+    Refinement step done in {{{ 925 ms.(cpu time)}}}
+    - After refining: 1360 cnds
+  Filter Refinement in embedded space done in {{{ 1136 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement of 1360 candidates on graph.. done in {{{ 139 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 140 ms.(cpu time)}}}
+R3NN query performed in {{{ 1277 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 6175 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 89 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 150 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 15914, page size: 6034 bytes).. done in {{{ 27 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 6441 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 564 ms.(cpu time)}}}
+    - After filtering: 3143 cnds, 1085 refPoints, 106 refNodes.
+    - Early results: 0 of 3143 candidates. Remaining candidates: 3143.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 3143 candidates.. done in {{{ 1111 ms.(cpu time)}}}
+    Refinement step done in {{{ 2551 ms.(cpu time)}}}
+    - After refining: 1989 cnds
+  Filter Refinement in embedded space done in {{{ 3115 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 2 ms.(cpu time)}}}
+    - Performing refinement of 1989 candidates on graph.. done in {{{ 91 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 94 ms.(cpu time)}}}
+R3NN query performed in {{{ 3209 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 6091 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 176 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 302 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 31827, page size: 6034 bytes).. done in {{{ 67 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 6636 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 6700 ms.(cpu time)}}}
+    - After filtering: 7259 cnds, 1758 refPoints, 149 refNodes.
+    - Early results: 0 of 7259 candidates. Remaining candidates: 7259.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 7259 candidates.. done in {{{ 9965 ms.(cpu time)}}}
+    Refinement step done in {{{ 27786 ms.(cpu time)}}}
+    - After refining: 4070 cnds
+  Filter Refinement in embedded space done in {{{ 34487 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 5 ms.(cpu time)}}}
+    - Performing refinement of 4070 candidates on graph.. done in {{{ 79 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 84 ms.(cpu time)}}}
+R3NN query performed in {{{ 34571 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5657 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 275 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 474 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 49729, page size: 6034 bytes).. done in {{{ 122 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 6528 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 9731 ms.(cpu time)}}}
+    - After filtering: 8738 cnds, 979 refPoints, 73 refNodes.
+    - Early results: 0 of 8738 candidates. Remaining candidates: 8738.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 8738 candidates.. done in {{{ 16282 ms.(cpu time)}}}
+    Refinement step done in {{{ 105114 ms.(cpu time)}}}
+    - After refining: 7148 cnds
+  Filter Refinement in embedded space done in {{{ 114846 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 5 ms.(cpu time)}}}
+    - Performing refinement of 7148 candidates on graph.. done in {{{ 97 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 102 ms.(cpu time)}}}
+R3NN query performed in {{{ 114948 ms.(cpu time)}}} 
+
+Generating graph with 49729 nodes, 49974 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 63 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 20 ms.(cpu time)}}}
+  - Creating 49974 random edges... done in {{{ 83 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 177 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 50220 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 63 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 21 ms.(cpu time)}}}
+  - Creating 50220 random edges... done in {{{ 85 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 179 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 50713 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 60 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 21 ms.(cpu time)}}}
+  - Creating 50713 random edges... done in {{{ 84 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 175 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 51699 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 62 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 20 ms.(cpu time)}}}
+  - Creating 51699 random edges... done in {{{ 85 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 177 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 53670 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 60 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 21 ms.(cpu time)}}}
+  - Creating 53670 random edges... done in {{{ 88 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 179 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 57613 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 60 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 21 ms.(cpu time)}}}
+  - Creating 57613 random edges... done in {{{ 92 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 184 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 65498 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 58 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 21 ms.(cpu time)}}}
+  - Creating 65498 random edges... done in {{{ 111 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 201 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 81269 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 58 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 20 ms.(cpu time)}}}
+  - Creating 81269 random edges... done in {{{ 130 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 218 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 99012 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 59 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 9 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 20 ms.(cpu time)}}}
+  - Creating 99012 random edges... done in {{{ 150 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 240 ms.(cpu time)}}}
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5176 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 16 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 26 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 6034 bytes).. done in {{{ 3 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5221 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 29 ms.(cpu time)}}}
+    - After filtering: 675 cnds, 685 refPoints, 29 refNodes.
+    - Early results: 0 of 675 candidates. Remaining candidates: 675.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 675 candidates.. done in {{{ 45 ms.(cpu time)}}}
+    Refinement step done in {{{ 94 ms.(cpu time)}}}
+    - After refining: 430 cnds
+  Filter Refinement in embedded space done in {{{ 123 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 430 candidates on graph.. done in {{{ 190 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 190 ms.(cpu time)}}}
+R3NN query performed in {{{ 313 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5196 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 14 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 25 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 6034 bytes).. done in {{{ 4 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5240 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 100 ms.(cpu time)}}}
+    - After filtering: 1320 cnds, 856 refPoints, 8 refNodes.
+    - Early results: 0 of 1320 candidates. Remaining candidates: 1320.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 1 of 1320 candidates.. done in {{{ 163 ms.(cpu time)}}}
+    Refinement step done in {{{ 198 ms.(cpu time)}}}
+    - After refining: 380 cnds
+  Filter Refinement in embedded space done in {{{ 298 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement of 380 candidates on graph.. done in {{{ 156 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 157 ms.(cpu time)}}}
+R3NN query performed in {{{ 455 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5371 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 14 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 25 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 6034 bytes).. done in {{{ 3 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5413 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 57 ms.(cpu time)}}}
+    - After filtering: 1141 cnds, 337 refPoints, 11 refNodes.
+    - Early results: 0 of 1141 candidates. Remaining candidates: 1141.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 1141 candidates.. done in {{{ 117 ms.(cpu time)}}}
+    Refinement step done in {{{ 284 ms.(cpu time)}}}
+    - After refining: 727 cnds
+  Filter Refinement in embedded space done in {{{ 341 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 727 candidates on graph.. done in {{{ 362 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 362 ms.(cpu time)}}}
+R3NN query performed in {{{ 703 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5540 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 14 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 25 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 6034 bytes).. done in {{{ 4 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5583 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 78 ms.(cpu time)}}}
+    - After filtering: 1248 cnds, 383 refPoints, 7 refNodes.
+    - Early results: 0 of 1248 candidates. Remaining candidates: 1248.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 1248 candidates.. done in {{{ 157 ms.(cpu time)}}}
+    Refinement step done in {{{ 319 ms.(cpu time)}}}
+    - After refining: 817 cnds
+  Filter Refinement in embedded space done in {{{ 397 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 817 candidates on graph.. done in {{{ 392 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 392 ms.(cpu time)}}}
+R3NN query performed in {{{ 790 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5466 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 12 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 25 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 6034 bytes).. done in {{{ 3 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5507 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 43 ms.(cpu time)}}}
+    - After filtering: 879 cnds, 441 refPoints, 30 refNodes.
+    - Early results: 0 of 879 candidates. Remaining candidates: 879.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 1 of 879 candidates.. done in {{{ 80 ms.(cpu time)}}}
+    Refinement step done in {{{ 141 ms.(cpu time)}}}
+    - After refining: 565 cnds
+  Filter Refinement in embedded space done in {{{ 184 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement of 565 candidates on graph.. done in {{{ 288 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 289 ms.(cpu time)}}}
+R3NN query performed in {{{ 473 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5565 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 13 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 25 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2487, page size: 6034 bytes).. done in {{{ 3 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5606 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 17 ms.(cpu time)}}}
+    - After filtering: 533 cnds, 320 refPoints, 42 refNodes.
+    - Early results: 0 of 533 candidates. Remaining candidates: 533.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 1 of 533 candidates.. done in {{{ 30 ms.(cpu time)}}}
+    Refinement step done in {{{ 52 ms.(cpu time)}}}
+    - After refining: 375 cnds
+  Filter Refinement in embedded space done in {{{ 69 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 375 candidates on graph.. done in {{{ 207 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 207 ms.(cpu time)}}}
+R3NN query performed in {{{ 276 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 6017 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 14 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 24 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 6034 bytes).. done in {{{ 3 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 6058 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 15 ms.(cpu time)}}}
+    - After filtering: 410 cnds, 443 refPoints, 42 refNodes.
+    - Early results: 0 of 410 candidates. Remaining candidates: 410.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 1 of 410 candidates.. done in {{{ 17 ms.(cpu time)}}}
+    Refinement step done in {{{ 36 ms.(cpu time)}}}
+    - After refining: 274 cnds
+  Filter Refinement in embedded space done in {{{ 53 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement of 274 candidates on graph.. done in {{{ 185 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 186 ms.(cpu time)}}}
+R3NN query performed in {{{ 239 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 6234 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 13 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 24 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 6034 bytes).. done in {{{ 3 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 6275 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 23 ms.(cpu time)}}}
+    - After filtering: 754 cnds, 141 refPoints, 26 refNodes.
+    - Early results: 0 of 754 candidates. Remaining candidates: 754.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 1 of 754 candidates.. done in {{{ 48 ms.(cpu time)}}}
+    Refinement step done in {{{ 67 ms.(cpu time)}}}
+    - After refining: 650 cnds
+  Filter Refinement in embedded space done in {{{ 90 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement of 650 candidates on graph.. done in {{{ 377 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 378 ms.(cpu time)}}}
+R3NN query performed in {{{ 468 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 6549 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 13 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 24 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 6034 bytes).. done in {{{ 3 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 6589 ms.(cpu time)}}} 
+
+2. Performing R3NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 12 ms.(cpu time)}}}
+    - After filtering: 500 cnds, 43 refPoints, 35 refNodes.
+    - Early results: 0 of 500 candidates. Remaining candidates: 500.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 500 candidates.. done in {{{ 24 ms.(cpu time)}}}
+    Refinement step done in {{{ 48 ms.(cpu time)}}}
+    - After refining: 416 cnds
+  Filter Refinement in embedded space done in {{{ 60 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 416 candidates on graph.. done in {{{ 300 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 300 ms.(cpu time)}}}
+R3NN query performed in {{{ 360 ms.(cpu time)}}} 
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 60 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 20 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 112 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 203 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 61 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 21 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 110 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 203 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 59 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 9 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 21 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 111 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 201 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 53 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 8 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 17 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 107 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 185 ms.(cpu time)}}}
+
+Generating graph with 49729 nodes, 64513 edges, 2487 objects...
+  - Creating 49729 vertices... done in {{{ 60 ms.(cpu time)}}}
+  - Creating 2487 random objects... done in {{{ 10 ms.(cpu time)}}}
+  - Creating 49729 node positions... done in {{{ 21 ms.(cpu time)}}}
+  - Creating 64513 random edges... done in {{{ 113 ms.(cpu time)}}}
+Graph generation finished. Runtime: {{{ 204 ms.(cpu time)}}}
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5693 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 13 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 26 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 6034 bytes).. done in {{{ 3 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5736 ms.(cpu time)}}} 
+
+2. Performing R1NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 22 ms.(cpu time)}}}
+    - After filtering: 592 cnds, 301 refPoints, 26 refNodes.
+    - Early results: 0 of 592 candidates. Remaining candidates: 592.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 592 candidates.. done in {{{ 36 ms.(cpu time)}}}
+    Refinement step done in {{{ 55 ms.(cpu time)}}}
+    - After refining: 372 cnds
+  Filter Refinement in embedded space done in {{{ 77 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement of 372 candidates on graph.. done in {{{ 43 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 44 ms.(cpu time)}}}
+R1NN query performed in {{{ 121 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5734 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 15 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 25 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 6034 bytes).. done in {{{ 3 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5777 ms.(cpu time)}}} 
+
+2. Performing R2NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 14 ms.(cpu time)}}}
+    - After filtering: 490 cnds, 326 refPoints, 13 refNodes.
+    - Early results: 0 of 490 candidates. Remaining candidates: 490.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 490 candidates.. done in {{{ 22 ms.(cpu time)}}}
+    Refinement step done in {{{ 40 ms.(cpu time)}}}
+    - After refining: 368 cnds
+  Filter Refinement in embedded space done in {{{ 55 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 368 candidates on graph.. done in {{{ 101 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 101 ms.(cpu time)}}}
+R2NN query performed in {{{ 157 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5781 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 14 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 24 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 6034 bytes).. done in {{{ 4 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5824 ms.(cpu time)}}} 
+
+2. Performing R4NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 36 ms.(cpu time)}}}
+    - After filtering: 777 cnds, 312 refPoints, 21 refNodes.
+    - Early results: 0 of 777 candidates. Remaining candidates: 777.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 777 candidates.. done in {{{ 60 ms.(cpu time)}}}
+    Refinement step done in {{{ 85 ms.(cpu time)}}}
+    - After refining: 553 cnds
+  Filter Refinement in embedded space done in {{{ 121 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement of 553 candidates on graph.. done in {{{ 441 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 442 ms.(cpu time)}}}
+R4NN query performed in {{{ 563 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5726 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 15 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 24 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 6034 bytes).. done in {{{ 3 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5768 ms.(cpu time)}}} 
+
+2. Performing R8NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 17 ms.(cpu time)}}}
+    - After filtering: 568 cnds, 249 refPoints, 43 refNodes.
+    - Early results: 0 of 568 candidates. Remaining candidates: 568.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 0 of 568 candidates.. done in {{{ 29 ms.(cpu time)}}}
+    Refinement step done in {{{ 56 ms.(cpu time)}}}
+    - After refining: 552 cnds
+  Filter Refinement in embedded space done in {{{ 73 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 1 ms.(cpu time)}}}
+    - Performing refinement of 552 candidates on graph.. done in {{{ 1473 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 1474 ms.(cpu time)}}}
+R8NN query performed in {{{ 1547 ms.(cpu time)}}} 
+
+1. Start preparation phase (create: embedding, DB, R*Tree, query object)
+  - Creating refpoints and embedding.. done in {{{ 5868 ms.(cpu time)}}}
+  - Creating CSV file.. done in {{{ 14 ms.(cpu time)}}}
+  - Creating file based Database.. done in {{{ 25 ms.(cpu time)}}}
+  - Creating R*Tree index (entries: 2488, page size: 6034 bytes).. done in {{{ 3 ms.(cpu time)}}}
+Algorithm preparation done in {{{ 5911 ms.(cpu time)}}} 
+
+2. Performing R16NN-query...
+  2.1 Performing filter refinement in embedded space..
+    - Performing filter step.. done in {{{ 33 ms.(cpu time)}}}
+    - After filtering: 583 cnds, 776 refPoints, 29 refNodes.
+    - Early results: 0 of 583 candidates. Remaining candidates: 583.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement step..
+      - Self pruned: 12 of 583 candidates.. done in {{{ 36 ms.(cpu time)}}}
+    Refinement step done in {{{ 88 ms.(cpu time)}}}
+    - After refining: 465 cnds
+  Filter Refinement in embedded space done in {{{ 122 ms.(cpu time)}}} 
+
+  2.2 Refining candidates on graph..
+    - Mapping candidates from DB to graph.. done in {{{ 0 ms.(cpu time)}}}
+    - Performing refinement of 465 candidates on graph.. done in {{{ 4912 ms.(cpu time)}}}
+  Refinement of candidates on graph done in {{{ 4912 ms.(cpu time)}}}
+R16NN query performed in {{{ 5034 ms.(cpu time)}}} 
+

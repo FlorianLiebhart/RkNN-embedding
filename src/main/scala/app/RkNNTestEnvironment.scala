@@ -21,7 +21,7 @@ object RkNNTestEnvironment {
     try {
       runExperiments(
         short = true,
-        runs  = 2
+        runs  = 1
       )
     }
     catch {
@@ -40,7 +40,8 @@ object RkNNTestEnvironment {
     dryRun()
 
     experimentLogAppendln(s"--------------- Starting experiments.. -----------------\n")
-    
+    val runTimeRealTotal = RealTimeDiff()
+
     val naive     = Naive
     val eager     = Eager
     val embedding = Embedding
@@ -54,7 +55,8 @@ object RkNNTestEnvironment {
     runExperiment(Experiment.Connectivity  , algorithms,     runs, short, Seq(0.005, 0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.64, 1.0), Seq(0.02, 0.04, 0.08, 0.16))
     runExperiment(Experiment.K             , algorithms,     runs, short, Seq(1, 2, 4, 8, 16),                                       Seq(2, 4, 8))
 
-    experimentLogAppendln("------------- All experiments finished. ---------------\n")
+    runTimeRealTotal.end
+    experimentLogAppendln(s"------------- All experiments finished in ${runTimeRealTotal}. ---------------\n")
   }
 
 
@@ -69,7 +71,7 @@ object RkNNTestEnvironment {
 
     val setups: Seq[ExperimentSetup] =
       if(experiment == Experiment.Default)
-        Seq(ExperimentSetup.default)
+        Seq(ExperimentSetup.default(runs = runs))
       else values map { value =>
         ExperimentSetup.forExperiment(
           experiment = experiment,
