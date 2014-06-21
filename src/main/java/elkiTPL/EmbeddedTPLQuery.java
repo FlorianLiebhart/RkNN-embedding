@@ -10,7 +10,7 @@ import de.lmu.ifi.dbs.elki.distance.distancevalue.DoubleDistance;
 import de.lmu.ifi.dbs.elki.index.tree.AbstractNode;
 import de.lmu.ifi.dbs.elki.index.tree.spatial.*;
 import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar.RStarTreeNode;
-import util.Utils.ThreadCPUTimeDiff;
+import util.ThreadCPUTimeDiff;
 import util.Log;
 
 

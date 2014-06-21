@@ -8,7 +8,7 @@ import app.Experiment.Experiment
 
 
 object ExperimentSetup {
-  val defaultVertices       = 75000 
+  val defaultVertices       = 7500
   val defaultObjectDensity  = 0.05 // every 20th
   val defaultConnectivity   = 0.3
   val defaultK              = 3
@@ -21,7 +21,7 @@ object ExperimentSetup {
 
 /**
  *
- * @param vertices        // e.g. 1000        Max. 1 Million! (for no integeroverflow for max-edges)
+ * @param vertices        // e.g. 1000        Max. 1 Million! (for no integer overflow for max-edges)
  * @param objectDensity   // recom.: 0.05
  * @param connectivity    // recom.: 0.1
  * @param k               // e.g. 4

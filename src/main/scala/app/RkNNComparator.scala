@@ -1,16 +1,16 @@
 package app
 
-import graph.{SVertex, GraphGen, SGraph}
+import scala.util.Random
 
-import util.Utils._
+import de.lmu.ifi.dbs.elki.database.ids.DBID
+
+import algorithms.{Eager, Naive, TPL, Embedding}
+import graph.GraphGen._
+import graph.{SVertex, GraphGen, SGraph}
+import util.ThreadCPUTimeDiff
 import util.Log
 import util.XmlUtil
 
-import algorithms.Naive.rknns
-import algorithms.Eager.rknns
-import algorithms.{Eager, Naive, TPL, Embedding}
-import de.lmu.ifi.dbs.elki.database.ids.DBID
-import scala.util.Random
 
 object RkNNComparator {
 

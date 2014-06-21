@@ -18,7 +18,8 @@ import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar._
 
 import elkiTPL.{EmbeddedTPLQuery, Utils}
 import graph.{SVertex, SGraph}
-import util.Utils.{VD, ThreadCPUTimeDiff}
+import util.Utils.VD
+import util.ThreadCPUTimeDiff
 import util.Utils.makesure
 import util.Log
 

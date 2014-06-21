@@ -1,11 +1,9 @@
 package algorithms
 
-import org.scalatest.{FunSuite}
+import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers
 import util.Utils.VD
-import util.Utils.createExampleGraphEager
-import util.Utils.t2ToOrdered
-import graph.core.Vertex
+import graph.GraphGen.createExampleGraphEager
 
 /**
  * Created: 31.12.13, 10:45

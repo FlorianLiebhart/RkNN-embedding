@@ -3,7 +3,8 @@ package algorithms
 import graph.{SEdge, SGraph, SVertex}
 
 import scala.collection.mutable.PriorityQueue
-import util.Utils.{ThreadCPUTimeDiff, VD, t2ToOrdered}
+import util.Utils.{VD, t2ToOrdered}
+import util.ThreadCPUTimeDiff
 import util.Log
 
 case object Eager extends GraphRknn{

@@ -1,7 +1,8 @@
 package algorithms
 
 import graph.{SGraph, SVertex}
-import util.Utils.{ThreadCPUTimeDiff, VD}
+import util.Utils.VD
+import util.ThreadCPUTimeDiff
 import util.Log
 
 case object Naive extends GraphRknn{
