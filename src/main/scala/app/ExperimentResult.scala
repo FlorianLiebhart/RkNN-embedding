@@ -35,7 +35,11 @@ case class ExperimentResult(experiment                      : Experiment,
          |${
           for (v <- values)
             cellLengths :+= v.toString.size
-          (values mkString "#### ; ") + "####"
+          val valuesString = (values mkString "#### ; ")
+          if(!valuesString.isEmpty)
+            valuesString + "####"
+          else
+            valuesString
           }
          |
          |${algorithmResults.head.singleResults.zipWithIndex

@@ -98,7 +98,7 @@ object RkNNTestEnvironment {
 
       experimentResult.algorithmResultsForEachValue :+= algorithmResults
       experimentResult.write()
-      util.Log.experimentLog.append("\n")
+      Log.experimentLog.append("\n")
     }
 
     realRunTimeExperiment.end
