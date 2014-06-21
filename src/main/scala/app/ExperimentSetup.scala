@@ -38,15 +38,15 @@ case class ExperimentSetup(experiment         : Experiment       = Experiment.De
                            connectivity       : Double           = defaultConnectivity,
                            k                  : Int              = defaultK){
 
-  def apply(experiment: Experiment, experimentValue: Double) {
+  def apply(experiment: Experiment, experimentValue: Any) {
     experiment match {
       case Experiment.Default        => ExperimentSetup(experiment = experiment)
-      case Experiment.EntriesPerNode => ExperimentSetup(experiment = experiment, entriesPerNode      = experimentValue, experimentValue = experimentValue)
-      case Experiment.RefPoints      => ExperimentSetup(experiment = experiment, numRefPoints        = experimentValue, experimentValue = experimentValue)
-      case Experiment.Vertices       => ExperimentSetup(experiment = experiment, approximateVertices = experimentValue, experimentValue = experimentValue)
-      case Experiment.ObjectDensity  => ExperimentSetup(experiment = experiment, objectDensity       = experimentValue, experimentValue = experimentValue)
-      case Experiment.Connectivity   => ExperimentSetup(experiment = experiment, connectivity        = experimentValue, experimentValue = experimentValue)
-      case Experiment.K              => ExperimentSetup(experiment = experiment, k                   = experimentValue, experimentValue = experimentValue)
+      case Experiment.EntriesPerNode => ExperimentSetup(experiment = experiment, entriesPerNode      = experimentValue.asInstanceOf[Int], experimentValue = experimentValue)
+      case Experiment.RefPoints      => ExperimentSetup(experiment = experiment, numRefPoints        = experimentValue.asInstanceOf[Int], experimentValue = experimentValue)
+      case Experiment.Vertices       => ExperimentSetup(experiment = experiment, approximateVertices = experimentValue.asInstanceOf[Int], experimentValue = experimentValue)
+      case Experiment.ObjectDensity  => ExperimentSetup(experiment = experiment, objectDensity       = experimentValue.asInstanceOf[Double], experimentValue = experimentValue)
+      case Experiment.Connectivity   => ExperimentSetup(experiment = experiment, connectivity        = experimentValue.asInstanceOf[Double], experimentValue = experimentValue)
+      case Experiment.K              => ExperimentSetup(experiment = experiment, k                   = experimentValue.asInstanceOf[Int], experimentValue = experimentValue)
     }
   }
 

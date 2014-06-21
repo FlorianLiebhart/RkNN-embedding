@@ -37,8 +37,7 @@ object RkNNTestEnvironment {
   }
 
   def runExperiments(runs: Int, short: Boolean) {
-    if(!short)
-      dryRun()
+    dryRun()
 
     experimentLogAppendln(s"--------------- Starting experiments.. -----------------\n")
     
@@ -59,7 +58,7 @@ object RkNNTestEnvironment {
   }
 
 
-  def runExperiment(experiment: Experiment, algorithms: Seq[GraphRknn], runs: Int, short: Boolean, expValues: Seq[Double], shortExpValues: Seq[Double]) = {
+  def runExperiment(experiment: Experiment, algorithms: Seq[GraphRknn], runs: Int, short: Boolean, expValues: Seq[Any], shortExpValues: Seq[Any]) = {
     val values = if(short) shortExpValues else expValues
 
     experimentLogAppendln(s"Running experiment: $experiment  ($runs runs, ${if(short) "short"} ${if(experiment != Experiment.Default) s", ${experiment.valueName}: ${values mkString ", "}" else ""})")
@@ -124,7 +123,7 @@ object RkNNTestEnvironment {
     for(((sGraph, q), i) <- setup.sGraphsQIds zipWithIndex) {
       Stats.reset()
 
-      experimentLogAppend(s"$i ", false)
+      experimentLogAppend(s"${i+1} ", false)
 
       algorithm match {
         case Naive     => Naive.rknns(sGraph, q, setup.k)
@@ -190,6 +189,6 @@ object RkNNTestEnvironment {
     Embedding.rknns(sGraph, q, setup.k, relation, queryObject, rStarTree, dbidVertexIDMapping)
 
     realRunTimeDryRun.end
-    experimentLogAppendln(s" done in $realRunTimeDryRun.\n\n")
+    experimentLogAppendln(s" done in $realRunTimeDryRun.\n\n", false)
   }
 }
