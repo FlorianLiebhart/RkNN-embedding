@@ -17,8 +17,8 @@ object RkNNTestEnvironment {
 
     try {
       runExperiments(
-        short = true,
-        runs  = 2
+        short = false,
+        runs  = 5
       )
     }
     catch {
@@ -108,13 +108,14 @@ object RkNNTestEnvironment {
                           val queryObject                                = Embedding.getQueryObject(relation, q, dbidVertexIDMapping)
                           Embedding.rknns(sGraph, q, setup.k, relation, queryObject, rStarTree, dbidVertexIDMapping)
       }
+  Integer.MAX_VALUE
+      Int.MaxValue
+      nodesToRefine    :+= Log.nodesToVerify
+      nodesVisited     :+= Log.nodesVisited
+      runTimeRknnQuery :+= Log.runTimeRknnQuery
 
-      nodesToRefine    :+= (Log.nodesToVerify)   .toInt
-      nodesVisited     :+= (Log.nodesVisited)    .toInt
-      runTimeRknnQuery :+= (Log.runTimeRknnQuery).toInt
-
-      embeddingFilteredCandidates :+= (Log.embeddingFilteredCandidates).toInt
-      embeddingRunTimePreparation :+= (Log.embeddingRunTimePreparation).toInt
+      embeddingFilteredCandidates :+= Log.embeddingFilteredCandidates
+      embeddingRunTimePreparation :+= Log.embeddingRunTimePreparation
     }
 
     val singleResults = Seq[SingleResult](

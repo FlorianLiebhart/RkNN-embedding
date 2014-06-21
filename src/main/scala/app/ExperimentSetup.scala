@@ -8,11 +8,11 @@ import app.Experiment.Experiment
 
 
 object ExperimentSetup {
-  val defaultVertices       = 7500 // TODO CHANGE BACK to 75000!!!!
+  val defaultVertices       = 75000 
   val defaultObjectDensity  = 0.05 // every 20th
-  val defaultConnectivity   = 0.1
+  val defaultConnectivity   = 0.3
   val defaultK              = 3
-  val defaultNumRefPoints   = 6
+  val defaultNumRefPoints   = 15
   val defaultEntriesPerNode = 25
   val defaultRuns           = 5
 

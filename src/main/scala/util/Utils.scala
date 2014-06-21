@@ -26,11 +26,11 @@ object Log {
 
   var nodesToVerify                          = 0
   var nodesVisited                           = 0
-  var runTimeRknnQuery                       = 0.0
+  var runTimeRknnQuery                       = 0
 
   var embeddingFilteredCandidates            = 0
-  def setEmbeddingFilteredCandidates(x: Int) = embeddingFilteredCandidates = x
-  var embeddingRunTimePreparation            = 0.0
+  def setEmbeddingFilteredCandidates(x: Int) = { embeddingFilteredCandidates = x }
+  var embeddingRunTimePreparation            = 0
 
 
   val printLog      = new StringBuilder()
@@ -89,10 +89,9 @@ object Log {
   def resetStats() {
     nodesToVerify               = 0
     nodesVisited                = 0
+    runTimeRknnQuery            = 0
 
     embeddingFilteredCandidates = 0
-
-    runTimeRknnQuery            = 0
     embeddingRunTimePreparation = 0
   }
 
@@ -101,23 +100,20 @@ object Log {
 object Utils {
 
   case class ThreadCPUTimeDiff(){
-    val tStart: java.lang.Long = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime()
+    val tStart: java.lang.Long = ManagementFactory.getThreadMXBean.getCurrentThreadCpuTime / 1000000
+
     private var tEnd: java.lang.Long = null
 
-    def end   = tEnd = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime()
+    def end   = { tEnd = ManagementFactory.getThreadMXBean.getCurrentThreadCpuTime / 1000000 }
 
-    def diffMillis = (tEnd - tStart) / 1000000.0
-
-    def diffNanos  = tEnd - tStart
+    def diffMillis: Int = (tEnd - tStart).toInt
 
     override def toString: String = {
-      if(tStart == null)
-        throw new RuntimeException("Start time of TimeDiff not specified")
       if(tEnd == null)
         throw new RuntimeException("End time of TimeDiff not specified")
 
       else {
-         s"{{{ ${tEnd - tStart} ms. }}}"
+         s"{{{ $diffMillis ms. }}}"
        }
     }
   }
