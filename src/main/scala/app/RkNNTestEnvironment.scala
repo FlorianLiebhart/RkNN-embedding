@@ -5,7 +5,9 @@ import java.text.SimpleDateFormat
 
 import app.Experiment.Experiment
 import algorithms.{Eager, Naive, GraphRknn, Embedding}
-import util.{Log, Stats}
+import util.{RealTimeDiff, Log, Stats}
+import util.Log.{experimentLogAppend, experimentLogAppendln}
+import util.Utils.writeToFile
 
 object RkNNTestEnvironment {
 
@@ -14,11 +16,12 @@ object RkNNTestEnvironment {
     val date = new SimpleDateFormat("yyyy-MM-dd HH.mm.ss").format(new Date())
     Log.appendln(s"###### Start: $date ######\n")
     Log.writeFlushWriteLog(appendToFile = false)
+    writeToFile("log/experimentsLog.txt", false, "")
 
     try {
       runExperiments(
-        short = false,
-        runs  = 5
+        short = true,
+        runs  = 2
       )
     }
     catch {
@@ -34,9 +37,10 @@ object RkNNTestEnvironment {
   }
 
   def runExperiments(runs: Int, short: Boolean) {
-    dryRun()
+    if(!short)
+      dryRun()
 
-    println("--------------- Starting experiments. -----------------\n")
+    experimentLogAppendln(s"--------------- Starting experiments.. -----------------\n")
     
     val naive     = Naive
     val eager     = Eager
@@ -51,12 +55,18 @@ object RkNNTestEnvironment {
     runExperiment(Experiment.Connectivity  , algorithms,     runs, short, Seq(0.005, 0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.64, 1.0), Seq(0.02, 0.04, 0.08, 0.16))
     runExperiment(Experiment.K             , algorithms,     runs, short, Seq(1, 2, 4, 8, 16),                                       Seq(2, 4, 8))
 
-    println("\n------------- All experiments finished. ---------------\n")
+    experimentLogAppendln("------------- All experiments finished. ---------------\n")
   }
 
 
   def runExperiment(experiment: Experiment, algorithms: Seq[GraphRknn], runs: Int, short: Boolean, expValues: Seq[Double], shortExpValues: Seq[Double]) = {
     val values = if(short) shortExpValues else expValues
+
+    experimentLogAppendln(s"Running experiment: $experiment  ($runs runs, ${if(short) "short"} ${if(experiment != Experiment.Default) s", ${experiment.valueName}: ${values mkString ", "}" else ""})")
+    experimentLogAppend(s"Generating ${if(values.isEmpty) 1 else values.size} x $runs graphs..")
+
+    val realRunTimeExperiment = RealTimeDiff()
+    val realRunTimeGraphGen   = RealTimeDiff()
 
     val setups =
       if(values.isEmpty)
@@ -64,9 +74,13 @@ object RkNNTestEnvironment {
       else values map { value =>
       ExperimentSetup(
         experiment = experiment,
-        runs = runs
+        runs = runs,
+        experimentValue = value
       )
     }
+
+    realRunTimeGraphGen.end
+    experimentLogAppendln(s" done in $realRunTimeGraphGen\n", false)
 
     val experimentResult: ExperimentResult = new ExperimentResult(
       experiment                   = experiment,
@@ -77,11 +91,17 @@ object RkNNTestEnvironment {
     experimentResult.write()
 
     for(setup <- setups){
+      if(setup.experiment != Experiment.Default)
+        experimentLogAppendln(s"  ${setup.experiment.valueName}: ${setup.experimentValue}")
       val algorithmResults: Seq[AlgorithmResult] = algorithms map (runExperimentForAlgorithm(setup, _))
 
       experimentResult.algorithmResultsForEachValue :+= algorithmResults
       experimentResult.write()
+      util.Log.experimentLog.append("\n")
     }
+
+    realRunTimeExperiment.end
+    experimentLogAppendln(s"Finished experiment: $experiment in $realRunTimeExperiment.\n\n")
   }
 
 
@@ -98,8 +118,13 @@ object RkNNTestEnvironment {
     var embeddingFilteredCandidates = Seq[Int]()
     var embeddingRunTimePreparation = Seq[Int]()
 
-    for((sGraph, q) <- setup.sGraphsQIds) {
+    experimentLogAppend(s"  - ${algorithm.name}.. ")
+    val realRunTimeAlgorithm = RealTimeDiff()
+
+    for(((sGraph, q), i) <- setup.sGraphsQIds zipWithIndex) {
       Stats.reset()
+
+      experimentLogAppend(s"$i ", false)
 
       algorithm match {
         case Naive     => Naive.rknns(sGraph, q, setup.k)
@@ -108,6 +133,7 @@ object RkNNTestEnvironment {
                           val queryObject                                = Embedding.getQueryObject(relation, q, dbidVertexIDMapping)
                           Embedding.rknns(sGraph, q, setup.k, relation, queryObject, rStarTree, dbidVertexIDMapping)
       }
+
       nodesToRefine    :+= Stats.nodesToVerify
       nodesVisited     :+= Stats.nodesVisited
       runTimeRknnQuery :+= Stats.runTimeRknnQuery
@@ -115,6 +141,10 @@ object RkNNTestEnvironment {
       embeddingFilteredCandidates :+= Stats.embeddingFilteredCandidates
       embeddingRunTimePreparation :+= Stats.embeddingRunTimePreparation
     }
+
+    realRunTimeAlgorithm.end
+    experimentLogAppendln(s" done in $realRunTimeAlgorithm", false)
+
 
     val singleResults = Seq[SingleResult](
       new SingleResult("Candidates to refine on graph"      , nodesToRefine),
@@ -137,7 +167,8 @@ object RkNNTestEnvironment {
    *  Code-Organization: Perform all algorithms prior running the tests, so that the JVM can organize code.
    */
   def dryRun() = {
-    println("Code organization phase: Performing dry run (running all algorithms once)")
+    val realRunTimeDryRun = new RealTimeDiff()
+    experimentLogAppend("Code organization phase: Performing dry run (running all algorithms once)..")
 
     val setup = new ExperimentSetup(
       experiment          = null,
@@ -158,6 +189,7 @@ object RkNNTestEnvironment {
     val queryObject                                = Embedding.getQueryObject(relation, q, dbidVertexIDMapping)
     Embedding.rknns(sGraph, q, setup.k, relation, queryObject, rStarTree, dbidVertexIDMapping)
 
-    println("Dry run completed. Now starting experiments.\n\n")
+    realRunTimeDryRun.end
+    experimentLogAppendln(s" done in $realRunTimeDryRun.\n\n")
   }
 }

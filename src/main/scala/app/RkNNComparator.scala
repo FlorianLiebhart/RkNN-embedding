@@ -7,7 +7,7 @@ import de.lmu.ifi.dbs.elki.database.ids.DBID
 import algorithms.{Eager, Naive, TPL, Embedding}
 import graph.GraphGen._
 import graph.{SVertex, GraphGen, SGraph}
-import util.ThreadCPUTimeDiff
+import util.CPUTimeDiff
 import util.Log
 import util.XmlUtil
 
@@ -164,7 +164,7 @@ object RkNNComparator {
 
     Log.appendln(s"-----------Naive R${k}NN for query point ${q.id}:-----------\n").printFlush
 
-    val timeNaiveRkNN  = ThreadCPUTimeDiff()
+    val timeNaiveRkNN  = CPUTimeDiff()
 
     val rknns          = Naive.rknns(sGraph, q, k)
 
@@ -181,7 +181,7 @@ object RkNNComparator {
 
     Log.appendln(s"-----------Eager R${k}NN for query point ${q.id}:-----------\n")
 
-    val timeEagerRkNN  = ThreadCPUTimeDiff()
+    val timeEagerRkNN  = CPUTimeDiff()
 
     val rknns          = Eager.rknns(sGraph, q, k)
 
@@ -199,7 +199,7 @@ object RkNNComparator {
     Log.appendln(s"-----------Embedded R${k}NN for query point ${q.id}:-----------\n")
     Log.printFlush
 
-    val timeEmbeddedRkNN = ThreadCPUTimeDiff()
+    val timeEmbeddedRkNN = CPUTimeDiff()
 
     val (relation, rStarTree, dbidVertexIDMapping) = Embedding.createDatabaseWithIndex(sGraph, -1, rStarTreePageSize, refPoints)
     val queryObject                                = Embedding.getQueryObject(relation, q, dbidVertexIDMapping)
@@ -219,7 +219,7 @@ object RkNNComparator {
     Log.appendln("-----------TPL:-----------")
     Log.appendln(s"R${k}NNs for query point ${q.id}")
 
-    val timeTPLRkNN                          = ThreadCPUTimeDiff()
+    val timeTPLRkNN                          = CPUTimeDiff()
 
     val rkNNsTPL: Seq[(DBID, Double)] = TPL.tplRkNNs(sGraph, q, k, refPoints, rStarTreePageSize, withClipping)
 

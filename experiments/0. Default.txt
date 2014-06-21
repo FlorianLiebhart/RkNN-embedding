@@ -1,0 +1,71 @@
+
+---------------------------------------------------------------------------
+0. Experiment: Default run. ()
+---------------------------------------------------------------------------
+
+Connectivity:            0.3
+Entries per R*Tree node: 25
+k:                       3
+Reference points:        15
+Vertices:                75000
+Object Density:          0.05
+
+
+Naive (5 runs)
+-----------------
+
+Default:
+          
+
+Candidates to refine on graph
+3727, 3727, 3727, 3727, 3727                                  
+3727
+
+Nodes visited
+245669, 246213, 244649, 243842, 242007                                
+244476          
+
+Runtime thread CPU rknn query (ms.)
+2327, 2230, 2100, 2033, 2048                                  
+2147                     
+
+
+Eager (5 runs)
+-----------------
+
+Default:
+                                    
+
+Candidates to refine on graph
+30, 34, 14, 41, 9           
+25                                  
+
+Nodes visited
+2990, 5775, 2240, 7354, 712                     
+3814                                    
+
+Runtime thread CPU rknn query (ms.)
+24, 48, 17, 65, 4               
+31                                   
+
+
+Embedding (5 runs)
+-----------------
+
+Default:
+     
+
+Candidates to refine on graph
+405, 316, 653, 598, 356                                 
+465               
+
+Nodes visited
+26454, 18847, 42497, 38544, 23329                                   
+29934               
+
+Runtime thread CPU rknn query (ms.)
+422, 254, 577, 515, 287                                   
+411          
+
+Candidates left after filter
+511, 447, 852, 796, 513                                  

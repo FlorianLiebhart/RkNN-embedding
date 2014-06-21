@@ -2,7 +2,7 @@ package algorithms
 
 import graph.{SGraph, SVertex}
 import util.Utils.VD
-import util.ThreadCPUTimeDiff
+import util.CPUTimeDiff
 import util.Stats
 
 case object Naive extends GraphRknn{
@@ -16,7 +16,7 @@ case object Naive extends GraphRknn{
    * @return Sorted rknns
    */
   def rknns(sGraph: SGraph, q: SVertex, k: Int): Seq[VD] = {
-    val timeTotalRknn = ThreadCPUTimeDiff()
+    val timeTotalRknn = CPUTimeDiff()
 
     val allGraphNodes            = sGraph.getAllVertices.toIndexedSeq
     val allGraphNodesWithObjects = allGraphNodes filter (_.containsObject) filterNot (_ equals q)

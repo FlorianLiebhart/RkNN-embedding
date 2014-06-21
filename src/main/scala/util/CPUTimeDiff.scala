@@ -2,7 +2,7 @@ package util
 
 import java.lang.management.ManagementFactory
 
-case class ThreadCPUTimeDiff(){
+case class CPUTimeDiff(){
     val tStart: java.lang.Long = ManagementFactory.getThreadMXBean.getCurrentThreadCpuTime / 1000000
 
     private var tEnd: java.lang.Long = null
@@ -13,10 +13,10 @@ case class ThreadCPUTimeDiff(){
 
     override def toString: String = {
       if(tEnd == null)
-        throw new RuntimeException("End time of TimeDiff not specified")
+        throw new RuntimeException("End time not specified!")
 
       else {
-         s"{{{ $diffMillis ms. }}}"
+         s"{{{ $diffMillis ms.(cpu time)}}}"
        }
     }
   }

@@ -18,7 +18,7 @@ import static elkiTPL.PruningHeuristic.vmMaxDistMinimumNorm;
 import static elkiTPL.PruningHeuristic.vmMinDistanceMaximumNorm;
 
 import util.Stats;
-import util.ThreadCPUTimeDiff;
+import util.CPUTimeDiff;
 import util.Log;
 
 
@@ -48,7 +48,7 @@ public class EmbeddedTPLQuery {
   public ArrayList<DBID> filterRefinement(DoubleVector q, int k) {
     Log.append("    - Performing filter step..");
     Log.printFlush();
-    ThreadCPUTimeDiff timeFilterStep = new ThreadCPUTimeDiff();
+    CPUTimeDiff timeFilterStep = new CPUTimeDiff();
 
     ArrayList<ArrayList<?>> filtered = filter(q, k);
 
@@ -64,7 +64,7 @@ public class EmbeddedTPLQuery {
 
 
     // A candidate p is an early result, if for k other candidates p': MaxDist(q, p) <= MinDist(p', q)
-    ThreadCPUTimeDiff timeEarlyResult = new ThreadCPUTimeDiff();
+    CPUTimeDiff timeEarlyResult = new CPUTimeDiff();
 
     SpatialPointLeafEntry kthCandidate = candidateSet.get( (k > candidateSet.size()) ? candidateSet.size() - 1 : k-1 );
     double minDistKthCndQ              = PruningHeuristic.vvMinDistanceMaximumNorm(q, kthCandidate);
@@ -89,7 +89,7 @@ public class EmbeddedTPLQuery {
 
     Log.appendln("    - Performing refinement step..");
     Log.printFlush();
-    ThreadCPUTimeDiff timeRefinementStep = new ThreadCPUTimeDiff();
+    CPUTimeDiff timeRefinementStep = new CPUTimeDiff();
 
     ArrayList<DBID> refined = refine(q, k, cndSetEarlyResultsRemoved, refinementSetPoints, refinementSetNodes);
 
@@ -215,7 +215,7 @@ public class EmbeddedTPLQuery {
     /*
      * SELF PRUNING of candidates
      */
-    ThreadCPUTimeDiff timeSelfPruning = new ThreadCPUTimeDiff();
+    CPUTimeDiff timeSelfPruning = new CPUTimeDiff();
 
     // todo (maybe small optimization): Remove init of toVisit(p) from here, do it on demand in refinement,
     // for each point p in candidateSet

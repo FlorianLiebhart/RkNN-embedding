@@ -19,7 +19,7 @@ import de.lmu.ifi.dbs.elki.index.tree.spatial.rstarvariants.rstar._
 import elkiTPL.{EmbeddedTPLQuery, Utils}
 import graph.{SVertex, SGraph}
 import util.Utils.VD
-import util.ThreadCPUTimeDiff
+import util.CPUTimeDiff
 import util.Utils.makesure
 import util.{Log, Stats}
 
@@ -45,13 +45,13 @@ case object Embedding extends GraphRknn{
     val rTreePath        = "tplSimulation/rTree.csv"
 
     Log.appendln(s"1. Start preparation phase (create: embedding, DB, R*Tree, query object)")
-    val timeAlgorithmPreparation = ThreadCPUTimeDiff()
+    val timeAlgorithmPreparation = CPUTimeDiff()
 
     /*
      *    1.1 Create embedding
      */
     Log.append(s"  - Creating refpoints and embedding..")
-    val timeCreateEmbedding = ThreadCPUTimeDiff()
+    val timeCreateEmbedding = CPUTimeDiff()
 
     val refPoints: Seq[SVertex] =
       if(numRefPoints == -1)
@@ -72,7 +72,7 @@ case object Embedding extends GraphRknn{
      *    1.2 Write CSV + Create memory database
      */
     Log.append(s"  - Creating CSV file..")
-    val timeCreateCSV = ThreadCPUTimeDiff()
+    val timeCreateCSV = CPUTimeDiff()
 
     val dbidVertexIDMapping: MutableHashMap[String, SVertex] = writeRTreeCSVFile(refPointDistancesContainingObjects, rTreePath)
 
@@ -80,7 +80,7 @@ case object Embedding extends GraphRknn{
     Log.appendln(s" done in $timeCreateCSV")
 
     Log.append(s"  - Creating file based Database..")
-    val timeCreateDB = ThreadCPUTimeDiff()
+    val timeCreateDB = CPUTimeDiff()
 
     val db      : List[Database]         = Utils.createDatabase(rTreePath).toList
     val relation: Relation[DoubleVector] = db(0).getRelation(TypeUtil.NUMBER_VECTOR_FIELD)
@@ -94,7 +94,7 @@ case object Embedding extends GraphRknn{
      *    1.3 Create RStar tree index
      */
     Log.append(s"  - Creating R*Tree index (entries: " + relation.size() + ", page size: " + rStarTreePageSize + " bytes)..")
-    val timeCreateRStarTree = ThreadCPUTimeDiff()
+    val timeCreateRStarTree = CPUTimeDiff()
 
     val rStarTree: RStarTreeIndex[DoubleVector] = Utils.createRStarTree(relation, rStarTreePageSize)
 
@@ -141,13 +141,13 @@ case object Embedding extends GraphRknn{
     makesure(q.containsObject, "q must contain an object!")
 
     Log.appendln(s"2. Performing R${k}NN-query...")
-    val timeTotalRknn = ThreadCPUTimeDiff()
+    val timeTotalRknn = CPUTimeDiff()
 
     /*
      *    2.1 Filter-refinement in embedded space
      */
     Log.appendln(s"  2.1 Performing filter refinement in embedded space..")
-    val timeFilterRefEmbedding = ThreadCPUTimeDiff()
+    val timeFilterRefEmbedding = CPUTimeDiff()
 
     val embeddingTPLResultDBIDs: Seq[DBID] = new EmbeddedTPLQuery(rStarTree, relation).filterRefinement(queryObject, k)
 
@@ -158,12 +158,12 @@ case object Embedding extends GraphRknn{
      *    2.2 Refining the TPL rknn results on graph
      */
     Log.appendln(s"  2.2 Refining candidates on graph..")
-    val timeRefinementOnGraph = ThreadCPUTimeDiff()
+    val timeRefinementOnGraph = CPUTimeDiff()
     /*
      *        2.2.1 Mapping embedded candidates from DB to Graph
      */
     Log.append(s"    - Mapping candidates from DB to graph..")
-    val timeMappingFromDBtoGraph = ThreadCPUTimeDiff()
+    val timeMappingFromDBtoGraph = CPUTimeDiff()
 
     val filterRefinementResultsEmbedding = embeddingTPLResultDBIDs map { dbid =>
       dbidVertexIDMapping.get(DBIDUtil.deref(dbid).toString).get
@@ -179,7 +179,7 @@ case object Embedding extends GraphRknn{
     val candidatesToRefineOnGraph = filterRefinementResultsEmbedding.size
     Stats.nodesToVerify             = candidatesToRefineOnGraph
     Log.append(s"    - Performing refinement of ${candidatesToRefineOnGraph} candidates on graph..")
-    val timePerformRefinementOnGraph = ThreadCPUTimeDiff()
+    val timePerformRefinementOnGraph = CPUTimeDiff()
 
     val allkNNs = filterRefinementResultsEmbedding map ( refResult =>
       (refResult, Eager.rangeNN(sGraph, refResult, k, Double.PositiveInfinity))

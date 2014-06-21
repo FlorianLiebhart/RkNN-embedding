@@ -29,6 +29,7 @@ object ExperimentSetup {
  * @param entriesPerNode  // recom.: 25
  */
 case class ExperimentSetup(experiment         : Experiment       = Experiment.Default,
+                           experimentValue    : Any              = null,
                            entriesPerNode     : Int              = defaultEntriesPerNode,
                            runs               : Int              = defaultRuns,
                            numRefPoints       : Int              = defaultNumRefPoints,
@@ -40,12 +41,12 @@ case class ExperimentSetup(experiment         : Experiment       = Experiment.De
   def apply(experiment: Experiment, experimentValue: Double) {
     experiment match {
       case Experiment.Default        => ExperimentSetup(experiment = experiment)
-      case Experiment.EntriesPerNode => ExperimentSetup(experiment = experiment, entriesPerNode      = experimentValue)
-      case Experiment.RefPoints      => ExperimentSetup(experiment = experiment, numRefPoints        = experimentValue)
-      case Experiment.Vertices       => ExperimentSetup(experiment = experiment, approximateVertices = experimentValue)
-      case Experiment.ObjectDensity  => ExperimentSetup(experiment = experiment, objectDensity       = experimentValue)
-      case Experiment.Connectivity   => ExperimentSetup(experiment = experiment, connectivity        = experimentValue)
-      case Experiment.K              => ExperimentSetup(experiment = experiment, k                   = experimentValue)
+      case Experiment.EntriesPerNode => ExperimentSetup(experiment = experiment, entriesPerNode      = experimentValue, experimentValue = experimentValue)
+      case Experiment.RefPoints      => ExperimentSetup(experiment = experiment, numRefPoints        = experimentValue, experimentValue = experimentValue)
+      case Experiment.Vertices       => ExperimentSetup(experiment = experiment, approximateVertices = experimentValue, experimentValue = experimentValue)
+      case Experiment.ObjectDensity  => ExperimentSetup(experiment = experiment, objectDensity       = experimentValue, experimentValue = experimentValue)
+      case Experiment.Connectivity   => ExperimentSetup(experiment = experiment, connectivity        = experimentValue, experimentValue = experimentValue)
+      case Experiment.K              => ExperimentSetup(experiment = experiment, k                   = experimentValue, experimentValue = experimentValue)
     }
   }
 

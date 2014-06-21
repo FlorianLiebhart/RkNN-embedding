@@ -4,7 +4,7 @@ import scala.collection.mutable.PriorityQueue
 
 import graph.{SGraph, SVertex}
 import util.Utils.{VD, t2ToOrdered}
-import util.ThreadCPUTimeDiff
+import util.CPUTimeDiff
 import util.Stats
 
 case object Eager extends GraphRknn{
@@ -12,7 +12,7 @@ case object Eager extends GraphRknn{
   override val name = "Eager"
 
   def rknns(sGraph: SGraph, q: SVertex, k: Int): Seq[VD] = {
-    val timeTotalRknn = ThreadCPUTimeDiff()
+    val timeTotalRknn = CPUTimeDiff()
 
     val h = new PriorityQueue[VD]
     h.enqueue((q, 0))

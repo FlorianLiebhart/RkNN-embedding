@@ -4,7 +4,7 @@ import scala.util.Random
 import scala.collection.JavaConversions._
 
 import util.Utils.makesure
-import util.ThreadCPUTimeDiff
+import util.CPUTimeDiff
 import util.GuiConstants
 import util.Log
 import graph.core.Graph
@@ -15,7 +15,7 @@ object GraphGen {
     checkPreconditions(numberOfVertices,numberOfEdges,numberOfObjects)
 
     Log.appendln("Generating graph with " + numberOfVertices + " nodes, " + numberOfEdges + " edges, " + numberOfObjects + " objects..." )
-    val timeGenerateGraph = ThreadCPUTimeDiff()
+    val timeGenerateGraph = CPUTimeDiff()
 
     GraphGenerator.getInstance().generateProbabilisticGraph(numberOfVertices, numberOfEdges, 0, numberOfObjects, weightOne)
 
@@ -29,7 +29,7 @@ object GraphGen {
     checkPreconditions(numberOfVertices, numberOfEdges, numberOfObjects)
 
     Log.appendln("Generating graph with " + numberOfVertices + " nodes, " + numberOfEdges + " edges, " + numberOfObjects + " objects..." )
-    val timeGenerateGraph = ThreadCPUTimeDiff()
+    val timeGenerateGraph = CPUTimeDiff()
 
 
     val sGraph = new SGraph
@@ -38,7 +38,7 @@ object GraphGen {
      * create vertices
      */
     Log.append(s"  - Creating $numberOfVertices vertices...")
-    val timeCreateVertices = ThreadCPUTimeDiff()
+    val timeCreateVertices = CPUTimeDiff()
 
     (0 to numberOfVertices - 1) map { id => sGraph.addVertex(new SVertex(id)) }
 
@@ -48,7 +48,7 @@ object GraphGen {
      * create random objects
      */
     Log.append(s"  - Creating $numberOfObjects random objects...")
-    val timeCreateObjects = ThreadCPUTimeDiff()
+    val timeCreateObjects = CPUTimeDiff()
 
     val shuffledVertices = new Random(System.currentTimeMillis).shuffle(sGraph.getAllVertices)
     val objectIds        = (0 to numberOfObjects - 1)
@@ -61,7 +61,7 @@ object GraphGen {
      * create node positions
      */
     Log.append(s"  - Creating $numberOfVertices node positions...")
-    val timeCreateNodePositions = ThreadCPUTimeDiff()
+    val timeCreateNodePositions = CPUTimeDiff()
 
     val nrOfRows = setNodesPosition(sGraph)
 
@@ -72,7 +72,7 @@ object GraphGen {
      * create random edges
      */
     Log.append(s"  - Creating $numberOfEdges random edges...")
-    val timeCreateEdges = ThreadCPUTimeDiff()
+    val timeCreateEdges = CPUTimeDiff()
 
     // create edges
     createRandomEdges(sGraph, numberOfEdges, nrOfRows)
@@ -190,7 +190,7 @@ object GraphGen {
   def convertScalaToJavaGraph(sGraph: SGraph): graph.core.Graph = {
     Log.append("\nConverting SGraph to Java graph with " + sGraph.getAllVertices.size + " nodes, " + sGraph.getAllEdges.size + " edges..")
 
-    val timeConvertScalaToJavaGraph = ThreadCPUTimeDiff()
+    val timeConvertScalaToJavaGraph = CPUTimeDiff()
 
     val jGraph = new graph.core.Graph()
     sGraph.getAllVertices.map(v => jGraph.addVertex(convertScalaToJavaVertex(v)))
@@ -204,7 +204,7 @@ object GraphGen {
 
   def convertJavaToScalaGraph(jGraph: Graph): SGraph = {
     Log.append("Converting Java graph to SGraph with " + jGraph.getAllVertices.size + " nodes, " + jGraph.getAllEdges.size + " edges..")
-    val timeConvertJavaToScalaGraph = ThreadCPUTimeDiff()
+    val timeConvertJavaToScalaGraph = CPUTimeDiff()
 
     val sGraph = new SGraph()
     jGraph.getAllVertices.map(v => sGraph.addVertex(convertJavaToScalaVertex(v)))
