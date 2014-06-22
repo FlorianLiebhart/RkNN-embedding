@@ -20,8 +20,8 @@ object RkNNTestEnvironment {
 
     try {
       runExperiments(
-        short = true,
-        runs  = 1
+        short = false,
+        runs  = 5
       )
     }
     catch {
@@ -47,13 +47,19 @@ object RkNNTestEnvironment {
     val embedding = Embedding
     val algorithms = Seq(naive, eager, embedding)
 
-    runExperiment(Experiment.Default       , algorithms,     runs, short, Seq(),                                                     Seq())
-    runExperiment(Experiment.EntriesPerNode, Seq(embedding), runs, short, Seq(5, 10, 15, 20, 25, 30, 35, 40, 45, 50),                Seq(5, 10, 15, 20))
-    runExperiment(Experiment.RefPoints     , Seq(embedding), runs, short, Seq(5, 10, 15, 20, 25, 30, 35, 40, 45, 50),                Seq(5, 10, 15, 20))
-    runExperiment(Experiment.Vertices      , algorithms,     runs, short, Seq(10, 100, 1000, 10000, 50000, 100000, 200000, 500000),  Seq(10,100,1000,10000))
-    runExperiment(Experiment.ObjectDensity , algorithms,     runs, short, Seq(0.005, 0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.64, 1.0), Seq(0.02, 0.04, 0.08, 0.16))
-    runExperiment(Experiment.Connectivity  , algorithms,     runs, short, Seq(0.005, 0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.64, 1.0), Seq(0.02, 0.04, 0.08, 0.16))
-    runExperiment(Experiment.K             , algorithms,     runs, short, Seq(1, 2, 4, 8, 16),                                       Seq(2, 4, 8))
+    runExperiment(Experiment.Default       , algorithms,     runs, short, Seq(),                                                                    Seq())
+//    runExperiment(Experiment.EntriesPerNode, Seq(embedding), runs, short, Seq(5, 10, 15, 20, 25, 30, 35, 40, 45, 50),                               Seq(5, 10, 15, 20))
+    runExperiment(Experiment.EntriesPerNode, Seq(embedding), runs, short, Seq(20, 40, 60, 80, 100, 120, 140, 160),                                  Seq(5, 10, 15, 20))
+//    runExperiment(Experiment.Connectivity  , algorithms,     runs, short, Seq(0.005, 0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.64, 1.0),                Seq(0.02, 0.04, 0.08, 0.16))
+    runExperiment(Experiment.Connectivity  , algorithms,     runs, short, Seq(0.001, 0.005, 0.01, 0.02, 0.04, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0),  Seq(0.02, 0.04, 0.08, 0.16))
+//    runExperiment(Experiment.Vertices      , algorithms,     runs, short, Seq(10, 100, 1000, 10000, 50000, 100000, 200000, 500000),                 Seq(10,100,1000,10000))
+    runExperiment(Experiment.Vertices      , algorithms,     runs, short, Seq(10, 100, 1000, 10000, 50000, 100000, 200000, 350000, 500000),         Seq(10,100,1000,10000))
+//    runExperiment(Experiment.ObjectDensity , algorithms,     runs, short, Seq(0.005, 0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.64, 1.0),                Seq(0.02, 0.04, 0.08, 0.16))
+    runExperiment(Experiment.ObjectDensity , algorithms,     runs, short, Seq(0.001, 0.005, 0.01, 0.02, 0.04, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0),  Seq(0.02, 0.04, 0.08, 0.16))
+//    runExperiment(Experiment.K             , algorithms,     runs, short, Seq(1, 2, 4, 8, 16),                                                      Seq(2, 4, 8))
+    runExperiment(Experiment.K             , algorithms,     runs, short, Seq(1, 2, 4, 8, 16, 20),                                                  Seq(2, 4, 8))
+//    runExperiment(Experiment.RefPoints     , Seq(embedding), runs, short, Seq(5, 10, 15, 20, 25, 30, 35, 40, 45, 50),                               Seq(5, 10, 15, 20))
+    runExperiment(Experiment.RefPoints     , Seq(embedding), runs, short, Seq(20, 40, 60, 80, 100, 130, 160),                                       Seq(5, 10, 15, 20))
 
     runTimeRealTotal.end
     experimentLogAppendln(s"------------- All experiments finished in ${runTimeRealTotal}. ---------------\n")
@@ -116,8 +122,10 @@ object RkNNTestEnvironment {
     var nodesVisited       = Seq[Int]()
     var runTimeRknnQuery   = Seq[Int]()
 
-    var embeddingFilteredCandidates = Seq[Int]()
-    var embeddingRunTimePreparation = Seq[Int]()
+    var embeddingFilteredCandidates        = Seq[Int]()
+    var embeddingRunTimePreparation        = Seq[Int]()
+    var embeddingRunTimeFilterRefEmbedding = Seq[Int]()
+    var embeddingRunTimeRefinementOnGraph  = Seq[Int]()
 
     experimentLogAppend(s"  - ${algorithm.name}.. ")
     val realRunTimeAlgorithm = RealTimeDiff()
@@ -139,8 +147,10 @@ object RkNNTestEnvironment {
       nodesVisited     :+= Stats.nodesVisited
       runTimeRknnQuery :+= Stats.runTimeRknnQuery
 
-      embeddingFilteredCandidates :+= Stats.embeddingFilteredCandidates
-      embeddingRunTimePreparation :+= Stats.embeddingRunTimePreparation
+      embeddingFilteredCandidates        :+= Stats.embeddingFilteredCandidates
+      embeddingRunTimePreparation        :+= Stats.embeddingRunTimePreparation
+      embeddingRunTimeFilterRefEmbedding :+= Stats.embeddingRunTimeFilterRefEmbedding
+      embeddingRunTimeRefinementOnGraph  :+= Stats.embeddingRunTimeRefinementOnGraph
     }
 
     realRunTimeAlgorithm.end
@@ -154,8 +164,10 @@ object RkNNTestEnvironment {
     ) ++ (
       algorithm match {
         case Embedding => Seq[SingleResult](
-                            new SingleResult("Candidates left after filter"       , embeddingFilteredCandidates),
-                            new SingleResult("Runtime embedding preparation (ms.)", embeddingRunTimePreparation)
+                            new SingleResult("Candidates left after filter"       ,       embeddingFilteredCandidates),
+                            new SingleResult("Runtime embedding preparation (ms.)",       embeddingRunTimePreparation),
+                            new SingleResult("Runtime filter refinement on R*Tree (ms.)", embeddingRunTimeFilterRefEmbedding),
+                            new SingleResult("Runtime refinement on graph (ms.)",         embeddingRunTimeRefinementOnGraph)
                           )
         case _         => Nil
       }

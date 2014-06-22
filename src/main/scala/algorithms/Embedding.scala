@@ -152,13 +152,13 @@ case object Embedding extends GraphRknn{
     val embeddingTPLResultDBIDs: Seq[DBID] = new EmbeddedTPLQuery(rStarTree, relation).filterRefinement(queryObject, k)
 
     timeFilterRefEmbedding.end
+    Stats.embeddingRunTimeFilterRefEmbedding = timeFilterRefEmbedding.diffMillis
     Log.appendln(s"  Filter Refinement in embedded space done in $timeFilterRefEmbedding \n").printFlush
 
     /*
      *    2.2 Refining the TPL rknn results on graph
      */
     Log.appendln(s"  2.2 Refining candidates on graph..")
-    val timeRefinementOnGraph = CPUTimeDiff()
     /*
      *        2.2.1 Mapping embedded candidates from DB to Graph
      */
@@ -177,9 +177,9 @@ case object Embedding extends GraphRknn{
      *        2.2.2 Refinement on graph
      */
     val candidatesToRefineOnGraph = filterRefinementResultsEmbedding.size
-    Stats.nodesToVerify             = candidatesToRefineOnGraph
+    Stats.nodesToVerify            = candidatesToRefineOnGraph
     Log.append(s"    - Performing refinement of ${candidatesToRefineOnGraph} candidates on graph..")
-    val timePerformRefinementOnGraph = CPUTimeDiff()
+    val timeRefinementOnGraph = CPUTimeDiff()
 
     val allkNNs = filterRefinementResultsEmbedding map ( refResult =>
       (refResult, Eager.rangeNN(sGraph, refResult, k, Double.PositiveInfinity))
@@ -189,11 +189,9 @@ case object Embedding extends GraphRknn{
       case (v, knns) if (knns map( _._1 ) contains q) => new VD(v, knns.find(y => (y._1 equals q)).get._2)
     }
 
-    timePerformRefinementOnGraph.end
-    Log.appendln(s" done in $timePerformRefinementOnGraph")
-
     timeRefinementOnGraph.end
-    Log.appendln(s"  Refinement of candidates on graph done in $timeRefinementOnGraph")
+    Stats.embeddingRunTimeRefinementOnGraph = timeRefinementOnGraph.diffMillis
+    Log.appendln(s" done in $timeRefinementOnGraph")
 
     timeTotalRknn.end
     Stats.runTimeRknnQuery = timeTotalRknn.diffMillis

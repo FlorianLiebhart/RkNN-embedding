@@ -12,13 +12,17 @@ object Stats {
   var embeddingFilteredCandidates            = 0
   def setEmbeddingFilteredCandidates(x: Int) = { embeddingFilteredCandidates = x }
   var embeddingRunTimePreparation            = 0
+  var embeddingRunTimeFilterRefEmbedding     = 0
+  var embeddingRunTimeRefinementOnGraph      = 0
 
   def reset() {
-    nodesToVerify               = 0
-    nodesVisited                = 0
-    runTimeRknnQuery            = 0
+    nodesToVerify                          = 0
+    nodesVisited                           = 0
+    runTimeRknnQuery                       = 0
 
-    embeddingFilteredCandidates = 0
-    embeddingRunTimePreparation = 0
+    embeddingFilteredCandidates            = 0
+    embeddingRunTimePreparation            = 0
+    embeddingRunTimeFilterRefEmbedding     = 0
+    embeddingRunTimeRefinementOnGraph      = 0
   }
 }
