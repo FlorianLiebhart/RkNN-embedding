@@ -53,7 +53,7 @@ object RkNNTestEnvironment {
 //    runExperiment(Experiment.Connectivity  , algorithms,     runs, short, Seq(0.005, 0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.64, 1.0),                Seq(0.02, 0.04, 0.08, 0.16))
     runExperiment(Experiment.Connectivity  , algorithms,     runs, short, Seq(0.001, 0.005, 0.01, 0.02, 0.04, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0),  Seq(0.02, 0.04, 0.08, 0.16))
 //    runExperiment(Experiment.Vertices      , algorithms,     runs, short, Seq(10, 100, 1000, 10000, 50000, 100000, 200000, 500000),                 Seq(10,100,1000,10000))
-    runExperiment(Experiment.Vertices      , algorithms,     runs, short, Seq(10, 100, 1000, 10000, 50000, 100000, 200000, 350000, 500000),         Seq(10,100,1000,10000))
+    runExperiment(Experiment.Vertices      , algorithms,     runs, short, Seq(10, 100, 1000, 10000, 50000, 100000, 200000, 350000),         Seq(10,100,1000,10000))
 //    runExperiment(Experiment.ObjectDensity , algorithms,     runs, short, Seq(0.005, 0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.64, 1.0),                Seq(0.02, 0.04, 0.08, 0.16))
     runExperiment(Experiment.ObjectDensity , algorithms,     runs, short, Seq(0.001, 0.005, 0.01, 0.02, 0.04, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0),  Seq(0.02, 0.04, 0.08, 0.16))
 //    runExperiment(Experiment.K             , algorithms,     runs, short, Seq(1, 2, 4, 8, 16),                                                      Seq(2, 4, 8))

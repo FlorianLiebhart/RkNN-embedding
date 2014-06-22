@@ -1,0 +1,84 @@
+
+---------------------------------------------------------------------------
+0. Experiment: Default run. ()
+---------------------------------------------------------------------------
+
+Connectivity:            0.3
+Entries per R*Tree node: 25
+k:                       3
+Reference points:        15
+Vertices:                50000
+Object Density:          0.05
+
+
+Naive (5 runs)
+-----------------
+
+Default:
+
+
+Candidates to refine on graph
+2,487, 2,487, 2,487, 2,487, 2,486          
+2,486                                      
+
+Nodes visited
+164,623, 166,771, 160,471, 158,140, 160,948
+162,190                                    
+
+Runtime thread CPU rknn query (ms.)
+1,479, 1,465, 1,383, 1,322, 1,306          
+1,391                                      
+
+
+Eager (5 runs)
+-----------------
+
+Default:
+
+
+Candidates to refine on graph
+26, 41, 32, 6, 25                          
+26                                         
+
+Nodes visited
+2,943, 7,522, 6,737, 425, 4,770            
+4,479                                      
+
+Runtime thread CPU rknn query (ms.)
+22, 63, 54, 3, 37                          
+35                                         
+
+
+Embedding (5 runs)
+-----------------
+
+Default:
+
+
+Candidates to refine on graph
+518, 473, 494, 675, 379                    
+507                                        
+
+Nodes visited
+32,070, 33,019, 30,361, 41,898, 24,671     
+32,403                                     
+
+Runtime thread CPU rknn query (ms.)
+521, 417, 356, 443, 270                    
+401                                        
+
+Candidates left after filter
+593, 551, 645, 756, 451                    
+599                                        
+
+Runtime embedding preparation (ms.)
+5,903, 5,674, 5,633, 5,765, 5,560          
+5,707                                      
+
+Runtime filter refinement on R*Tree (ms.)
+255, 126, 112, 110, 66                     
+133                                        
+
+Runtime refinement on graph (ms.)
+263, 290, 243, 332, 202                    
+266                                        

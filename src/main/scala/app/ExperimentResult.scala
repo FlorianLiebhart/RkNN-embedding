@@ -8,6 +8,10 @@ case class ExperimentResult(experiment                      : Experiment,
                             var algorithmResultsForEachValue: Seq[Seq[AlgorithmResult]]){
 
 
+  /**
+   * '####' will be replaced by a number of spaces as stored in "cellLengths"
+   * @return
+   */
   def toCSVString: String = {
     val sb = new StringBuilder()
 

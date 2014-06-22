@@ -1,0 +1,215 @@
+[03:03:30] Code organization phase: Performing dry run (running all algorithms once).. done in 1,803 ms.(real time).
+
+
+[03:03:32] --------------- Starting experiments.. -----------------
+
+[03:03:32] 3. Experiment: Alter number of vertices. (5 runs, Vertices: 10, 100, 1000, 10000, 50000, 100000, 200000, 350000)
+[03:03:32] Generating 8 x 5 graphs.. done in 58,232 ms.(real time)
+
+[03:04:30]   Vertices: 10
+[03:04:30]   - Naive.. 1 2 3 4 5  done in 6 ms.(real time)
+[03:04:30]   - Eager.. 1 2 3 4 5  done in 7 ms.(real time)
+[03:04:30]   - Embedding.. 1 2 3 4 5  done in 37 ms.(real time)
+
+[03:04:30]   Vertices: 100
+[03:04:30]   - Naive.. 1 2 3 4 5  done in 32 ms.(real time)
+[03:04:30]   - Eager.. 1 2 3 4 5  done in 229 ms.(real time)
+[03:04:31]   - Embedding.. 1 2 3 4 5  done in 272 ms.(real time)
+
+[03:04:31]   Vertices: 1000
+[03:04:31]   - Naive.. 1 2 3 4 5  done in 213 ms.(real time)
+[03:04:31]   - Eager.. 1 2 3 4 5  done in 13,413 ms.(real time)
+[03:04:45]   - Embedding.. 1 2 3 4 5  done in 11,082 ms.(real time)
+
+[03:04:56]   Vertices: 10000
+[03:04:56]   - Naive.. 1 2 3 4 5  done in 18,619 ms.(real time)
+[03:05:14]   - Eager.. 1 2 3 4 5  done in 6,479 ms.(real time)
+[03:05:21]   - Embedding.. 1 2 3 4 5  done in 85,082 ms.(real time)
+
+[03:06:46]   Vertices: 50000
+[03:06:46]   - Naive.. 1 2 3 4 5  done in 122,082 ms.(real time)
+[03:08:48]   - Eager.. 1 2 3 4 5  done in 193 ms.(real time)
+[03:08:48]   - Embedding.. 1 2 3 4 5  done in 488,028 ms.(real time)
+
+[03:16:56]   Vertices: 100000
+[03:16:56]   - Naive.. 1 2 3 4 5  done in 211,319 ms.(real time)
+[03:20:28]   - Eager.. 1 2 3 4 5  done in 14,651 ms.(real time)
+[03:20:42]   - Embedding.. 1 2 3 4 5  done in 1,031,517 ms.(real time)
+
+[03:37:54]   Vertices: 200000
+[03:37:54]   - Naive.. 1 2 3 4 5  done in 435,665 ms.(real time)
+[03:45:09]   - Eager.. 1 2 3 4 5  done in 227 ms.(real time)
+[03:45:10]   - Embedding.. 1 2 3 4 5  done in 2,275,640 ms.(real time)
+
+[04:23:05]   Vertices: 350000
+[04:23:05]   - Naive.. 1 2 3 4 5  done in 725,196 ms.(real time)
+[04:35:10]   - Eager.. 1 2 3 4 5  done in 5,935 ms.(real time)
+[04:35:16]   - Embedding.. 1 2 3 4 5  done in 6,196,252 ms.(real time)
+
+[06:18:33] Finished experiment in 11,700,689 ms.(real time).
+
+
+[06:18:33] 4. Experiment: Alter object density. (5 runs, Object density: 0.001, 0.005, 0.01, 0.02, 0.04, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0)
+[06:18:33] Generating 12 x 5 graphs.. done in 29,897 ms.(real time)
+
+[06:19:03]   Object density: 0.001
+[06:19:03]   - Naive.. 1 2 3 4 5  done in 252,280 ms.(real time)
+[06:23:15]   - Eager.. 1 2 3 4 5  done in 7,317,627 ms.(real time)
+[08:25:12]   - Embedding.. 1 2 3 4 5  done in 110,799 ms.(real time)
+
+[08:27:03]   Object density: 0.005
+[08:27:03]   - Naive.. 1 2 3 4 5  done in 52,467 ms.(real time)
+[08:27:56]   - Eager.. 1 2 3 4 5  done in 92,380 ms.(real time)
+[08:29:28]   - Embedding.. 1 2 3 4 5  done in 47,648 ms.(real time)
+
+[08:30:16]   Object density: 0.01
+[08:30:16]   - Naive.. 1 2 3 4 5  done in 28,889 ms.(real time)
+[08:30:45]   - Eager.. 1 2 3 4 5  done in 11,520 ms.(real time)
+[08:30:56]   - Embedding.. 1 2 3 4 5  done in 38,598 ms.(real time)
+
+[08:31:35]   Object density: 0.02
+[08:31:35]   - Naive.. 1 2 3 4 5  done in 14,529 ms.(real time)
+[08:31:49]   - Eager.. 1 2 3 4 5  done in 2,962 ms.(real time)
+[08:31:52]   - Embedding.. 1 2 3 4 5  done in 35,664 ms.(real time)
+
+[08:32:28]   Object density: 0.04
+[08:32:28]   - Naive.. 1 2 3 4 5  done in 8,997 ms.(real time)
+[08:32:37]   - Eager.. 1 2 3 4 5  done in 457 ms.(real time)
+[08:32:37]   - Embedding.. 1 2 3 4 5  done in 35,293 ms.(real time)
+
+[08:33:13]   Object density: 0.08
+[08:33:13]   - Naive.. 1 2 3 4 5  done in 5,572 ms.(real time)
+[08:33:18]   - Eager.. 1 2 3 4 5  done in 215 ms.(real time)
+[08:33:19]   - Embedding.. 1 2 3 4 5  done in 35,574 ms.(real time)
+
+[08:33:54]   Object density: 0.1
+[08:33:54]   - Naive.. 1 2 3 4 5  done in 5,009 ms.(real time)
+[08:33:59]   - Eager.. 1 2 3 4 5  done in 71 ms.(real time)
+[08:33:59]   - Embedding.. 1 2 3 4 5  done in 35,758 ms.(real time)
+
+[08:34:35]   Object density: 0.2
+[08:34:35]   - Naive.. 1 2 3 4 5  done in 3,830 ms.(real time)
+[08:34:39]   - Eager.. 1 2 3 4 5  done in 16 ms.(real time)
+[08:34:39]   - Embedding.. 1 2 3 4 5  done in 40,370 ms.(real time)
+
+[08:35:19]   Object density: 0.4
+[08:35:19]   - Naive.. 1 2 3 4 5  done in 3,325 ms.(real time)
+[08:35:23]   - Eager.. 1 2 3 4 5  done in 7 ms.(real time)
+[08:35:23]   - Embedding.. 1 2 3 4 5  done in 71,147 ms.(real time)
+
+[08:36:34]   Object density: 0.6
+[08:36:34]   - Naive.. 1 2 3 4 5  done in 3,351 ms.(real time)
+[08:36:37]   - Eager.. 1 2 3 4 5  done in 5 ms.(real time)
+[08:36:37]   - Embedding.. 1 2 3 4 5  done in 129,218 ms.(real time)
+
+[08:38:46]   Object density: 0.8
+[08:38:46]   - Naive.. 1 2 3 4 5  done in 3,402 ms.(real time)
+[08:38:50]   - Eager.. 1 2 3 4 5  done in 5 ms.(real time)
+[08:38:50]   - Embedding.. 1 2 3 4 5  done in 639,750 ms.(real time)
+
+[08:49:30]   Object density: 1.0
+[08:49:30]   - Naive.. 1 2 3 4 5  done in 3,449 ms.(real time)
+[08:49:33]   - Eager.. 1 2 3 4 5  done in 3 ms.(real time)
+[08:49:33]   - Embedding.. 1 2 3 4 5  done in 1,917,136 ms.(real time)
+
+[09:21:30] Finished experiment in 10,977,486 ms.(real time).
+
+
+[09:21:30] 6. Experiment: Alter k. (5 runs, k: 1, 2, 4, 8, 16, 20)
+[09:21:30] Generating 6 x 5 graphs.. done in 16,137 ms.(real time)
+
+[09:21:46]   k: 1
+[09:21:46]   - Naive.. 1 2 3 4 5  done in 2,414 ms.(real time)
+[09:21:49]   - Eager.. 1 2 3 4 5  done in 237 ms.(real time)
+[09:21:49]   - Embedding.. 1 2 3 4 5  done in 35,846 ms.(real time)
+
+[09:22:25]   k: 2
+[09:22:25]   - Naive.. 1 2 3 4 5  done in 3,968 ms.(real time)
+[09:22:29]   - Eager.. 1 2 3 4 5  done in 63 ms.(real time)
+[09:22:29]   - Embedding.. 1 2 3 4 5  done in 32,988 ms.(real time)
+
+[09:23:02]   k: 4
+[09:23:02]   - Naive.. 1 2 3 4 5  done in 10,878 ms.(real time)
+[09:23:13]   - Eager.. 1 2 3 4 5  done in 279 ms.(real time)
+[09:23:13]   - Embedding.. 1 2 3 4 5  done in 34,334 ms.(real time)
+
+[09:23:47]   k: 8
+[09:23:47]   - Naive.. 1 2 3 4 5  done in 34,393 ms.(real time)
+[09:24:22]   - Eager.. 1 2 3 4 5  done in 2,785 ms.(real time)
+[09:24:25]   - Embedding.. 1 2 3 4 5  done in 38,455 ms.(real time)
+
+[09:25:03]   k: 16
+[09:25:03]   - Naive.. 1 2 3 4 5  done in 122,653 ms.(real time)
+[09:27:06]   - Eager.. 1 2 3 4 5  done in 14,606 ms.(real time)
+[09:27:20]   - Embedding.. 1 2 3 4 5  done in 66,026 ms.(real time)
+
+[09:28:26]   k: 20
+[09:28:26]   - Naive.. 1 2 3 4 5  done in 191,007 ms.(real time)
+[09:31:37]   - Eager.. 1 2 3 4 5  done in 35,005 ms.(real time)
+[09:32:12]   - Embedding.. 1 2 3 4 5  done in 77,064 ms.(real time)
+
+[09:33:29] Finished experiment in 719,222 ms.(real time).
+
+
+[09:33:29] 2. Experiment: Alter number of reference points. (5 runs, Reference points: 20, 40, 60, 80, 100, 130, 160)
+[09:33:29] Generating 7 x 5 graphs.. done in 14,552 ms.(real time)
+
+[09:33:44]   Reference points: 20
+[09:33:44]   - Embedding.. 1 2 3 4 5  done in 48,191 ms.(real time)
+
+[09:34:32]   Reference points: 40
+[09:34:32]   - Embedding.. 1 2 3 4 5  done in 96,492 ms.(real time)
+
+[09:36:09]   Reference points: 60
+[09:36:09]   - Embedding.. 1 2 3 4 5  done in 151,483 ms.(real time)
+
+[09:38:40]   Reference points: 80
+[09:38:40]   - Embedding.. 1 2 3 4 5  done in 207,210 ms.(real time)
+
+[09:42:07]   Reference points: 100
+[09:42:07]   - Embedding.. 1 2 3 4 5  done in 258,524 ms.(real time)
+
+[09:46:26]   Reference points: 130
+[09:46:26]   - Embedding.. 1 2 3 4 5  done in 332,596 ms.(real time)
+
+[09:51:58]   Reference points: 160
+[09:51:58]   - Embedding.. 1 2 3 4 5  done in 418,684 ms.(real time)
+
+[09:58:57] Finished experiment in 1,527,783 ms.(real time).
+
+
+[09:58:57] ------------- All experiments finished in 24,925,190 ms.(real time). ---------------
+
+
+
+
+
+
+Summary:
+
+5 runs.
+
+0. Experiment: Default. 
+   5 min
+
+1. Experiment: Entries. (20, 40, 60, 80, 100, 120, 140, 160)
+   5 min
+
+5. Experiment: Connectivity. (0.001, 0.005, 0.01, 0.02, 0.04, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0)
+   10 min
+
+6. Experiment: Alter k. (1, 2, 4, 8, 16, 20)
+   12 min
+
+2. Experiment: Alter number of reference points. (20, 40, 60, 80, 100, 130, 160)
+   25 min
+
+4. Experiment: Alter object density. (0.001, 0.005, 0.01, 0.02, 0.04, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0)
+  180 min (3h)
+
+3. Experiment: Alter number of vertices. (10, 100, 1000, 10000, 50000, 100000, 200000, 350000)
+  280 min (4,7h)
+
+total: 
+
+440 min (7,3h)
