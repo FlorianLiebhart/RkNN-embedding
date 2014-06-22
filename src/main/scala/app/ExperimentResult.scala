@@ -78,4 +78,28 @@ case class ExperimentResult(experiment                      : Experiment,
     writeToFile(s"log/${experiment.writeName}.txt", false, toCSVString)
   }
 
+  def appendDirectComparison() = {
+    val directComparisonString =
+    s"""
+      |${experiment.valueName};${values mkString ";"}
+      |
+      |""".stripMargin +
+    (for{
+      i <- 0 to Math.min(algorithmResultsForEachValue.transpose.head.head.singleResults.size - 1, 2)}  // From the first algorithm that runs (Naive), make comparisons for its single results between all algorithms
+    yield {
+      algorithmResultsForEachValue.transpose.head.head.singleResults(i).name + "\n" +
+        (for{
+          algorithmResults <- algorithmResultsForEachValue.transpose
+        }
+        yield{
+          algorithmResults.head.algorithmName + ";" +
+            (algorithmResults map { algorithmResult =>
+              formatThousands(algorithmResult.singleResults(i).totalResult)
+            }).mkString(";")
+        }).mkString("\n")
+    }).mkString("\n\n")
+
+    writeToFile(s"log/${experiment.writeName}.txt", true, "\n\n\n\n" + directComparisonString)
+  }
+
 }
