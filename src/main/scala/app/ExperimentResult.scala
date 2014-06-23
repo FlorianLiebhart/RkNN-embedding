@@ -79,27 +79,29 @@ case class ExperimentResult(experiment                      : Experiment,
   }
 
   def appendDirectComparison() = {
+    val algorithmResultsForEachValueTransposed = algorithmResultsForEachValue.transpose
+    val maxSingleResults = algorithmResultsForEachValueTransposed.maxBy(_.head.singleResults.size).head.singleResults
     val directComparisonString =
     s"""
       |${experiment.valueName};${values mkString ";"}
       |
       |""".stripMargin +
-    (for{
-      i <- 0 to Math.min(algorithmResultsForEachValue.transpose.head.head.singleResults.size - 1, 2)}  // From the first algorithm that runs (Naive), make comparisons for its single results between all algorithms
+    (for{i <-  maxSingleResults} 
     yield {
-      algorithmResultsForEachValue.transpose.head.head.singleResults(i).name + "\n" +
+      i.name + "\n" +
         (for{
-          algorithmResults <- algorithmResultsForEachValue.transpose
+          algorithmResults <- algorithmResultsForEachValueTransposed
         }
         yield{
-          algorithmResults.head.algorithmName + ";" +
-            (algorithmResults map { algorithmResult =>
-              formatThousands(algorithmResult.singleResults(i).totalResult)
-            }).mkString(";")
+            algorithmResults.head.algorithmName + ";" +
+              (algorithmResults map { algorithmResult =>
+                if (algorithmResult.singleResults.filter(_.name == i.name).size == 1)
+                  formatThousands(algorithmResult.singleResults.filter(_.name == i.name).head.totalResult)
+                else ""
+              }).mkString(";")
         }).mkString("\n")
     }).mkString("\n\n")
 
     writeToFile(s"log/${experiment.writeName}.txt", true, "\n\n\n\n" + directComparisonString)
   }
-
 }

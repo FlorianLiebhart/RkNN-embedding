@@ -104,6 +104,7 @@ object RkNNTestEnvironment {
 
       experimentResult.algorithmResultsForEachValue :+= algorithmResults
       experimentResult.write()
+      experimentResult.appendDirectComparison()
       Log.experimentLog.append("\n")
     }
 
