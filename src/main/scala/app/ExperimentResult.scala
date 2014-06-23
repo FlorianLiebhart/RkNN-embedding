@@ -75,7 +75,7 @@ case class ExperimentResult(experiment                      : Experiment,
   }
 
   def write() = {
-    writeToFile(s"log/${experiment.writeName}.txt", false, toCSVString)
+    writeToFile(s"log/${experiment.writeName}.csv", false, toCSVString)
   }
 
   def appendDirectComparison() = {
@@ -102,6 +102,6 @@ case class ExperimentResult(experiment                      : Experiment,
         }).mkString("\n")
     }).mkString("\n\n")
 
-    writeToFile(s"log/${experiment.writeName}.txt", true, "\n\n\n\n" + directComparisonString)
+    writeToFile(s"log/${experiment.writeName}.csv", true, "\n\n\n\n" + directComparisonString)
   }
 }
