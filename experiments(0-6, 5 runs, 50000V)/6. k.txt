@@ -81,3 +81,39 @@ Runtime filter refinement on R*Tree (ms.)
 Runtime refinement on graph (ms.)
 26, 43, 30, 42, 44                     ; 108, 73, 184, 148, 127                      ; 379, 404, 498, 369, 314                     ; 876, 1,042, 1,520, 1,363, 1,181             ; 5,862, 6,787, 5,584, 5,621, 5,131           ; 5,827, 10,687, 10,887, 8,065, 7,727
 37                                     ; 128                                         ; 392                                         ; 1,196                                       ; 5,797                                       ; 8,638
+
+
+
+
+
+k:
+1        ; 2      ; 4       ; 8       ; 16      ; 20
+
+Candidates to refine on graph
+Naiv     ; 2,487  ; 2,487   ; 2,486   ; 2,487   ; 2,487   ; 2,487
+Eager    ; 5      ; 10      ; 21      ; 79      ; 141     ; 214
+Embedded ; 338    ; 430     ; 449     ; 444     ; 565     ; 562
+
+Nodes visited
+Naiv     ; 58,114 ; 110,637 ; 212,019 ; 418,477 ; 832,453 ; 1,057,026
+Eager    ; 868    ; 1,824   ; 5,529   ; 36,226  ; 104,003 ; 236,375
+Embedded ; 7,394  ; 18,862  ; 38,876  ; 74,147  ; 193,395 ; 240,202
+
+Runtime thread CPU rknn query (ms.)
+Naiv     ; 313    ; 776     ; 2,134   ; 6,801   ; 24,324  ; 37,953
+Eager    ; 4      ; 11      ; 54      ; 536     ; 2,888   ; 6,952
+Embedded ; 97     ; 244     ; 497     ; 1,285   ; 5,911   ; 8,767
+
+
+Candidates left after filter
+Embedded ; 452    ; 642     ; 594     ; 576     ; 662     ; 659
+
+Runtime embedding preparation (ms.)
+Embedded ; 5,997  ; 5,857   ; 5,851   ; 5,824   ; 5,869   ; 5,849
+
+Runtime filter refinement on R*Tree (ms.)
+Embedded ; 59     ; 116     ; 103     ; 88      ; 114     ; 127
+
+Runtime refinement on graph (ms.)
+Embedded ; 37     ; 128     ; 392     ; 1,196   ; 5,797   ; 8,638
+

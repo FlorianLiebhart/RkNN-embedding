@@ -86,7 +86,7 @@ case class ExperimentResult(experiment                      : Experiment,
       |${experiment.valueName};${values mkString ";"}
       |
       |""".stripMargin +
-    (for{i <-  maxSingleResults} 
+    (for{i <-  maxSingleResults}
     yield {
       i.name + "\n" +
         (for{
