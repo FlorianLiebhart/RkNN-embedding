@@ -118,7 +118,7 @@ object RkNNTestEnvironment {
   def runExperiment(experiment: Experiment, algorithms: Seq[GraphRknn], runs: Int, nrOfQueryPoints: Int, expValues: Seq[Any], short: Boolean = false, shortExpValues: Seq[Any] = Seq.empty) = {
     val values = if(short) shortExpValues else expValues
 
-    experimentLogAppendln(s"${experiment.title} ($runs runs${if(short) ", short" else ""}${if(experiment != Experiment.Default) {s", ${experiment.valueName}: ${values mkString ", "}"} else ""})")
+    experimentLogAppendln(s"${experiment.title} ($runs runs, $nrOfQueryPoints query points per run${if(short) ", short" else ""}${if(experiment != Experiment.Default) {s", ${experiment.valueName}: ${values mkString ", "}"} else ""})")
     experimentLogAppend(s"Generating ${if(values.isEmpty) 1 else values.size} x $runs graphs..")
 
     val realRunTimeExperiment = RealTimeDiff()
@@ -224,7 +224,7 @@ object RkNNTestEnvironment {
       }
     )
 
-    new AlgorithmResult(algorithm.name, setup.runs, setup.experiment, singleResults)
+    new AlgorithmResult(algorithm.name, setup.runs, setup.nrOfQueryPoints, setup.experiment, singleResults)
   }
 
   /**

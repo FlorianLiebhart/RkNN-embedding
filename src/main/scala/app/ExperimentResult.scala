@@ -32,7 +32,7 @@ case class ExperimentResult(experiment                      : Experiment,
     for (algorithmResults <- algorithmResultsForEachValue.transpose) {
       sb.append(
         s"""
-         |${algorithmResults.head.algorithmName} (${algorithmResults.head.runs} runs)
+         |${algorithmResults.head.algorithmName} (${algorithmResults.head.runs} runs, ${algorithmResults.head.nrOfQueryPoints} query points per run)
          |-----------------
          |
          |${experiment.valueName}:

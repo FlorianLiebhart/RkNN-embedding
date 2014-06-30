@@ -18,9 +18,9 @@ object ExperimentSetup {
               runs               : Int        = 5,
               numRefPoints       : Int        = 15,
               approximateVertices: Int        = 50000,
-              objectDensity      : Double     = 0.05,
+              objectDensity      : Double     = 0.02,
               connectivity       : Double     = 0.3,
-              k                  : Int        = 3,
+              k                  : Int        = 4,
               nrOfQueryPoints    : Int        = 10): ExperimentSetup = {
       ExperimentSetup(
         experiment,
