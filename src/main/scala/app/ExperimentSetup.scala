@@ -20,7 +20,8 @@ object ExperimentSetup {
               approximateVertices: Int        = 50000,
               objectDensity      : Double     = 0.05,
               connectivity       : Double     = 0.3,
-              k                  : Int        = 3): ExperimentSetup = {
+              k                  : Int        = 3,
+              nrOfQueryPoints    : Int        = 10): ExperimentSetup = {
       ExperimentSetup(
         experiment,
         experimentValue,
@@ -30,19 +31,20 @@ object ExperimentSetup {
         approximateVertices,
         objectDensity,
         connectivity,
-        k
+        k,
+        nrOfQueryPoints
       )
   }
 
-  def forExperiment(experiment: Experiment, runs: Int, experimentValue: Any) = {
+  def forExperiment(experiment: Experiment, runs: Int, nrOfQueryPoints: Int, experimentValue: Any) = {
     experiment match {
-      case Experiment.Default        => ExperimentSetup.default(experiment = experiment, runs = runs)
-      case Experiment.EntriesPerNode => ExperimentSetup.default(experiment = experiment, runs = runs, entriesPerNode      = experimentValue.asInstanceOf[Int]   , experimentValue = experimentValue)
-      case Experiment.RefPoints      => ExperimentSetup.default(experiment = experiment, runs = runs, numRefPoints        = experimentValue.asInstanceOf[Int]   , experimentValue = experimentValue)
-      case Experiment.Vertices       => ExperimentSetup.default(experiment = experiment, runs = runs, approximateVertices = experimentValue.asInstanceOf[Int]   , experimentValue = experimentValue)
-      case Experiment.ObjectDensity  => ExperimentSetup.default(experiment = experiment, runs = runs, objectDensity       = experimentValue.asInstanceOf[Double], experimentValue = experimentValue)
-      case Experiment.Connectivity   => ExperimentSetup.default(experiment = experiment, runs = runs, connectivity        = experimentValue.asInstanceOf[Double], experimentValue = experimentValue)
-      case Experiment.K              => ExperimentSetup.default(experiment = experiment, runs = runs, k                   = experimentValue.asInstanceOf[Int]   , experimentValue = experimentValue)
+      case Experiment.Default        => ExperimentSetup.default(experiment = experiment, runs = runs, nrOfQueryPoints = nrOfQueryPoints)
+      case Experiment.EntriesPerNode => ExperimentSetup.default(experiment = experiment, runs = runs, nrOfQueryPoints = nrOfQueryPoints, entriesPerNode      = experimentValue.asInstanceOf[Int]   , experimentValue = experimentValue)
+      case Experiment.RefPoints      => ExperimentSetup.default(experiment = experiment, runs = runs, nrOfQueryPoints = nrOfQueryPoints, numRefPoints        = experimentValue.asInstanceOf[Int]   , experimentValue = experimentValue)
+      case Experiment.Vertices       => ExperimentSetup.default(experiment = experiment, runs = runs, nrOfQueryPoints = nrOfQueryPoints, approximateVertices = experimentValue.asInstanceOf[Int]   , experimentValue = experimentValue)
+      case Experiment.ObjectDensity  => ExperimentSetup.default(experiment = experiment, runs = runs, nrOfQueryPoints = nrOfQueryPoints, objectDensity       = experimentValue.asInstanceOf[Double], experimentValue = experimentValue)
+      case Experiment.Connectivity   => ExperimentSetup.default(experiment = experiment, runs = runs, nrOfQueryPoints = nrOfQueryPoints, connectivity        = experimentValue.asInstanceOf[Double], experimentValue = experimentValue)
+      case Experiment.K              => ExperimentSetup.default(experiment = experiment, runs = runs, nrOfQueryPoints = nrOfQueryPoints, k                   = experimentValue.asInstanceOf[Int]   , experimentValue = experimentValue)
     }
   }
 
@@ -65,7 +67,8 @@ case class ExperimentSetup(experiment         : Experiment,
                            approximateVertices: Int,
                            objectDensity      : Double,
                            connectivity       : Double,
-                           k                  : Int){
+                           k                  : Int,
+                           nrOfQueryPoints    : Int){
 
   val vertices              = Math.pow(Math.sqrt(approximateVertices).floor, 2).toInt
   val objects               = if (objectDensity * vertices <= 1) 2 else (objectDensity * vertices).ceil.toInt
@@ -76,13 +79,24 @@ case class ExperimentSetup(experiment         : Experiment,
   val edges                 = (connectivity * (maxEdges - minEdges) + minEdges).toInt   // generally for a graph: from N-1 to N(N-1)/2 // Int Overflow at: max 2.147.483.647 => Vertex max: 65.536
   val rStarTreePageSize     = (entriesPerNode * numRefPoints * 16) + 34
 
-  val sGraphsQIds: Seq[(SGraph, SVertex)] =
-    for {_ <- 1 to runs} yield {
-      val sGraph = GraphGen.generateScalaGraph(vertices, edges, objects)
-      val q      = sGraph.getVertex(new Random(System.currentTimeMillis).nextInt(vertices))
+  val sGraphsQIds: Seq[(SGraph, SVertex)] = {
+    val differentGraphs = for {_ <- 1 to runs} yield {      // generate 'runs' different graphs
+      GraphGen.generateScalaGraph(vertices, edges, objects)
+    }
+
+    val graphs = differentGraphs flatMap {graph =>          // duplicate each graph by 'nrOfQueryPoints'
+      for {_ <- 1 to nrOfQueryPoints}
+      yield {
+        graph
+      }
+    }
+
+    graphs map { graph =>                                   // for each graph create a query point
+      val q      = graph.getVertex(new Random(System.currentTimeMillis).nextInt(vertices))
       if (!q.containsObject)
         q.setObjectId(vertices)
-      (sGraph, q)
+      (graph, q)
+    }
   }
 
   override def toString = {

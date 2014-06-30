@@ -3,6 +3,7 @@ package util
 import Utils.writeToFile
 import java.text.SimpleDateFormat
 import java.util.Date
+import app.RkNNTestEnvironment
 
 object Log {
   val printEnabled  = false  // allow printing on console
@@ -27,7 +28,7 @@ object Log {
     experimentLog.append(s"$timeStamp$s")
     writeLog.append(experimentLog)
     System.out.print(experimentLog.toString)
-    writeToFile("log/experimentsLog.txt", true, experimentLog.toString)
+    writeToFile(s"log/${RkNNTestEnvironment.startDate}/experimentsLog.txt", true, experimentLog.toString)
     experimentLog.clear
   }
 
@@ -40,7 +41,7 @@ object Log {
     experimentLog.append(s"$timeStamp$s\n")
     writeLog.append(experimentLog)
     System.out.print(experimentLog.toString)
-    writeToFile("log/experimentsLog.txt", true, experimentLog.toString)
+    writeToFile(s"log/${RkNNTestEnvironment.startDate}/experimentsLog.txt", true, experimentLog.toString)
     experimentLog.clear
   }
 
@@ -71,7 +72,7 @@ object Log {
     }
   }
 
-  def writeFlushWriteLog(path: String = "log/writeLog.txt", appendToFile: Boolean){
+  def writeFlushWriteLog(path: String = s"log/${RkNNTestEnvironment.startDate}/writeLog.txt", appendToFile: Boolean){
     writeToFile(path, appendToFile, writeLog.toString)
     writeLog.clear
   }

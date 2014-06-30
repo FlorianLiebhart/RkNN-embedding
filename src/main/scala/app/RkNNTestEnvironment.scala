@@ -11,17 +11,30 @@ import util.Utils.writeToFile
 
 object RkNNTestEnvironment {
 
+  val startDate = new SimpleDateFormat("yyyy-MM-dd HH.mm.ss").format(new Date())
+
+  /**
+   * Run from console via:
+   * java -jar "rknn.jar" <runs> <nrofquerypoints> <experimentssettings>
+   * e.g.:
+   * java -jar "rknn.jar" "5" "10" "experimentssettings.txt"
+
+   * @param args
+   */
   def main(args: Array[String]): Unit = {
 
-    val date = new SimpleDateFormat("yyyy-MM-dd HH.mm.ss").format(new Date())
-    Log.appendln(s"###### Start: $date ######\n")
+    Log.appendln(s"###### Start: $startDate ######\n")
     Log.writeFlushWriteLog(appendToFile = false)
-    writeToFile("log/experimentsLog.txt", false, "")
+    writeToFile(s"log/${startDate}/experimentsLog.txt", false, "")
 
     try {
-      runExperiments(
-        short = false,
-        runs  = 5
+//      runExperiments(
+//        short = false,
+//        runs  = 3,
+//        nrOfQueryPoints = 10
+//      )
+      runFromJar(
+        args = args
       )
     }
     catch {
@@ -36,7 +49,7 @@ object RkNNTestEnvironment {
     Log.writeFlushWriteLog(appendToFile = true)
   }
 
-  def runExperiments(runs: Int, short: Boolean) {
+  def runExperiments(runs: Int, nrOfQueryPoints: Int, short: Boolean) {
     dryRun()
 
     experimentLogAppendln(s"--------------- Starting experiments.. -----------------\n")
@@ -47,26 +60,62 @@ object RkNNTestEnvironment {
     val embedding = Embedding
     val algorithms = Seq(naive, eager, embedding)
 
-    runExperiment(Experiment.Default       , algorithms,     runs, short, Seq(),                                                                    Seq())
-//    runExperiment(Experiment.EntriesPerNode, Seq(embedding), runs, short, Seq(5, 10, 15, 20, 25, 30, 35, 40, 45, 50),                               Seq(5, 10, 15, 20))
-    runExperiment(Experiment.EntriesPerNode, Seq(embedding), runs, short, Seq(20, 40, 60, 80, 100, 120, 140, 160),                                  Seq(5, 10, 15, 20))
-//    runExperiment(Experiment.Connectivity  , algorithms,     runs, short, Seq(0.005, 0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.64, 1.0),                Seq(0.02, 0.04, 0.08, 0.16))
-    runExperiment(Experiment.Connectivity  , algorithms,     runs, short, Seq(0.001, 0.005, 0.01, 0.02, 0.04, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0),  Seq(0.02, 0.04, 0.08, 0.16))
-//    runExperiment(Experiment.Vertices      , algorithms,     runs, short, Seq(10, 100, 1000, 10000, 50000, 100000, 200000, 500000),                 Seq(10,100,1000,10000))
-    runExperiment(Experiment.Vertices      , algorithms,     runs, short, Seq(10, 100, 1000, 10000, 50000, 100000, 200000, 350000),         Seq(10,100,1000,10000))
-//    runExperiment(Experiment.ObjectDensity , algorithms,     runs, short, Seq(0.005, 0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.64, 1.0),                Seq(0.02, 0.04, 0.08, 0.16))
-    runExperiment(Experiment.ObjectDensity , algorithms,     runs, short, Seq(0.001, 0.005, 0.01, 0.02, 0.04, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0),  Seq(0.02, 0.04, 0.08, 0.16))
-//    runExperiment(Experiment.K             , algorithms,     runs, short, Seq(1, 2, 4, 8, 16),                                                      Seq(2, 4, 8))
-    runExperiment(Experiment.K             , algorithms,     runs, short, Seq(1, 2, 4, 8, 16, 20),                                                  Seq(2, 4, 8))
-//    runExperiment(Experiment.RefPoints     , Seq(embedding), runs, short, Seq(5, 10, 15, 20, 25, 30, 35, 40, 45, 50),                               Seq(5, 10, 15, 20))
-    runExperiment(Experiment.RefPoints     , Seq(embedding), runs, short, Seq(20, 40, 60, 80, 100, 130, 160),                                       Seq(5, 10, 15, 20))
+
+    runExperiment(Experiment.RefPoints     , Seq(embedding), runs = runs, nrOfQueryPoints = nrOfQueryPoints, Seq(1,2,3,4,5,6,7,8,9,10),                                               short, Seq(5, 10, 15, 20))
+    runExperiment(Experiment.Default       , algorithms,     runs = runs, nrOfQueryPoints = nrOfQueryPoints, Seq(),                                                                   short, Seq())
+    runExperiment(Experiment.EntriesPerNode, Seq(embedding), runs = runs, nrOfQueryPoints = nrOfQueryPoints, Seq(20, 40, 60, 80, 100, 120, 140, 160),                                 short, Seq(5, 10, 15, 20))
+    runExperiment(Experiment.Vertices      , algorithms,     runs = runs, nrOfQueryPoints = nrOfQueryPoints, Seq(1000, 10000, 50000, 100000, 200000, 350000),                         short, Seq(10,100,1000,10000))
+    runExperiment(Experiment.Connectivity  , algorithms,     runs = runs, nrOfQueryPoints = nrOfQueryPoints, Seq(0.001, 0.005, 0.01, 0.02, 0.04, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0), short, Seq(0.02, 0.04, 0.08, 0.16))
+    runExperiment(Experiment.ObjectDensity , algorithms,     runs = runs, nrOfQueryPoints = nrOfQueryPoints, Seq(0.001, 0.005, 0.01, 0.02, 0.04, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0), short, Seq(0.02, 0.04, 0.08, 0.16))
+    runExperiment(Experiment.K             , algorithms,     runs = runs, nrOfQueryPoints = nrOfQueryPoints, Seq(1, 2, 4, 8, 16, 20),                                                 short, Seq(2, 4, 8))
 
     runTimeRealTotal.end
     experimentLogAppendln(s"------------- All experiments finished in ${runTimeRealTotal}. ---------------\n")
   }
 
 
-  def runExperiment(experiment: Experiment, algorithms: Seq[GraphRknn], runs: Int, short: Boolean, expValues: Seq[Any], shortExpValues: Seq[Any]) = {
+  def runFromJar(args: Array[String]) {
+
+    if(args.length != 3)
+      throw new IllegalArgumentException("Please pass an argument for <runs>, <nrofquerypoints>, and <experimentssettingsfile>")
+
+    val runs            = Integer.parseInt(args(0))
+    val nrOfQueryPoints = Integer.parseInt(args(1))
+    val expSettingsFile = args(2)
+
+    val source = scala.io.Source.fromFile(expSettingsFile)
+    val experimentValuesTuples = source.getLines.toIndexedSeq.map(line => {val x = line.split(";"); (x(0).trim, x(1).split(",").map(_.trim).toSeq)})
+    source.close()
+
+    dryRun()
+
+    experimentLogAppendln(s"--------------- Starting experiments.. -----------------\n")
+    val runTimeRealTotal = RealTimeDiff()
+
+    val naive     = Naive
+    val eager     = Eager
+    val embedding = Embedding
+    val algorithms = Seq(naive, eager, embedding)
+
+    experimentValuesTuples map { experimentValuesTuple => experimentValuesTuple match {
+      case ("RefPoints"     , values) => runExperiment(Experiment.RefPoints     , Seq(embedding), runs = runs, nrOfQueryPoints = nrOfQueryPoints, expValues = values.map(Integer.parseInt(_)))
+      case ("Default"       , values) => runExperiment(Experiment.Default       , algorithms,     runs = runs, nrOfQueryPoints = nrOfQueryPoints, expValues = Seq())
+      case ("EntriesPerNode", values) => runExperiment(Experiment.EntriesPerNode, Seq(embedding), runs = runs, nrOfQueryPoints = nrOfQueryPoints, expValues = values.map(Integer.parseInt(_)))
+      case ("Vertices"      , values) => runExperiment(Experiment.Vertices      , algorithms,     runs = runs, nrOfQueryPoints = nrOfQueryPoints, expValues = values.map(Integer.parseInt(_)))
+      case ("Connectivity"  , values) => runExperiment(Experiment.Connectivity  , algorithms,     runs = runs, nrOfQueryPoints = nrOfQueryPoints, expValues = values.map(_.toDouble))
+      case ("ObjectDensity" , values) => runExperiment(Experiment.ObjectDensity , algorithms,     runs = runs, nrOfQueryPoints = nrOfQueryPoints, expValues = values.map(_.toDouble))
+      case ("K"             , values) => runExperiment(Experiment.K             , algorithms,     runs = runs, nrOfQueryPoints = nrOfQueryPoints, expValues = values.map(Integer.parseInt(_)))
+      case _                          => throw new IllegalArgumentException("Illegal settings file")
+      }
+    }
+
+
+    runTimeRealTotal.end
+    experimentLogAppendln(s"------------- All experiments finished in ${runTimeRealTotal}. ---------------\n")
+  }
+
+
+  def runExperiment(experiment: Experiment, algorithms: Seq[GraphRknn], runs: Int, nrOfQueryPoints: Int, expValues: Seq[Any], short: Boolean = false, shortExpValues: Seq[Any] = Seq.empty) = {
     val values = if(short) shortExpValues else expValues
 
     experimentLogAppendln(s"${experiment.title} ($runs runs${if(short) ", short" else ""}${if(experiment != Experiment.Default) {s", ${experiment.valueName}: ${values mkString ", "}"} else ""})")
@@ -77,11 +126,12 @@ object RkNNTestEnvironment {
 
     val setups: Seq[ExperimentSetup] =
       if(experiment == Experiment.Default)
-        Seq(ExperimentSetup.default(runs = runs))
+        Seq(ExperimentSetup.default(runs = runs, nrOfQueryPoints = nrOfQueryPoints))
       else values map { value =>
         ExperimentSetup.forExperiment(
-          experiment = experiment,
-          runs = runs,
+          experiment      = experiment,
+          runs            = runs,
+          nrOfQueryPoints = nrOfQueryPoints,
           experimentValue = value
         )
     }
@@ -193,7 +243,8 @@ object RkNNTestEnvironment {
       k                   = 3,
       numRefPoints        = 3,
       entriesPerNode      = 25,
-      runs                = 1
+      runs                = 1,
+      nrOfQueryPoints     = 1
     )
 
     val (sGraph, q) = setup.sGraphsQIds.head

@@ -1,0 +1,7 @@
+RefPoints      ; 2,4,6,8
+Default        ; 
+EntriesPerNode ; 5,10,15,20
+Vertices       ; 1000,10000,50000
+Connectivity   ; 0.04,0.08,0.1,0.2
+ObjectDensity  ; 0.04,0.08,0.1,0.2
+K              ; 1,2,4,8
