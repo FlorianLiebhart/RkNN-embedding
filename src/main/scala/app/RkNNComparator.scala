@@ -201,7 +201,7 @@ object RkNNComparator {
 
     val timeEmbeddedRkNN = CPUTimeDiff()
 
-    val (relation, rStarTree, dbidVertexIDMapping) = Embedding.createDatabaseWithIndex(sGraph, -1, rStarTreePageSize, refPoints)
+    val (relation, rStarTree, dbidVertexIDMapping) = Embedding.createDatabaseWithIndex(sGraph, -1, rStarTreePageSize, "filedatabase/rTree.csv", refPoints)
     val queryObject                                = Embedding.getQueryObject(relation, q, dbidVertexIDMapping)
     val rknns: Seq[(SVertex, Double)] = Embedding.rknns(sGraph, q, k, relation, queryObject , rStarTree, dbidVertexIDMapping)
 

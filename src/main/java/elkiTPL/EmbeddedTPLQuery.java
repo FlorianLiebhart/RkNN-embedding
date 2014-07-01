@@ -97,7 +97,7 @@ public class EmbeddedTPLQuery {
     Log.appendln("    Refinement step done in " + timeRefinementStep);
     Log.appendln("    - After refining: " + refined.size() + " cnds");
 
-    return refined;
+    return refined; // TODO: Fix: Add earlyResults to refined!
   }
 
 

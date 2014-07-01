@@ -15,9 +15,9 @@ object RkNNTestEnvironment {
 
   /**
    * Run from console via:
-   * java -jar "rknn.jar" <runs> <nrofquerypoints> <experimentssettings>
+   * java -jar "rknn.jar" <runs> <nrofquerypoints> <experimentsettings>
    * e.g.:
-   * java -jar "rknn.jar" "5" "10" "experimentssettings.txt"
+   * java -jar "rknn.jar" "5" "10" "experimentsettings.txt"
 
    * @param args
    */
@@ -77,7 +77,7 @@ object RkNNTestEnvironment {
   def runFromJar(args: Array[String]) {
 
     if(args.length != 3)
-      throw new IllegalArgumentException("Please pass an argument for <runs>, <nrofquerypoints>, and <experimentssettingsfile>")
+      throw new IllegalArgumentException("Please pass an argument for <runs>, <nrofquerypoints>, and <experimentsettingsfile>")
 
     val runs            = Integer.parseInt(args(0))
     val nrOfQueryPoints = Integer.parseInt(args(1))
@@ -189,7 +189,7 @@ object RkNNTestEnvironment {
       algorithm match {
         case Naive     => Naive.rknns(sGraph, q, setup.k)
         case Eager     => Eager.rknns(sGraph, q, setup.k)
-        case Embedding => val (relation, rStarTree, dbidVertexIDMapping) = Embedding.createDatabaseWithIndex(sGraph, setup.numRefPoints, setup.rStarTreePageSize)
+        case Embedding => val (relation, rStarTree, dbidVertexIDMapping) = Embedding.createDatabaseWithIndex(sGraph, setup.numRefPoints, setup.rStarTreePageSize, s"filedatabase/${startDate}/rTree.csv")
                           val queryObject                                = Embedding.getQueryObject(relation, q, dbidVertexIDMapping)
                           Embedding.rknns(sGraph, q, setup.k, relation, queryObject, rStarTree, dbidVertexIDMapping)
       }
@@ -251,7 +251,7 @@ object RkNNTestEnvironment {
 
     Naive.rknns(sGraph, q, setup.k)
     Eager.rknns(sGraph, q, setup.k)
-    val (relation, rStarTree, dbidVertexIDMapping) = Embedding.createDatabaseWithIndex(sGraph, setup.numRefPoints, setup.rStarTreePageSize)
+    val (relation, rStarTree, dbidVertexIDMapping) = Embedding.createDatabaseWithIndex(sGraph, setup.numRefPoints, setup.rStarTreePageSize, s"filedatabase/${startDate}/rTree.csv")
     val queryObject                                = Embedding.getQueryObject(relation, q, dbidVertexIDMapping)
     Embedding.rknns(sGraph, q, setup.k, relation, queryObject, rStarTree, dbidVertexIDMapping)
 

@@ -40,9 +40,7 @@ case object Embedding extends GraphRknn{
    *
    * 1. Preparation phase
    */
-  def createDatabaseWithIndex(sGraph: SGraph, numRefPoints: Int, rStarTreePageSize: Int, predefinedRefPoints: Seq[SVertex] = null): (Relation[DoubleVector], RStarTreeIndex[DoubleVector], MutableHashMap[String, SVertex]) = {
-
-    val rTreePath        = "tplSimulation/rTree.csv"
+  def createDatabaseWithIndex(sGraph: SGraph, numRefPoints: Int, rStarTreePageSize: Int, rTreePath: String, predefinedRefPoints: Seq[SVertex] = null): (Relation[DoubleVector], RStarTreeIndex[DoubleVector], MutableHashMap[String, SVertex]) = {
 
     Log.appendln(s"1. Start preparation phase (create: embedding, DB, R*Tree, query object)")
     val timeAlgorithmPreparation = CPUTimeDiff()
