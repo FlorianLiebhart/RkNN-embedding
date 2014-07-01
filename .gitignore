@@ -41,7 +41,7 @@ target/*
 
 #Project specific
 src/main/java/rweeks/*
-tplSimulation/rTree.csv
+filedatabase/*
 lib/*
 !lib/MiniGUI-saved-settings.txt
 exampleGraphXMLs/generatedGraph.xml
