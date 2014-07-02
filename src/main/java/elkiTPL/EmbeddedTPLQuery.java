@@ -367,7 +367,7 @@ public class EmbeddedTPLQuery {
       for(TPLEntry entry : refinementSetNodes) {
         SpatialDirectoryEntry N = (SpatialDirectoryEntry) entry.getEntry();
         // if mindist(p,entry)<dist(p,q)
-        if (PruningHeuristic.vmMinDistanceMaximumNorm(p, N) < PruningHeuristic.vvMinDistanceMaximumNorm(p, q)){
+        if (PruningHeuristic.vmMinDistanceMaximumNorm(p, N) < PruningHeuristic.vvMaxDistanceMinimumNorm(p, q)){
           // add entry in set toVisit(p)
           toVisits.get(p.getDBID()).put(N.getEntryID(), entry);
         }
@@ -384,7 +384,7 @@ public class EmbeddedTPLQuery {
         // and report p -- actual result
         DBID dbid = p.getDBID();
 
-        DoubleDistance distance = (DoubleDistance) maxDistQuery.distance(dbid, q); // TODO is this distance calculation correct? -> probably
+        DoubleDistance distance = (DoubleDistance) maxDistQuery.distance(dbid, q);
         results.add(dbid);
       }
     }

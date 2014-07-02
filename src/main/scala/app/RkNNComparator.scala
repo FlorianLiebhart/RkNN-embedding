@@ -57,7 +57,7 @@ object RkNNComparator {
 //        val sGraph            = convertJavaToScalaGraph(XmlUtil.importGraphFromXml("exampleGraphXMLs/exampleGraphTPL.xml"))
         val sGraph            = convertJavaToScalaGraph(XmlUtil.importGraphFromXml("exampleGraphXMLs/exampleGraphTPLAllObjects.xml"))
         val q                 = sGraph.getVertex(15)
-        val refPoints         = Seq(sGraph.getVertex(4))//, sGraph.getVertex(11))
+        val refPoints         = Seq(sGraph.getVertex(4), sGraph.getVertex(11))
 //                                .++(Seq(sGraph.getVertex(13) ,sGraph.getVertex(5)))//, sGraph.getVertex(16)))
 
         val rStarTreePageSize = (refPoints.size * 16 * 3 ) + 34 // minimum!
@@ -106,10 +106,10 @@ object RkNNComparator {
 
       case "random" =>  // randomly generated graph
         // vertices may be a little less than what defined here, since the floored sqrt will be squared
-        val vertices          = 100 // Max. 1 Million! (so that there won't be an integer overflow for max-edges)
+        val vertices          = 1000 // Max. 1 Million! (so that there won't be an integer overflow for max-edges)
         val actualVertices    = Math.pow(Math.sqrt(vertices).floor, 2).toInt
 
-        val objects           = 1 //0.005 * actualVertices
+        val objects           = 0.05 * actualVertices
 
         val nrOfRowsAndCols   = Math.sqrt(actualVertices)
         val rowEdges          = nrOfRowsAndCols * (nrOfRowsAndCols - 1)
@@ -120,8 +120,8 @@ object RkNNComparator {
         val edges             = 0.1 * (maxEdges - minEdges) + minEdges   // generally for a graph: from N-1 to N(N-1)/2 // Int Overflow at: max 2.147.483.647 => Vertex max: 65.536
 
         val qID               = new Random(System.currentTimeMillis).nextInt(actualVertices+1)
-        val numRefPoints      = 30
-        val rStarTreePageSize = 25 * 8 * numRefPoints  // bytes: e.g. 1024 bytes; Erich recommendation: 25*8*dimensions (=> corresponds to around 25 entries/page)
+        val numRefPoints      = 15
+        val rStarTreePageSize = 15 * 8 * numRefPoints  // bytes: e.g. 1024 bytes; Erich recommendation: 25*8*dimensions (=> corresponds to around 25 entries/page)
         val k                 = 3
 
         val sGraph            = GraphGen.generateScalaGraph(actualVertices, edges.toInt, objects.toInt, edgeMaxWeight = 10)
@@ -146,7 +146,7 @@ object RkNNComparator {
     Log.appendln("")
 
     // Naive algorithm
-//    naiveRkNN(sGraph, qID, k)
+    naiveRkNN(sGraph, q, k)
 
     Log.printFlush
 
