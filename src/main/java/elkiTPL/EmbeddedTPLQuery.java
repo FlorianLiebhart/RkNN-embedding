@@ -64,6 +64,7 @@ public class EmbeddedTPLQuery {
 
 
     // A candidate p is an early result, if for k other candidates p': MaxDist(q, p) <= MinDist(p', q)
+    // TODO: This is currently not used, as it does not work correctly! Review! (Returns way too many results, sometimes). Once it works, instead of candidateSet, pass cndSetEarlyResultsRemoved to refine()
     CPUTimeDiff timeEarlyResult = new CPUTimeDiff();
 
     SpatialPointLeafEntry kthCandidate = candidateSet.get( (k > candidateSet.size()) ? candidateSet.size() - 1 : k-1 );
@@ -91,7 +92,7 @@ public class EmbeddedTPLQuery {
     Log.printFlush();
     CPUTimeDiff timeRefinementStep = new CPUTimeDiff();
 
-    ArrayList<DBID> refined = refine(q, k, cndSetEarlyResultsRemoved, refinementSetPoints, refinementSetNodes);
+    ArrayList<DBID> refined = refine(q, k, candidateSet, refinementSetPoints, refinementSetNodes);
 
     timeRefinementStep.end();
     Log.appendln("    Refinement step done in " + timeRefinementStep);

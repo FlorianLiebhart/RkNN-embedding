@@ -34,7 +34,7 @@ object RkNNComparator {
      * rknn query settings
      */
 
-    val exampleGraph = "random" // "eager"  for using the example graph from TKDE - GraphRNN paper page 3,
+    val exampleGraph = "tpl" // "eager"  for using the example graph from TKDE - GraphRNN paper page 3,
                                 // "tpl"    for using the example graph from the TPL page 748,
                                 // "random" for generating a random graph
 
@@ -55,7 +55,7 @@ object RkNNComparator {
 
       case "tpl"  =>
 //        val sGraph            = convertJavaToScalaGraph(XmlUtil.importGraphFromXml("exampleGraphXMLs/exampleGraphTPL.xml"))
-        val sGraph            = convertJavaToScalaGraph(XmlUtil.importGraphFromXml("exampleGraphXMLs/exampleGraphTPLAllObjects.xml"))
+        val sGraph            = convertJavaToScalaGraph(XmlUtil.importGraphFromXml("exampleGraphXMLs/exampleGraphTPL_ausarbeitung.xml"))
         val q                 = sGraph.getVertex(15)
         val refPoints         = Seq(sGraph.getVertex(4), sGraph.getVertex(11))
 //                                .++(Seq(sGraph.getVertex(13) ,sGraph.getVertex(5)))//, sGraph.getVertex(16)))

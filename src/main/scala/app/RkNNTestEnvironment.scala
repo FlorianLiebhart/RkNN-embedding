@@ -28,14 +28,14 @@ object RkNNTestEnvironment {
     writeToFile(s"log/${startDate}/experimentsLog.txt", false, "")
 
     try {
-//      runExperiments(
-//        short = false,
-//        runs  = 3,
-//        nrOfQueryPoints = 10
-//      )
-      runFromJar(
-        args = args
+      runExperiments(
+        short = false,
+        runs  = 1,
+        nrOfQueryPoints = 1
       )
+//      runFromJar(
+//        args = args
+//      )
     }
     catch {
       case e: Exception => {
@@ -61,13 +61,13 @@ object RkNNTestEnvironment {
     val algorithms = Seq(naive, eager, embedding)
 
 
-    runExperiment(Experiment.RefPoints     , Seq(embedding), runs = runs, nrOfQueryPoints = nrOfQueryPoints, Seq(1,2,3,4,5,6,7,8,9,10),                                               short, Seq(5, 10, 15, 20))
-    runExperiment(Experiment.Default       , algorithms,     runs = runs, nrOfQueryPoints = nrOfQueryPoints, Seq(),                                                                   short, Seq())
-    runExperiment(Experiment.EntriesPerNode, Seq(embedding), runs = runs, nrOfQueryPoints = nrOfQueryPoints, Seq(20, 40, 60, 80, 100, 120, 140, 160),                                 short, Seq(5, 10, 15, 20))
-    runExperiment(Experiment.Vertices      , algorithms,     runs = runs, nrOfQueryPoints = nrOfQueryPoints, Seq(1000, 10000, 50000, 100000, 200000, 350000),                         short, Seq(10,100,1000,10000))
-    runExperiment(Experiment.Connectivity  , algorithms,     runs = runs, nrOfQueryPoints = nrOfQueryPoints, Seq(0.001, 0.005, 0.01, 0.02, 0.04, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0), short, Seq(0.02, 0.04, 0.08, 0.16))
-    runExperiment(Experiment.ObjectDensity , algorithms,     runs = runs, nrOfQueryPoints = nrOfQueryPoints, Seq(0.001, 0.005, 0.01, 0.02, 0.04, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0), short, Seq(0.02, 0.04, 0.08, 0.16))
-    runExperiment(Experiment.K             , algorithms,     runs = runs, nrOfQueryPoints = nrOfQueryPoints, Seq(1, 2, 4, 8, 16, 20),                                                 short, Seq(2, 4, 8))
+//    runExperiment(Experiment.RefPoints     , Seq(embedding), runs = runs, nrOfQueryPoints = nrOfQueryPoints, Seq(1,2,3,4,5,6,7,8,9,10),                                               short, Seq(5, 10, 15, 20))
+//    runExperiment(Experiment.Default       , algorithms,     runs = runs, nrOfQueryPoints = nrOfQueryPoints, Seq(),                                                                   short, Seq())
+//    runExperiment(Experiment.EntriesPerNode, Seq(embedding), runs = runs, nrOfQueryPoints = nrOfQueryPoints, Seq(1000,5000,10000,25000),                                 short, Seq(5, 10, 15, 20))
+//    runExperiment(Experiment.Vertices      , algorithms,     runs = runs, nrOfQueryPoints = nrOfQueryPoints, Seq(1000, 10000, 50000, 100000, 200000, 350000),                         short, Seq(10,100,1000,10000))
+//    runExperiment(Experiment.Connectivity  , algorithms,     runs = runs, nrOfQueryPoints = nrOfQueryPoints, Seq(0.001, 0.005, 0.01, 0.02, 0.04, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0), short, Seq(0.02, 0.04, 0.08, 0.16))
+//    runExperiment(Experiment.ObjectDensity , algorithms,     runs = runs, nrOfQueryPoints = nrOfQueryPoints, Seq(0.001, 0.005, 0.01, 0.02, 0.04, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0), short, Seq(0.02, 0.04, 0.08, 0.16))
+//    runExperiment(Experiment.K             , algorithms,     runs = runs, nrOfQueryPoints = nrOfQueryPoints, Seq(1, 2, 4, 8, 16, 20),                                                 short, Seq(2, 4, 8))
 
     runTimeRealTotal.end
     experimentLogAppendln(s"------------- All experiments finished in ${runTimeRealTotal}. ---------------\n")

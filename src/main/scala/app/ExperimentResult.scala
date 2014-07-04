@@ -1,7 +1,7 @@
 package app
 
 import Experiment.Experiment
-import util.Utils.{writeToFile, formatThousands}
+import util.Utils.writeToFile
 
 case class ExperimentResult(experiment                      : Experiment,
                             values                          : Seq[Any],
@@ -52,13 +52,13 @@ case class ExperimentResult(experiment                      : Experiment,
             indexedSingleResult._1.name + "\n" +
 
             (algorithmResults.map(algorithmResult => {
-              val runResults = algorithmResult.singleResults(indexedSingleResult._2).runResults.map(formatThousands(_)) mkString ", "
+              val runResults = algorithmResult.singleResults(indexedSingleResult._2).runResults mkString ", "
               cellLengths :+= runResults.size
               runResults + "####"
             }) mkString " ; ") + "\n" +
 
             (algorithmResults.map(algorithmResult => {
-              val totalResult = formatThousands(algorithmResult.singleResults(indexedSingleResult._2).totalResult)
+              val totalResult = algorithmResult.singleResults(indexedSingleResult._2).totalResult.toString
               cellLengths :+= totalResult.size
               totalResult + "####"
             }) mkString " ; ")
@@ -96,7 +96,7 @@ case class ExperimentResult(experiment                      : Experiment,
             algorithmResults.head.algorithmName + ";" +
               (algorithmResults map { algorithmResult =>
                 if (algorithmResult.singleResults.filter(_.name == i.name).size == 1)
-                  formatThousands(algorithmResult.singleResults.filter(_.name == i.name).head.totalResult)
+                  algorithmResult.singleResults.filter(_.name == i.name).head.totalResult
                 else ""
               }).mkString(";")
         }).mkString("\n")

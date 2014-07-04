@@ -10,8 +10,6 @@ import java.util.Locale
 object Utils {
 
 
-  def formatThousands(l: Long) = NumberFormat.getInstance(Locale.US).asInstanceOf[DecimalFormat].format(l)
-
   /**
    * Throws IllegalArgumentException if b is false
    * @param b

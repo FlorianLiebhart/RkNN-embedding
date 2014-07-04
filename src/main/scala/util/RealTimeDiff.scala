@@ -1,6 +1,5 @@
 package util
 
-import util.Utils.formatThousands
 
 case class RealTimeDiff(){
     val tStart: java.lang.Long = System.currentTimeMillis
@@ -16,7 +15,7 @@ case class RealTimeDiff(){
         throw new RuntimeException("End time not specified")
 
       else {
-         s"${formatThousands(diffMillis)} ms.(real time)"
+         s"${diffMillis} ms.(real time)"
        }
     }
   }
